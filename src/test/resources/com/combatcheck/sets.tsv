@@ -1,0 +1,388 @@
+# set	class	weapon id	weapon	category	speed	npc id	npc	stab	slash	crush	magic	ranged	str	rstr	mdmg	calculator damage per tick	slayer helmet kind	salve amulet kind	on task (1)	crystal armour weight	void melee	void ranged	in the wilderness (1)	autocast spell number	tome element
+bane-arclight	melee	19675	Arclight	Slash Sword	4	415	Abyssal demon	87	152	75	-60	-67	79	0	0.0	6.56334	0	0	0	0	0	0	0	0	
+bane-arclight	melee	19675	Arclight	Slash Sword	4	5862	Cerberus	87	152	75	-60	-67	79	0	0.0	6.17356	0	0	0	0	0	0	0	0	
+bane-arclight	melee	19675	Arclight	Slash Sword	4	12191	Duke Sucellus	87	152	75	-60	-67	79	0	0.0	4.40511	0	0	0	0	0	0	0	0	
+bane-arclight	melee	19675	Arclight	Slash Sword	4	7261	Hill Giant	87	152	75	-60	-67	79	0	0.0	4.22932	0	0	0	0	0	0	0	0	
+bane-arclight	melee	19675	Arclight	Slash Sword	4	3129	K'ril Tsutsaroth	87	152	75	-60	-67	79	0	0.0	4.66975	0	0	0	0	0	0	0	0	
+bane-bowfa-crystal	ranged	25865	Bow of Faerdhinen	Bow	5	415	Abyssal demon	-8	-8	-8	-52	249	0	118	0.0	5.26461	0	0	0	6	0	0	0	0	
+bane-bowfa-crystal	ranged	25865	Bow of Faerdhinen	Bow	5	5862	Cerberus	-8	-8	-8	-52	249	0	118	0.0	4.97050	0	0	0	6	0	0	0	0	
+bane-bowfa-crystal	ranged	25865	Bow of Faerdhinen	Bow	5	2215	General Graardor	-8	-8	-8	-52	249	0	118	0.0	3.85053	0	0	0	6	0	0	0	0	
+bane-bowfa-crystal	ranged	25865	Bow of Faerdhinen	Bow	5	7261	Hill Giant	-8	-8	-8	-52	249	0	118	0.0	5.76613	0	0	0	6	0	0	0	0	
+bane-bowfa-crystal-helm	ranged	25865	Bow of Faerdhinen	Bow	5	415	Abyssal demon	-8	-8	-8	-39	243	0	118	0.0	5.87683	2	0	1	5	0	0	0	0	
+bane-bowfa-crystal-helm	ranged	25865	Bow of Faerdhinen	Bow	5	5862	Cerberus	-8	-8	-8	-39	243	0	118	0.0	5.57685	2	0	1	5	0	0	0	0	
+bane-bowfa-crystal-helm	ranged	25865	Bow of Faerdhinen	Bow	5	2215	General Graardor	-8	-8	-8	-39	243	0	118	0.0	4.43453	2	0	1	5	0	0	0	0	
+bane-bowfa-crystal-helm	ranged	25865	Bow of Faerdhinen	Bow	5	7261	Hill Giant	-8	-8	-8	-39	243	0	118	0.0	6.38836	2	0	1	5	0	0	0	0	
+bane-bowfa-masori	ranged	25865	Bow of Faerdhinen	Bow	5	415	Abyssal demon	-8	-8	-8	-19	273	0	126	0.0	4.70055	0	0	0	0	0	0	0	0	
+bane-bowfa-masori	ranged	25865	Bow of Faerdhinen	Bow	5	5862	Cerberus	-8	-8	-8	-19	273	0	126	0.0	4.37561	0	0	0	0	0	0	0	0	
+bane-bowfa-masori	ranged	25865	Bow of Faerdhinen	Bow	5	2215	General Graardor	-8	-8	-8	-19	273	0	126	0.0	3.13823	0	0	0	0	0	0	0	0	
+bane-bowfa-masori	ranged	25865	Bow of Faerdhinen	Bow	5	7261	Hill Giant	-8	-8	-8	-19	273	0	126	0.0	5.25464	0	0	0	0	0	0	0	0	
+bane-burning-claws	melee	29577	Burning claws	Claw	4	415	Abyssal demon	90	139	47	-55	-63	95	0	0.0	4.05264	0	0	0	0	0	0	0	0	
+bane-burning-claws	melee	29577	Burning claws	Claw	4	5862	Cerberus	90	139	47	-55	-63	95	0	0.0	3.63075	0	0	0	0	0	0	0	0	
+bane-burning-claws	melee	29577	Burning claws	Claw	4	12191	Duke Sucellus	90	139	47	-55	-63	95	0	0.0	2.51888	0	0	0	0	0	0	0	0	
+bane-burning-claws	melee	29577	Burning claws	Claw	4	7261	Hill Giant	90	139	47	-55	-63	95	0	0.0	4.70035	0	0	0	0	0	0	0	0	
+bane-burning-claws	melee	29577	Burning claws	Claw	4	3129	K'ril Tsutsaroth	90	139	47	-55	-63	95	0	0.0	1.97860	0	0	0	0	0	0	0	0	
+bane-colossal	melee	27021	Colossal blade	2h Sword	6	415	Abyssal demon	43	183	112	-59	-63	163	0	0.0	3.97170	0	0	0	0	0	0	0	0	
+bane-colossal	melee	27021	Colossal blade	2h Sword	6	5862	Cerberus	43	183	112	-59	-63	163	0	0.0	4.41667	0	0	0	0	0	0	0	0	
+bane-colossal	melee	27021	Colossal blade	2h Sword	6	2215	General Graardor	43	183	112	-59	-63	163	0	0.0	2.43283	0	0	0	0	0	0	0	0	
+bane-colossal	melee	27021	Colossal blade	2h Sword	6	7261	Hill Giant	43	183	112	-59	-63	163	0	0.0	4.76960	0	0	0	0	0	0	0	0	
+bane-craws-out	ranged	22550	Craw's bow	Bow	4	415	Abyssal demon	-8	-8	-8	-19	220	0	80	0.0	4.68338	0	0	0	0	0	0	0	0	
+bane-craws-out	ranged	22550	Craw's bow	Bow	4	5862	Cerberus	-8	-8	-8	-19	220	0	80	0.0	4.28855	0	0	0	0	0	0	0	0	
+bane-craws-out	ranged	22550	Craw's bow	Bow	4	2215	General Graardor	-8	-8	-8	-19	220	0	80	0.0	2.78503	0	0	0	0	0	0	0	0	
+bane-craws-out	ranged	22550	Craw's bow	Bow	4	7261	Hill Giant	-8	-8	-8	-19	220	0	80	0.0	5.35665	0	0	0	0	0	0	0	0	
+bane-craws-wild	ranged	22550	Craw's bow	Bow	4	415	Abyssal demon	-8	-8	-8	-19	220	0	80	0.0	7.35604	0	0	0	0	0	0	1	0	
+bane-craws-wild	ranged	22550	Craw's bow	Bow	4	5862	Cerberus	-8	-8	-8	-19	220	0	80	0.0	6.96557	0	0	0	0	0	0	1	0	
+bane-craws-wild	ranged	22550	Craw's bow	Bow	4	2215	General Graardor	-8	-8	-8	-19	220	0	80	0.0	5.47866	0	0	0	0	0	0	1	0	
+bane-craws-wild	ranged	22550	Craw's bow	Bow	4	7261	Hill Giant	-8	-8	-8	-19	220	0	80	0.0	8.02187	0	0	0	0	0	0	1	0	
+bane-dhcb	ranged	21012	Dragon hunter crossbow	Crossbow	6	5862	Cerberus	-15	-16	-15	-29	258	0	145	0.0	3.78453	0	0	0	0	0	0	0	0	
+bane-dhcb	ranged	21012	Dragon hunter crossbow	Crossbow	6	7261	Hill Giant	-15	-16	-15	-29	258	0	145	0.0	4.58884	0	0	0	0	0	0	0	0	
+bane-dhcb	ranged	21012	Dragon hunter crossbow	Crossbow	6	239	King Black Dragon	-15	-16	-15	-29	258	0	145	0.0	4.53916	0	0	0	0	0	0	0	0	
+bane-dhcb	ranged	21012	Dragon hunter crossbow	Crossbow	6	8059	Vorkath	-15	-16	-15	-29	258	0	145	0.0	4.82356	0	0	0	0	0	0	0	0	
+bane-dhcb-helm	ranged	21012	Dragon hunter crossbow	Crossbow	6	5862	Cerberus	-15	-16	-15	-25	249	0	143	0.0	4.45861	2	0	1	0	0	0	0	0	
+bane-dhcb-helm	ranged	21012	Dragon hunter crossbow	Crossbow	6	7261	Hill Giant	-15	-16	-15	-25	249	0	143	0.0	5.28512	2	0	1	0	0	0	0	0	
+bane-dhcb-helm	ranged	21012	Dragon hunter crossbow	Crossbow	6	239	King Black Dragon	-15	-16	-15	-25	249	0	143	0.0	5.23572	2	0	1	0	0	0	0	0	
+bane-dhcb-helm	ranged	21012	Dragon hunter crossbow	Crossbow	6	8059	Vorkath	-15	-16	-15	-25	249	0	143	0.0	5.52081	2	0	1	0	0	0	0	0	
+bane-dhl	melee	22978	Dragon hunter lance	Spear	4	5862	Cerberus	162	179	140	-60	-67	141	0	0.0	5.00638	0	0	0	0	0	0	0	0	
+bane-dhl	melee	22978	Dragon hunter lance	Spear	4	7261	Hill Giant	162	179	140	-60	-67	141	0	0.0	5.94148	0	0	0	0	0	0	0	0	
+bane-dhl	melee	22978	Dragon hunter lance	Spear	4	239	King Black Dragon	162	179	140	-60	-67	141	0	0.0	4.94517	0	0	0	0	0	0	0	0	
+bane-dhl	melee	22978	Dragon hunter lance	Spear	4	8059	Vorkath	162	179	140	-60	-67	141	0	0.0	5.46462	0	0	0	0	0	0	0	0	
+bane-elite-void-ranged	ranged	20997	Twisted bow	Bow	6	415	Abyssal demon	0	0	0	-12	115	0	90	0.0	0.97365	0	0	0	0	0	2	0	0	
+bane-elite-void-ranged	ranged	20997	Twisted bow	Bow	6	5862	Cerberus	0	0	0	-12	115	0	90	0.0	5.95238	0	0	0	0	0	2	0	0	
+bane-elite-void-ranged	ranged	20997	Twisted bow	Bow	6	2215	General Graardor	0	0	0	-12	115	0	90	0.0	1.36989	0	0	0	0	0	2	0	0	
+bane-elite-void-ranged	ranged	20997	Twisted bow	Bow	6	7261	Hill Giant	0	0	0	-12	115	0	90	0.0	1.89743	0	0	0	0	0	2	0	0	
+bane-emberlight	melee	29589	Emberlight	Slash Sword	4	415	Abyssal demon	140	184	75	-60	-67	84	0	0.0	6.89441	0	0	0	0	0	0	0	0	
+bane-emberlight	melee	29589	Emberlight	Slash Sword	4	5862	Cerberus	140	184	75	-60	-67	84	0	0.0	6.71773	0	0	0	0	0	0	0	0	
+bane-emberlight	melee	29589	Emberlight	Slash Sword	4	12191	Duke Sucellus	140	184	75	-60	-67	84	0	0.0	4.76581	0	0	0	0	0	0	0	0	
+bane-emberlight	melee	29589	Emberlight	Slash Sword	4	7261	Hill Giant	140	184	75	-60	-67	84	0	0.0	4.37004	0	0	0	0	0	0	0	0	
+bane-emberlight	melee	29589	Emberlight	Slash Sword	4	3129	K'ril Tsutsaroth	140	184	75	-60	-67	84	0	0.0	5.18933	0	0	0	0	0	0	0	0	
+bane-emberlight-helm	melee	29589	Emberlight	Slash Sword	4	415	Abyssal demon	140	174	75	-55	-57	78	0	0.0	7.77227	2	0	1	0	0	0	0	0	
+bane-emberlight-helm	melee	29589	Emberlight	Slash Sword	4	5862	Cerberus	140	174	75	-55	-57	78	0	0.0	7.42285	2	0	1	0	0	0	0	0	
+bane-emberlight-helm	melee	29589	Emberlight	Slash Sword	4	12191	Duke Sucellus	140	174	75	-55	-57	78	0	0.0	5.52627	2	0	1	0	0	0	0	0	
+bane-emberlight-helm	melee	29589	Emberlight	Slash Sword	4	7261	Hill Giant	140	174	75	-55	-57	78	0	0.0	4.87046	2	0	1	0	0	0	0	0	
+bane-emberlight-helm	melee	29589	Emberlight	Slash Sword	4	3129	K'ril Tsutsaroth	140	174	75	-55	-57	78	0	0.0	6.07476	2	0	1	0	0	0	0	0	
+bane-keris	melee	25979	Keris partisan	Partisan	4	7261	Hill Giant	135	112	132	-58	-67	116	0	0.0	5.29742	0	0	0	0	0	0	0	0	
+bane-keris	melee	25979	Keris partisan	Partisan	4	963	Kalphite Queen	135	112	132	-58	-67	116	0	0.0	4.58715	0	0	0	0	0	0	0	0	
+bane-keris	melee	25979	Keris partisan	Partisan	4	958	Kalphite Soldier	135	112	132	-58	-67	116	0	0.0	6.83477	0	0	0	0	0	0	0	0	
+bane-keris-breaching	melee	25981	Keris partisan of breaching	Partisan	4	7261	Hill Giant	135	112	132	-58	-67	116	0	0.0	5.29742	0	0	0	0	0	0	0	0	
+bane-keris-breaching	melee	25981	Keris partisan of breaching	Partisan	4	963	Kalphite Queen	135	112	132	-58	-67	116	0	0.0	5.31941	0	0	0	0	0	0	0	0	
+bane-keris-breaching	melee	25981	Keris partisan of breaching	Partisan	4	958	Kalphite Soldier	135	112	132	-58	-67	116	0	0.0	7.00939	0	0	0	0	0	0	0	0	
+bane-leaf-axe	melee	20727	Leaf-bladed battleaxe	Axe	5	7261	Hill Giant	75	186	147	-60	-67	163	0	0.0	5.33795	0	0	0	0	0	0	0	0	
+bane-leaf-axe	melee	20727	Leaf-bladed battleaxe	Axe	5	411	Kurask	75	186	147	-60	-67	163	0	0.0	5.57990	0	0	0	0	0	0	0	0	
+bane-leaf-axe	melee	20727	Leaf-bladed battleaxe	Axe	5	430	Turoth	75	186	147	-60	-67	163	0	0.0	5.73872	0	0	0	0	0	0	0	0	
+bane-scorching	ranged	29591	Scorching bow	Bow	5	415	Abyssal demon	-8	-8	-8	-19	269	0	120	0.0	6.08988	0	0	0	0	0	0	0	0	
+bane-scorching	ranged	29591	Scorching bow	Bow	5	5862	Cerberus	-8	-8	-8	-19	269	0	120	0.0	5.77233	0	0	0	0	0	0	0	0	
+bane-scorching	ranged	29591	Scorching bow	Bow	5	12191	Duke Sucellus	-8	-8	-8	-19	269	0	120	0.0	1.64080	0	0	0	0	0	0	0	0	
+bane-scorching	ranged	29591	Scorching bow	Bow	5	7261	Hill Giant	-8	-8	-8	-19	269	0	120	0.0	5.13122	0	0	0	0	0	0	0	0	
+bane-scorching	ranged	29591	Scorching bow	Bow	5	3129	K'ril Tsutsaroth	-8	-8	-8	-19	269	0	120	0.0	4.54717	0	0	0	0	0	0	0	0	
+bane-scorching-helm	ranged	29591	Scorching bow	Bow	5	415	Abyssal demon	-8	-8	-8	-15	260	0	118	0.0	6.73021	2	0	1	0	0	0	0	0	
+bane-scorching-helm	ranged	29591	Scorching bow	Bow	5	5862	Cerberus	-8	-8	-8	-15	260	0	118	0.0	6.42016	2	0	1	0	0	0	0	0	
+bane-scorching-helm	ranged	29591	Scorching bow	Bow	5	12191	Duke Sucellus	-8	-8	-8	-15	260	0	118	0.0	2.16587	2	0	1	0	0	0	0	0	
+bane-scorching-helm	ranged	29591	Scorching bow	Bow	5	7261	Hill Giant	-8	-8	-8	-15	260	0	118	0.0	5.75562	2	0	1	0	0	0	0	0	
+bane-scorching-helm	ranged	29591	Scorching bow	Bow	5	3129	K'ril Tsutsaroth	-8	-8	-8	-15	260	0	118	0.0	5.22395	2	0	1	0	0	0	0	0	
+bane-tonalztics	ranged	28922	Tonalztics of Ralos	Thrown	7	415	Abyssal demon	-8	-8	-8	-19	260	0	75	0.0	3.34141	0	0	0	0	0	0	0	0	
+bane-tonalztics	ranged	28922	Tonalztics of Ralos	Thrown	7	5862	Cerberus	-8	-8	-8	-19	260	0	75	0.0	3.09975	0	0	0	0	0	0	0	0	
+bane-tonalztics	ranged	28922	Tonalztics of Ralos	Thrown	7	2215	General Graardor	-8	-8	-8	-19	260	0	75	0.0	2.17953	0	0	0	0	0	0	0	0	
+bane-tonalztics	ranged	28922	Tonalztics of Ralos	Thrown	7	7261	Hill Giant	-8	-8	-8	-19	260	0	75	0.0	3.75349	0	0	0	0	0	0	0	0	
+bane-viggora-wild	melee	22545	Viggora's chainmace	Spiked	4	415	Abyssal demon	130	112	142	-60	-67	137	0	0.0	7.92909	0	0	0	0	0	0	1	0	
+bane-viggora-wild	melee	22545	Viggora's chainmace	Spiked	4	5862	Cerberus	130	112	142	-60	-67	137	0	0.0	8.16651	0	0	0	0	0	0	1	0	
+bane-viggora-wild	melee	22545	Viggora's chainmace	Spiked	4	2215	General Graardor	130	112	142	-60	-67	137	0	0.0	5.18039	0	0	0	0	0	0	1	0	
+bane-viggora-wild	melee	22545	Viggora's chainmace	Spiked	4	7261	Hill Giant	130	112	142	-60	-67	137	0	0.0	8.90613	0	0	0	0	0	0	1	0	
+bane-void-melee	melee	22324	Ghrazi rapier	Stab Sword	4	415	Abyssal demon	161	115	59	-14	-12	138	0	0.0	5.64051	0	0	0	0	1	0	0	0	
+bane-void-melee	melee	22324	Ghrazi rapier	Stab Sword	4	5862	Cerberus	161	115	59	-14	-12	138	0	0.0	5.61013	0	0	0	0	1	0	0	0	
+bane-void-melee	melee	22324	Ghrazi rapier	Stab Sword	4	2215	General Graardor	161	115	59	-14	-12	138	0	0.0	3.12268	0	0	0	0	1	0	0	0	
+bane-void-melee	melee	22324	Ghrazi rapier	Stab Sword	4	7261	Hill Giant	161	115	59	-14	-12	138	0	0.0	6.54809	0	0	0	0	1	0	0	0	
+bane-void-ranged	ranged	20997	Twisted bow	Bow	6	415	Abyssal demon	0	0	0	-12	115	0	90	0.0	0.92768	0	0	0	0	0	1	0	0	
+bane-void-ranged	ranged	20997	Twisted bow	Bow	6	5862	Cerberus	0	0	0	-12	115	0	90	0.0	5.79986	0	0	0	0	0	1	0	0	
+bane-void-ranged	ranged	20997	Twisted bow	Bow	6	2215	General Graardor	0	0	0	-12	115	0	90	0.0	1.31045	0	0	0	0	0	1	0	0	
+bane-void-ranged	ranged	20997	Twisted bow	Bow	6	7261	Hill Giant	0	0	0	-12	115	0	90	0.0	1.80785	0	0	0	0	0	1	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	415	Abyssal demon	182	189	75	-60	-67	174	0	0.0	5.58940	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	13668	Araxxor	182	189	75	-60	-67	174	0	0.0	4.30270	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	13013	Blue Moon	182	189	75	-60	-67	174	0	0.0	6.58391	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	5862	Cerberus	182	189	75	-60	-67	174	0	0.0	5.57776	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	2266	Dagannoth Prime	182	189	75	-60	-67	174	0	0.0	1.68720	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	2267	Dagannoth Rex	182	189	75	-60	-67	174	0	0.0	1.68720	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	2215	General Graardor	182	189	75	-60	-67	174	0	0.0	3.56233	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	5779	Giant Mole	182	189	75	-60	-67	174	0	0.0	4.83343	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	7261	Hill Giant	182	189	75	-60	-67	174	0	0.0	5.79277	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	3162	Kree'arra	182	189	75	-60	-67	174	0	0.0	0.00000	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	12077	Phantom Muspah	182	189	75	-60	-67	174	0	0.0	2.73031	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	12078	Phantom Muspah	182	189	75	-60	-67	174	0	0.0	2.73031	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	8059	Vorkath	182	189	75	-60	-67	174	0	0.0	5.22029	0	0	0	0	0	0	0	0	
+fang	melee	26219	Osmumten's fang	Stab Sword	5	2042	Zulrah	182	189	75	-60	-67	174	0	0.0	0.00000	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	415	Abyssal demon	177	169	75	-60	-67	164	0	0.0	5.82450	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	13668	Araxxor	177	169	75	-60	-67	164	0	0.0	4.98506	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	13013	Blue Moon	177	169	75	-60	-67	164	0	0.0	6.95359	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	5862	Cerberus	177	169	75	-60	-67	164	0	0.0	5.79232	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	2266	Dagannoth Prime	177	169	75	-60	-67	164	0	0.0	1.49619	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	2267	Dagannoth Rex	177	169	75	-60	-67	164	0	0.0	1.49619	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	2215	General Graardor	177	169	75	-60	-67	164	0	0.0	3.15903	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	5779	Giant Mole	177	169	75	-60	-67	164	0	0.0	4.47668	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	7261	Hill Giant	177	169	75	-60	-67	164	0	0.0	6.78573	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	3162	Kree'arra	177	169	75	-60	-67	164	0	0.0	0.00000	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	12077	Phantom Muspah	177	169	75	-60	-67	164	0	0.0	2.93806	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	12078	Phantom Muspah	177	169	75	-60	-67	164	0	0.0	2.93806	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	8059	Vorkath	177	169	75	-60	-67	164	0	0.0	5.04682	0	0	0	0	0	0	0	0	
+rapier	melee	22324	Ghrazi rapier	Stab Sword	4	2042	Zulrah	177	169	75	-60	-67	164	0	0.0	0.00000	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	415	Abyssal demon	0	0	0	154	-21	0	0	24.0	6.21794	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	13668	Araxxor	0	0	0	154	-21	0	0	24.0	1.72536	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	13013	Blue Moon	0	0	0	154	-21	0	0	24.0	1.68110	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	5862	Cerberus	0	0	0	154	-21	0	0	24.0	3.46156	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	2266	Dagannoth Prime	0	0	0	154	-21	0	0	24.0	1.22717	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	2267	Dagannoth Rex	0	0	0	154	-21	0	0	24.0	6.21546	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	2215	General Graardor	0	0	0	154	-21	0	0	24.0	3.20625	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	5779	Giant Mole	0	0	0	154	-21	0	0	24.0	3.40863	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	7261	Hill Giant	0	0	0	154	-21	0	0	24.0	6.21794	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	3162	Kree'arra	0	0	0	154	-21	0	0	24.0	1.87304	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	12077	Phantom Muspah	0	0	0	154	-21	0	0	24.0	1.29737	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	12078	Phantom Muspah	0	0	0	154	-21	0	0	24.0	4.79287	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	8059	Vorkath	0	0	0	154	-21	0	0	24.0	2.13809	0	0	0	0	0	0	0	0	
+sang	magic	22323	Sanguinesti staff	Powered Staff	4	2042	Zulrah	0	0	0	154	-21	0	0	24.0	5.69295	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	415	Abyssal demon	117	210	77	-61	-63	138	0	0.0	4.17741	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	13668	Araxxor	117	210	77	-61	-63	138	0	0.0	6.43684	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	13013	Blue Moon	117	210	77	-61	-63	138	0	0.0	10.31539	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	5862	Cerberus	117	210	77	-61	-63	138	0	0.0	6.66033	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	2266	Dagannoth Prime	117	210	77	-61	-63	138	0	0.0	2.08383	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	2267	Dagannoth Rex	117	210	77	-61	-63	138	0	0.0	2.08383	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	2215	General Graardor	117	210	77	-61	-63	138	0	0.0	4.39190	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	5779	Giant Mole	117	210	77	-61	-63	138	0	0.0	5.38416	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	7261	Hill Giant	117	210	77	-61	-63	138	0	0.0	7.11123	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	3162	Kree'arra	117	210	77	-61	-63	138	0	0.0	0.00000	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	12077	Phantom Muspah	117	210	77	-61	-63	138	0	0.0	4.24054	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	12078	Phantom Muspah	117	210	77	-61	-63	138	0	0.0	4.24054	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	8059	Vorkath	117	210	77	-61	-63	138	0	0.0	4.54669	0	0	0	0	0	0	0	0	
+scythe	melee	22325	Scythe of Vitur	Scythe	5	2042	Zulrah	117	210	77	-61	-63	138	0	0.0	0.00000	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	415	Abyssal demon	0	0	0	164	-17	0	0	24.0	6.57774	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	13668	Araxxor	0	0	0	164	-17	0	0	24.0	4.24746	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	13013	Blue Moon	0	0	0	164	-17	0	0	24.0	4.18545	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	5862	Cerberus	0	0	0	164	-17	0	0	24.0	5.44125	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	2266	Dagannoth Prime	0	0	0	164	-17	0	0	24.0	3.29126	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	2267	Dagannoth Rex	0	0	0	164	-17	0	0	24.0	6.57672	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	2215	General Graardor	0	0	0	164	-17	0	0	24.0	5.33598	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	5779	Giant Mole	0	0	0	164	-17	0	0	24.0	5.41942	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	7261	Hill Giant	0	0	0	164	-17	0	0	24.0	6.57774	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	3162	Kree'arra	0	0	0	164	-17	0	0	24.0	4.43319	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	12077	Phantom Muspah	0	0	0	164	-17	0	0	24.0	3.47043	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	12078	Phantom Muspah	0	0	0	164	-17	0	0	24.0	5.99017	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	8059	Vorkath	0	0	0	164	-17	0	0	24.0	4.70216	0	0	0	0	0	0	0	0	
+shadow	magic	27275	Tumeken's shadow	Powered Staff	5	2042	Zulrah	0	0	0	164	-17	0	0	24.0	5.86504	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	415	Abyssal demon	-8	-8	-8	16	145	0	80	0.0	3.83089	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	13668	Araxxor	-8	-8	-8	16	145	0	80	0.0	0.55126	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	13013	Blue Moon	-8	-8	-8	16	145	0	80	0.0	0.53712	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	5862	Cerberus	-8	-8	-8	16	145	0	80	0.0	1.11775	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	2266	Dagannoth Prime	-8	-8	-8	16	145	0	80	0.0	0.39209	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	2267	Dagannoth Rex	-8	-8	-8	16	145	0	80	0.0	3.82788	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	2215	General Graardor	-8	-8	-8	16	145	0	80	0.0	1.02488	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	5779	Giant Mole	-8	-8	-8	16	145	0	80	0.0	1.09714	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	7261	Hill Giant	-8	-8	-8	16	145	0	80	0.0	3.83089	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	3162	Kree'arra	-8	-8	-8	16	145	0	80	0.0	0.59845	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	12077	Phantom Muspah	-8	-8	-8	16	145	0	80	0.0	0.41452	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	12078	Phantom Muspah	-8	-8	-8	16	145	0	80	0.0	2.10592	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	8059	Vorkath	-8	-8	-8	16	145	0	80	0.0	0.68313	0	0	0	0	0	0	0	0	
+shadow-in-ranged-armour	magic	27275	Tumeken's shadow	Powered Staff	5	2042	Zulrah	-8	-8	-8	16	145	0	80	0.0	3.22700	0	0	0	0	0	0	0	0	
+spell-earth-blast	magic	21006	Kodai wand	Staff	4	8615	Alchemical Hydra	0	0	0	157	-17	0	0	39.0	1.28978	0	0	0	0	0	0	0	11	
+spell-earth-blast	magic	21006	Kodai wand	Staff	4	13668	Araxxor	0	0	0	157	-17	0	0	39.0	0.60710	0	0	0	0	0	0	0	11	
+spell-earth-blast	magic	21006	Kodai wand	Staff	4	5862	Cerberus	0	0	0	157	-17	0	0	39.0	1.21794	0	0	0	0	0	0	0	11	
+spell-earth-blast	magic	21006	Kodai wand	Staff	4	2215	General Graardor	0	0	0	157	-17	0	0	39.0	1.82603	0	0	0	0	0	0	0	11	
+spell-earth-blast	magic	21006	Kodai wand	Staff	4	7261	Hill Giant	0	0	0	157	-17	0	0	39.0	2.58707	0	0	0	0	0	0	0	11	
+spell-earth-blast	magic	21006	Kodai wand	Staff	4	12204	The Whisperer	0	0	0	157	-17	0	0	39.0	2.69391	0	0	0	0	0	0	0	11	
+spell-earth-blast	magic	21006	Kodai wand	Staff	4	8059	Vorkath	0	0	0	157	-17	0	0	39.0	0.75232	0	0	0	0	0	0	0	11	
+spell-earth-blast	magic	21006	Kodai wand	Staff	4	8340	Xarpus	0	0	0	157	-17	0	0	39.0	1.71712	0	0	0	0	0	0	0	11	
+spell-earth-surge-tome	magic	21006	Kodai wand	Staff	4	8615	Alchemical Hydra	0	0	0	165	-17	0	0	39.0	2.22441	0	0	0	0	0	0	0	50	earth
+spell-earth-surge-tome	magic	21006	Kodai wand	Staff	4	13668	Araxxor	0	0	0	165	-17	0	0	39.0	1.05532	0	0	0	0	0	0	0	50	earth
+spell-earth-surge-tome	magic	21006	Kodai wand	Staff	4	5862	Cerberus	0	0	0	165	-17	0	0	39.0	2.10125	0	0	0	0	0	0	0	50	earth
+spell-earth-surge-tome	magic	21006	Kodai wand	Staff	4	2215	General Graardor	0	0	0	165	-17	0	0	39.0	3.11773	0	0	0	0	0	0	0	50	earth
+spell-earth-surge-tome	magic	21006	Kodai wand	Staff	4	7261	Hill Giant	0	0	0	165	-17	0	0	39.0	4.37130	0	0	0	0	0	0	0	50	earth
+spell-earth-surge-tome	magic	21006	Kodai wand	Staff	4	12204	The Whisperer	0	0	0	165	-17	0	0	39.0	4.53712	0	0	0	0	0	0	0	50	earth
+spell-earth-surge-tome	magic	21006	Kodai wand	Staff	4	8059	Vorkath	0	0	0	165	-17	0	0	39.0	1.30777	0	0	0	0	0	0	0	50	earth
+spell-earth-surge-tome	magic	21006	Kodai wand	Staff	4	8340	Xarpus	0	0	0	165	-17	0	0	39.0	2.90942	0	0	0	0	0	0	0	50	earth
+spell-fire-surge	magic	21006	Kodai wand	Staff	4	8615	Alchemical Hydra	0	0	0	157	-17	0	0	39.0	0.97405	0	0	0	0	0	0	0	51	
+spell-fire-surge	magic	21006	Kodai wand	Staff	4	13668	Araxxor	0	0	0	157	-17	0	0	39.0	1.89831	0	0	0	0	0	0	0	51	
+spell-fire-surge	magic	21006	Kodai wand	Staff	4	5862	Cerberus	0	0	0	157	-17	0	0	39.0	1.87800	0	0	0	0	0	0	0	51	
+spell-fire-surge	magic	21006	Kodai wand	Staff	4	2215	General Graardor	0	0	0	157	-17	0	0	39.0	1.73957	0	0	0	0	0	0	0	51	
+spell-fire-surge	magic	21006	Kodai wand	Staff	4	7261	Hill Giant	0	0	0	157	-17	0	0	39.0	3.37252	0	0	0	0	0	0	0	51	
+spell-fire-surge	magic	21006	Kodai wand	Staff	4	12204	The Whisperer	0	0	0	157	-17	0	0	39.0	2.68237	0	0	0	0	0	0	0	51	
+spell-fire-surge	magic	21006	Kodai wand	Staff	4	8059	Vorkath	0	0	0	157	-17	0	0	39.0	2.05267	0	0	0	0	0	0	0	51	
+spell-fire-surge	magic	21006	Kodai wand	Staff	4	8340	Xarpus	0	0	0	157	-17	0	0	39.0	2.64773	0	0	0	0	0	0	0	51	
+spell-fire-surge-tome	magic	21006	Kodai wand	Staff	4	8615	Alchemical Hydra	0	0	0	165	-17	0	0	39.0	1.09809	0	0	0	0	0	0	0	51	fire
+spell-fire-surge-tome	magic	21006	Kodai wand	Staff	4	13668	Araxxor	0	0	0	165	-17	0	0	39.0	2.13778	0	0	0	0	0	0	0	51	fire
+spell-fire-surge-tome	magic	21006	Kodai wand	Staff	4	5862	Cerberus	0	0	0	165	-17	0	0	39.0	2.10125	0	0	0	0	0	0	0	51	fire
+spell-fire-surge-tome	magic	21006	Kodai wand	Staff	4	2215	General Graardor	0	0	0	165	-17	0	0	39.0	1.95590	0	0	0	0	0	0	0	51	fire
+spell-fire-surge-tome	magic	21006	Kodai wand	Staff	4	7261	Hill Giant	0	0	0	165	-17	0	0	39.0	3.67041	0	0	0	0	0	0	0	51	fire
+spell-fire-surge-tome	magic	21006	Kodai wand	Staff	4	12204	The Whisperer	0	0	0	165	-17	0	0	39.0	2.94579	0	0	0	0	0	0	0	51	fire
+spell-fire-surge-tome	magic	21006	Kodai wand	Staff	4	8059	Vorkath	0	0	0	165	-17	0	0	39.0	2.32444	0	0	0	0	0	0	0	51	fire
+spell-fire-surge-tome	magic	21006	Kodai wand	Staff	4	8340	Xarpus	0	0	0	165	-17	0	0	39.0	2.90942	0	0	0	0	0	0	0	51	fire
+spell-fire-wave	magic	21006	Kodai wand	Staff	4	8615	Alchemical Hydra	0	0	0	157	-17	0	0	39.0	0.80279	0	0	0	0	0	0	0	16	
+spell-fire-wave	magic	21006	Kodai wand	Staff	4	13668	Araxxor	0	0	0	157	-17	0	0	39.0	1.56884	0	0	0	0	0	0	0	16	
+spell-fire-wave	magic	21006	Kodai wand	Staff	4	5862	Cerberus	0	0	0	157	-17	0	0	39.0	1.54780	0	0	0	0	0	0	0	16	
+spell-fire-wave	magic	21006	Kodai wand	Staff	4	2215	General Graardor	0	0	0	157	-17	0	0	39.0	1.43371	0	0	0	0	0	0	0	16	
+spell-fire-wave	magic	21006	Kodai wand	Staff	4	7261	Hill Giant	0	0	0	157	-17	0	0	39.0	2.77954	0	0	0	0	0	0	0	16	
+spell-fire-wave	magic	21006	Kodai wand	Staff	4	12204	The Whisperer	0	0	0	157	-17	0	0	39.0	2.21074	0	0	0	0	0	0	0	16	
+spell-fire-wave	magic	21006	Kodai wand	Staff	4	8059	Vorkath	0	0	0	157	-17	0	0	39.0	1.71927	0	0	0	0	0	0	0	16	
+spell-fire-wave	magic	21006	Kodai wand	Staff	4	8340	Xarpus	0	0	0	157	-17	0	0	39.0	2.18219	0	0	0	0	0	0	0	16	
+spell-harmonised-fire-surge	magic	24423	Harmonised Nightmare staff	Staff	5	8615	Alchemical Hydra	0	0	0	153	-17	0	0	39.0	1.30068	0	0	0	0	0	0	0	51	fire
+spell-harmonised-fire-surge	magic	24423	Harmonised Nightmare staff	Staff	5	13668	Araxxor	0	0	0	153	-17	0	0	39.0	2.53219	0	0	0	0	0	0	0	51	fire
+spell-harmonised-fire-surge	magic	24423	Harmonised Nightmare staff	Staff	5	5862	Cerberus	0	0	0	153	-17	0	0	39.0	2.51568	0	0	0	0	0	0	0	51	fire
+spell-harmonised-fire-surge	magic	24423	Harmonised Nightmare staff	Staff	5	2215	General Graardor	0	0	0	153	-17	0	0	39.0	2.32395	0	0	0	0	0	0	0	51	fire
+spell-harmonised-fire-surge	magic	24423	Harmonised Nightmare staff	Staff	5	7261	Hill Giant	0	0	0	153	-17	0	0	39.0	4.58560	0	0	0	0	0	0	0	51	fire
+spell-harmonised-fire-surge	magic	24423	Harmonised Nightmare staff	Staff	5	12204	The Whisperer	0	0	0	153	-17	0	0	39.0	3.62975	0	0	0	0	0	0	0	51	fire
+spell-harmonised-fire-surge	magic	24423	Harmonised Nightmare staff	Staff	5	8059	Vorkath	0	0	0	153	-17	0	0	39.0	2.75331	0	0	0	0	0	0	0	51	fire
+spell-harmonised-fire-surge	magic	24423	Harmonised Nightmare staff	Staff	5	8340	Xarpus	0	0	0	153	-17	0	0	39.0	3.58176	0	0	0	0	0	0	0	51	fire
+spell-water-surge-tome	magic	21006	Kodai wand	Staff	4	8615	Alchemical Hydra	0	0	0	165	-17	0	0	39.0	1.31770	0	0	0	0	0	0	0	49	water
+spell-water-surge-tome	magic	21006	Kodai wand	Staff	4	13668	Araxxor	0	0	0	165	-17	0	0	39.0	1.26638	0	0	0	0	0	0	0	49	water
+spell-water-surge-tome	magic	21006	Kodai wand	Staff	4	5862	Cerberus	0	0	0	165	-17	0	0	39.0	3.43136	0	0	0	0	0	0	0	49	water
+spell-water-surge-tome	magic	21006	Kodai wand	Staff	4	2215	General Graardor	0	0	0	165	-17	0	0	39.0	2.24745	0	0	0	0	0	0	0	49	water
+spell-water-surge-tome	magic	21006	Kodai wand	Staff	4	7261	Hill Giant	0	0	0	165	-17	0	0	39.0	3.67622	0	0	0	0	0	0	0	49	water
+spell-water-surge-tome	magic	21006	Kodai wand	Staff	4	12204	The Whisperer	0	0	0	165	-17	0	0	39.0	3.07237	0	0	0	0	0	0	0	49	water
+spell-water-surge-tome	magic	21006	Kodai wand	Staff	4	8059	Vorkath	0	0	0	165	-17	0	0	39.0	1.56932	0	0	0	0	0	0	0	49	water
+spell-water-surge-tome	magic	21006	Kodai wand	Staff	4	8340	Xarpus	0	0	0	165	-17	0	0	39.0	3.04205	0	0	0	0	0	0	0	49	water
+spell-wind-surge	magic	21006	Kodai wand	Staff	4	8615	Alchemical Hydra	0	0	0	157	-17	0	0	39.0	0.97405	0	0	0	0	0	0	0	48	
+spell-wind-surge	magic	21006	Kodai wand	Staff	4	13668	Araxxor	0	0	0	157	-17	0	0	39.0	0.93612	0	0	0	0	0	0	0	48	
+spell-wind-surge	magic	21006	Kodai wand	Staff	4	5862	Cerberus	0	0	0	157	-17	0	0	39.0	1.87800	0	0	0	0	0	0	0	48	
+spell-wind-surge	magic	21006	Kodai wand	Staff	4	2215	General Graardor	0	0	0	157	-17	0	0	39.0	1.73957	0	0	0	0	0	0	0	48	
+spell-wind-surge	magic	21006	Kodai wand	Staff	4	7261	Hill Giant	0	0	0	157	-17	0	0	39.0	3.37252	0	0	0	0	0	0	0	48	
+spell-wind-surge	magic	21006	Kodai wand	Staff	4	12204	The Whisperer	0	0	0	157	-17	0	0	39.0	2.68237	0	0	0	0	0	0	0	48	
+spell-wind-surge	magic	21006	Kodai wand	Staff	4	8059	Vorkath	0	0	0	157	-17	0	0	39.0	1.16005	0	0	0	0	0	0	0	48	
+spell-wind-surge	magic	21006	Kodai wand	Staff	4	8340	Xarpus	0	0	0	157	-17	0	0	39.0	3.92108	0	0	0	0	0	0	0	48	
+task-rapier-helm	melee	22324	Ghrazi rapier	Stab Sword	4	2	Aberrant spectre	177	159	75	-64	-62	158	0	0.0	7.09673	1	0	1	0	0	0	0	0	
+task-rapier-helm	melee	22324	Ghrazi rapier	Stab Sword	4	415	Abyssal demon	177	159	75	-64	-62	158	0	0.0	6.74129	1	0	1	0	0	0	0	0	
+task-rapier-helm	melee	22324	Ghrazi rapier	Stab Sword	4	2514	Ankou	177	159	75	-64	-62	158	0	0.0	7.46346	1	0	1	0	0	0	0	0	
+task-rapier-helm	melee	22324	Ghrazi rapier	Stab Sword	4	414	Banshee	177	159	75	-64	-62	158	0	0.0	7.67758	1	0	1	0	0	0	0	0	
+task-rapier-helm	melee	22324	Ghrazi rapier	Stab Sword	4	5862	Cerberus	177	159	75	-64	-62	158	0	0.0	6.71025	1	0	1	0	0	0	0	0	
+task-rapier-helm	melee	22324	Ghrazi rapier	Stab Sword	4	2267	Dagannoth Rex	177	159	75	-64	-62	158	0	0.0	1.95965	1	0	1	0	0	0	0	0	
+task-rapier-helm	melee	22324	Ghrazi rapier	Stab Sword	4	7261	Hill Giant	177	159	75	-64	-62	158	0	0.0	7.66808	1	0	1	0	0	0	0	0	
+task-rapier-helm	melee	22324	Ghrazi rapier	Stab Sword	4	8059	Vorkath	177	159	75	-64	-62	158	0	0.0	5.99146	1	0	1	0	0	0	0	0	
+task-rapier-salve	melee	22324	Ghrazi rapier	Stab Sword	4	2	Aberrant spectre	152	144	50	-54	-59	152	0	0.0	6.78403	0	1	1	0	0	0	0	0	
+task-rapier-salve	melee	22324	Ghrazi rapier	Stab Sword	4	415	Abyssal demon	152	144	50	-54	-59	152	0	0.0	5.38363	0	1	1	0	0	0	0	0	
+task-rapier-salve	melee	22324	Ghrazi rapier	Stab Sword	4	2514	Ankou	152	144	50	-54	-59	152	0	0.0	7.18022	0	1	1	0	0	0	0	0	
+task-rapier-salve	melee	22324	Ghrazi rapier	Stab Sword	4	414	Banshee	152	144	50	-54	-59	152	0	0.0	7.41153	0	1	1	0	0	0	0	0	
+task-rapier-salve	melee	22324	Ghrazi rapier	Stab Sword	4	5862	Cerberus	152	144	50	-54	-59	152	0	0.0	5.34964	0	1	1	0	0	0	0	0	
+task-rapier-salve	melee	22324	Ghrazi rapier	Stab Sword	4	2267	Dagannoth Rex	152	144	50	-54	-59	152	0	0.0	1.26793	0	1	1	0	0	0	0	0	
+task-rapier-salve	melee	22324	Ghrazi rapier	Stab Sword	4	7261	Hill Giant	152	144	50	-54	-59	152	0	0.0	6.39872	0	1	1	0	0	0	0	0	
+task-rapier-salve	melee	22324	Ghrazi rapier	Stab Sword	4	8059	Vorkath	152	144	50	-54	-59	152	0	0.0	5.58996	0	1	1	0	0	0	0	0	
+task-rapier-salve-ei	melee	22324	Ghrazi rapier	Stab Sword	4	2	Aberrant spectre	152	144	50	-54	-59	152	0	0.0	7.03045	0	4	1	0	0	0	0	0	
+task-rapier-salve-ei	melee	22324	Ghrazi rapier	Stab Sword	4	415	Abyssal demon	152	144	50	-54	-59	152	0	0.0	5.38363	0	4	1	0	0	0	0	0	
+task-rapier-salve-ei	melee	22324	Ghrazi rapier	Stab Sword	4	2514	Ankou	152	144	50	-54	-59	152	0	0.0	7.42826	0	4	1	0	0	0	0	0	
+task-rapier-salve-ei	melee	22324	Ghrazi rapier	Stab Sword	4	414	Banshee	152	144	50	-54	-59	152	0	0.0	7.66052	0	4	1	0	0	0	0	0	
+task-rapier-salve-ei	melee	22324	Ghrazi rapier	Stab Sword	4	5862	Cerberus	152	144	50	-54	-59	152	0	0.0	5.34964	0	4	1	0	0	0	0	0	
+task-rapier-salve-ei	melee	22324	Ghrazi rapier	Stab Sword	4	2267	Dagannoth Rex	152	144	50	-54	-59	152	0	0.0	1.26793	0	4	1	0	0	0	0	0	
+task-rapier-salve-ei	melee	22324	Ghrazi rapier	Stab Sword	4	7261	Hill Giant	152	144	50	-54	-59	152	0	0.0	6.39872	0	4	1	0	0	0	0	0	
+task-rapier-salve-ei	melee	22324	Ghrazi rapier	Stab Sword	4	8059	Vorkath	152	144	50	-54	-59	152	0	0.0	5.83150	0	4	1	0	0	0	0	0	
+task-sang-helm-i	magic	22323	Sanguinesti staff	Powered Staff	4	2	Aberrant spectre	0	0	0	149	-16	0	0	21.0	6.22269	2	0	1	0	0	0	0	0	
+task-sang-helm-i	magic	22323	Sanguinesti staff	Powered Staff	4	415	Abyssal demon	0	0	0	149	-16	0	0	21.0	6.84386	2	0	1	0	0	0	0	0	
+task-sang-helm-i	magic	22323	Sanguinesti staff	Powered Staff	4	2514	Ankou	0	0	0	149	-16	0	0	21.0	6.84386	2	0	1	0	0	0	0	0	
+task-sang-helm-i	magic	22323	Sanguinesti staff	Powered Staff	4	414	Banshee	0	0	0	149	-16	0	0	21.0	6.84386	2	0	1	0	0	0	0	0	
+task-sang-helm-i	magic	22323	Sanguinesti staff	Powered Staff	4	5862	Cerberus	0	0	0	149	-16	0	0	21.0	4.14669	2	0	1	0	0	0	0	0	
+task-sang-helm-i	magic	22323	Sanguinesti staff	Powered Staff	4	2267	Dagannoth Rex	0	0	0	149	-16	0	0	21.0	6.84143	2	0	1	0	0	0	0	0	
+task-sang-helm-i	magic	22323	Sanguinesti staff	Powered Staff	4	7261	Hill Giant	0	0	0	149	-16	0	0	21.0	6.84386	2	0	1	0	0	0	0	0	
+task-sang-helm-i	magic	22323	Sanguinesti staff	Powered Staff	4	8059	Vorkath	0	0	0	149	-16	0	0	21.0	2.64135	2	0	1	0	0	0	0	0	
+task-sang-salve-ei	magic	22323	Sanguinesti staff	Powered Staff	4	2	Aberrant spectre	0	0	0	142	-21	0	0	19.0	6.22889	0	4	1	0	0	0	0	0	
+task-sang-salve-ei	magic	22323	Sanguinesti staff	Powered Staff	4	415	Abyssal demon	0	0	0	142	-21	0	0	19.0	5.96713	0	4	1	0	0	0	0	0	
+task-sang-salve-ei	magic	22323	Sanguinesti staff	Powered Staff	4	2514	Ankou	0	0	0	142	-21	0	0	19.0	6.84440	0	4	1	0	0	0	0	0	
+task-sang-salve-ei	magic	22323	Sanguinesti staff	Powered Staff	4	414	Banshee	0	0	0	142	-21	0	0	19.0	6.84440	0	4	1	0	0	0	0	0	
+task-sang-salve-ei	magic	22323	Sanguinesti staff	Powered Staff	4	5862	Cerberus	0	0	0	142	-21	0	0	19.0	3.16625	0	4	1	0	0	0	0	0	
+task-sang-salve-ei	magic	22323	Sanguinesti staff	Powered Staff	4	2267	Dagannoth Rex	0	0	0	142	-21	0	0	19.0	5.96461	0	4	1	0	0	0	0	0	
+task-sang-salve-ei	magic	22323	Sanguinesti staff	Powered Staff	4	7261	Hill Giant	0	0	0	142	-21	0	0	19.0	5.96713	0	4	1	0	0	0	0	0	
+task-sang-salve-ei	magic	22323	Sanguinesti staff	Powered Staff	4	8059	Vorkath	0	0	0	142	-21	0	0	19.0	2.66563	0	4	1	0	0	0	0	0	
+task-scythe-helm-and-salve	melee	22325	Scythe of Vitur	Scythe	5	2	Aberrant spectre	92	175	52	-50	-45	120	0	0.0	7.32141	2	4	1	0	0	0	0	0	
+task-scythe-helm-and-salve	melee	22325	Scythe of Vitur	Scythe	5	415	Abyssal demon	92	175	52	-50	-45	120	0	0.0	4.44613	2	4	1	0	0	0	0	0	
+task-scythe-helm-and-salve	melee	22325	Scythe of Vitur	Scythe	5	2514	Ankou	92	175	52	-50	-45	120	0	0.0	5.12431	2	4	1	0	0	0	0	0	
+task-scythe-helm-and-salve	melee	22325	Scythe of Vitur	Scythe	5	414	Banshee	92	175	52	-50	-45	120	0	0.0	7.90760	2	4	1	0	0	0	0	0	
+task-scythe-helm-and-salve	melee	22325	Scythe of Vitur	Scythe	5	5862	Cerberus	92	175	52	-50	-45	120	0	0.0	7.16209	2	4	1	0	0	0	0	0	
+task-scythe-helm-and-salve	melee	22325	Scythe of Vitur	Scythe	5	2267	Dagannoth Rex	92	175	52	-50	-45	120	0	0.0	2.25089	2	4	1	0	0	0	0	0	
+task-scythe-helm-and-salve	melee	22325	Scythe of Vitur	Scythe	5	7261	Hill Giant	92	175	52	-50	-45	120	0	0.0	7.60042	2	4	1	0	0	0	0	0	
+task-scythe-helm-and-salve	melee	22325	Scythe of Vitur	Scythe	5	8059	Vorkath	92	175	52	-50	-45	120	0	0.0	5.19510	2	4	1	0	0	0	0	0	
+task-scythe-helm-i	melee	22325	Scythe of Vitur	Scythe	5	2	Aberrant spectre	117	200	77	-56	-53	132	0	0.0	7.64822	2	0	1	0	0	0	0	0	
+task-scythe-helm-i	melee	22325	Scythe of Vitur	Scythe	5	415	Abyssal demon	117	200	77	-56	-53	132	0	0.0	4.86493	2	0	1	0	0	0	0	0	
+task-scythe-helm-i	melee	22325	Scythe of Vitur	Scythe	5	2514	Ankou	117	200	77	-56	-53	132	0	0.0	5.33379	2	0	1	0	0	0	0	0	
+task-scythe-helm-i	melee	22325	Scythe of Vitur	Scythe	5	414	Banshee	117	200	77	-56	-53	132	0	0.0	8.21422	2	0	1	0	0	0	0	0	
+task-scythe-helm-i	melee	22325	Scythe of Vitur	Scythe	5	5862	Cerberus	117	200	77	-56	-53	132	0	0.0	7.91028	2	0	1	0	0	0	0	0	
+task-scythe-helm-i	melee	22325	Scythe of Vitur	Scythe	5	2267	Dagannoth Rex	117	200	77	-56	-53	132	0	0.0	2.67660	2	0	1	0	0	0	0	0	
+task-scythe-helm-i	melee	22325	Scythe of Vitur	Scythe	5	7261	Hill Giant	117	200	77	-56	-53	132	0	0.0	8.20497	2	0	1	0	0	0	0	0	
+task-scythe-helm-i	melee	22325	Scythe of Vitur	Scythe	5	8059	Vorkath	117	200	77	-56	-53	132	0	0.0	5.71833	2	0	1	0	0	0	0	0	
+task-tbow-helm	ranged	20997	Twisted bow	Bow	6	2	Aberrant spectre	-8	-8	-8	-24	201	0	98	0.0	4.57460	1	0	1	0	0	0	0	0	
+task-tbow-helm	ranged	20997	Twisted bow	Bow	6	415	Abyssal demon	-8	-8	-8	-24	201	0	98	0.0	1.14247	1	0	1	0	0	0	0	0	
+task-tbow-helm	ranged	20997	Twisted bow	Bow	6	2514	Ankou	-8	-8	-8	-24	201	0	98	0.0	1.62971	1	0	1	0	0	0	0	0	
+task-tbow-helm	ranged	20997	Twisted bow	Bow	6	414	Banshee	-8	-8	-8	-24	201	0	98	0.0	1.77417	1	0	1	0	0	0	0	0	
+task-tbow-helm	ranged	20997	Twisted bow	Bow	6	5862	Cerberus	-8	-8	-8	-24	201	0	98	0.0	6.10009	1	0	1	0	0	0	0	0	
+task-tbow-helm	ranged	20997	Twisted bow	Bow	6	2267	Dagannoth Rex	-8	-8	-8	-24	201	0	98	0.0	0.17069	1	0	1	0	0	0	0	0	
+task-tbow-helm	ranged	20997	Twisted bow	Bow	6	7261	Hill Giant	-8	-8	-8	-24	201	0	98	0.0	1.76776	1	0	1	0	0	0	0	0	
+task-tbow-helm	ranged	20997	Twisted bow	Bow	6	8059	Vorkath	-8	-8	-8	-24	201	0	98	0.0	4.59884	1	0	1	0	0	0	0	0	
+task-tbow-helm-i	ranged	20997	Twisted bow	Bow	6	2	Aberrant spectre	-8	-8	-8	-15	206	0	98	0.0	5.28228	2	0	1	0	0	0	0	0	
+task-tbow-helm-i	ranged	20997	Twisted bow	Bow	6	415	Abyssal demon	-8	-8	-8	-15	206	0	98	0.0	1.45117	2	0	1	0	0	0	0	0	
+task-tbow-helm-i	ranged	20997	Twisted bow	Bow	6	2514	Ankou	-8	-8	-8	-15	206	0	98	0.0	1.93206	2	0	1	0	0	0	0	0	
+task-tbow-helm-i	ranged	20997	Twisted bow	Bow	6	414	Banshee	-8	-8	-8	-15	206	0	98	0.0	2.07464	2	0	1	0	0	0	0	0	
+task-tbow-helm-i	ranged	20997	Twisted bow	Bow	6	5862	Cerberus	-8	-8	-8	-15	206	0	98	0.0	7.14051	2	0	1	0	0	0	0	0	
+task-tbow-helm-i	ranged	20997	Twisted bow	Bow	6	2267	Dagannoth Rex	-8	-8	-8	-15	206	0	98	0.0	0.23126	2	0	1	0	0	0	0	0	
+task-tbow-helm-i	ranged	20997	Twisted bow	Bow	6	7261	Hill Giant	-8	-8	-8	-15	206	0	98	0.0	2.06831	2	0	1	0	0	0	0	0	
+task-tbow-helm-i	ranged	20997	Twisted bow	Bow	6	8059	Vorkath	-8	-8	-8	-15	206	0	98	0.0	5.44459	2	0	1	0	0	0	0	0	
+task-tbow-salve-e	ranged	20997	Twisted bow	Bow	6	2	Aberrant spectre	-8	-8	-8	-19	200	0	95	0.0	4.48017	0	2	1	0	0	0	0	0	
+task-tbow-salve-e	ranged	20997	Twisted bow	Bow	6	415	Abyssal demon	-8	-8	-8	-19	200	0	95	0.0	1.13956	0	2	1	0	0	0	0	0	
+task-tbow-salve-e	ranged	20997	Twisted bow	Bow	6	2514	Ankou	-8	-8	-8	-19	200	0	95	0.0	1.62865	0	2	1	0	0	0	0	0	
+task-tbow-salve-e	ranged	20997	Twisted bow	Bow	6	414	Banshee	-8	-8	-8	-19	200	0	95	0.0	1.77365	0	2	1	0	0	0	0	0	
+task-tbow-salve-e	ranged	20997	Twisted bow	Bow	6	5862	Cerberus	-8	-8	-8	-19	200	0	95	0.0	5.93053	0	2	1	0	0	0	0	0	
+task-tbow-salve-e	ranged	20997	Twisted bow	Bow	6	2267	Dagannoth Rex	-8	-8	-8	-19	200	0	95	0.0	0.17004	0	2	1	0	0	0	0	0	
+task-tbow-salve-e	ranged	20997	Twisted bow	Bow	6	7261	Hill Giant	-8	-8	-8	-19	200	0	95	0.0	1.76722	0	2	1	0	0	0	0	0	
+task-tbow-salve-e	ranged	20997	Twisted bow	Bow	6	8059	Vorkath	-8	-8	-8	-19	200	0	95	0.0	4.51704	0	2	1	0	0	0	0	0	
+task-tbow-salve-i	ranged	20997	Twisted bow	Bow	6	2	Aberrant spectre	-8	-8	-8	-19	200	0	95	0.0	5.27967	0	3	1	0	0	0	0	0	
+task-tbow-salve-i	ranged	20997	Twisted bow	Bow	6	415	Abyssal demon	-8	-8	-8	-19	200	0	95	0.0	1.13956	0	3	1	0	0	0	0	0	
+task-tbow-salve-i	ranged	20997	Twisted bow	Bow	6	2514	Ankou	-8	-8	-8	-19	200	0	95	0.0	1.92982	0	3	1	0	0	0	0	0	
+task-tbow-salve-i	ranged	20997	Twisted bow	Bow	6	414	Banshee	-8	-8	-8	-19	200	0	95	0.0	2.07355	0	3	1	0	0	0	0	0	
+task-tbow-salve-i	ranged	20997	Twisted bow	Bow	6	5862	Cerberus	-8	-8	-8	-19	200	0	95	0.0	5.93053	0	3	1	0	0	0	0	0	
+task-tbow-salve-i	ranged	20997	Twisted bow	Bow	6	2267	Dagannoth Rex	-8	-8	-8	-19	200	0	95	0.0	0.17004	0	3	1	0	0	0	0	0	
+task-tbow-salve-i	ranged	20997	Twisted bow	Bow	6	7261	Hill Giant	-8	-8	-8	-19	200	0	95	0.0	1.76722	0	3	1	0	0	0	0	0	
+task-tbow-salve-i	ranged	20997	Twisted bow	Bow	6	8059	Vorkath	-8	-8	-8	-19	200	0	95	0.0	5.43359	0	3	1	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	415	Abyssal demon	-8	-8	-8	-19	215	0	100	0.0	1.18097	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	13668	Araxxor	-8	-8	-8	-19	215	0	100	0.0	5.00955	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	13013	Blue Moon	-8	-8	-8	-19	215	0	100	0.0	2.74746	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	5862	Cerberus	-8	-8	-8	-19	215	0	100	0.0	6.16545	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	2266	Dagannoth Prime	-8	-8	-8	-19	215	0	100	0.0	6.51066	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	2267	Dagannoth Rex	-8	-8	-8	-19	215	0	100	0.0	0.17970	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	2215	General Graardor	-8	-8	-8	-19	215	0	100	0.0	1.81708	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	5779	Giant Mole	-8	-8	-8	-19	215	0	100	0.0	5.22718	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	7261	Hill Giant	-8	-8	-8	-19	215	0	100	0.0	1.77490	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	3162	Kree'arra	-8	-8	-8	-19	215	0	100	0.0	2.51977	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	12077	Phantom Muspah	-8	-8	-8	-19	215	0	100	0.0	6.11573	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	12078	Phantom Muspah	-8	-8	-8	-19	215	0	100	0.0	3.22639	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	8059	Vorkath	-8	-8	-8	-19	215	0	100	0.0	4.66931	0	0	0	0	0	0	0	0	
+tbow	ranged	20997	Twisted bow	Bow	6	2042	Zulrah	-8	-8	-8	-19	215	0	100	0.0	4.52711	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	415	Abyssal demon	47	85	47	-55	7	63	80	0.0	0.28516	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	13668	Araxxor	47	85	47	-55	7	63	80	0.0	1.21694	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	13013	Blue Moon	47	85	47	-55	7	63	80	0.0	0.63899	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	5862	Cerberus	47	85	47	-55	7	63	80	0.0	2.51347	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	2266	Dagannoth Prime	47	85	47	-55	7	63	80	0.0	2.52950	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	2267	Dagannoth Rex	47	85	47	-55	7	63	80	0.0	0.04096	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	2215	General Graardor	47	85	47	-55	7	63	80	0.0	0.40873	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	5779	Giant Mole	47	85	47	-55	7	63	80	0.0	1.58144	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	7261	Hill Giant	47	85	47	-55	7	63	80	0.0	1.23550	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	3162	Kree'arra	47	85	47	-55	7	63	80	0.0	0.57713	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	12077	Phantom Muspah	47	85	47	-55	7	63	80	0.0	1.97037	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	12078	Phantom Muspah	47	85	47	-55	7	63	80	0.0	0.72754	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	8059	Vorkath	47	85	47	-55	7	63	80	0.0	1.54711	0	0	0	0	0	0	0	0	
+tbow-in-melee-armour	ranged	20997	Twisted bow	Bow	6	2042	Zulrah	47	85	47	-55	7	63	80	0.0	1.25615	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	415	Abyssal demon	-8	-8	-8	-19	235	0	105	0.0	4.07878	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	13668	Araxxor	-8	-8	-8	-19	235	0	105	0.0	2.48177	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	13013	Blue Moon	-8	-8	-8	-19	235	0	105	0.0	3.25367	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	5862	Cerberus	-8	-8	-8	-19	235	0	105	0.0	3.75503	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	2266	Dagannoth Prime	-8	-8	-8	-19	235	0	105	0.0	3.66205	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	2267	Dagannoth Rex	-8	-8	-8	-19	235	0	105	0.0	1.19897	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	2215	General Graardor	-8	-8	-8	-19	235	0	105	0.0	2.52221	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	5779	Giant Mole	-8	-8	-8	-19	235	0	105	0.0	3.30470	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	7261	Hill Giant	-8	-8	-8	-19	235	0	105	0.0	4.63083	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	3162	Kree'arra	-8	-8	-8	-19	235	0	105	0.0	1.42183	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	12077	Phantom Muspah	-8	-8	-8	-19	235	0	105	0.0	3.35152	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	12078	Phantom Muspah	-8	-8	-8	-19	235	0	105	0.0	1.48653	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	8059	Vorkath	-8	-8	-8	-19	235	0	105	0.0	3.63214	0	0	0	0	0	0	0	0	
+venator	ranged	27610	Venator bow	Bow	5	2042	Zulrah	-8	-8	-8	-19	235	0	105	0.0	2.78323	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	415	Abyssal demon	0	82	0	129	-17	82	0	24.0	3.18759	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	13668	Araxxor	0	82	0	129	-17	82	0	24.0	2.40570	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	13013	Blue Moon	0	82	0	129	-17	82	0	24.0	4.19585	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	5862	Cerberus	0	82	0	129	-17	82	0	24.0	2.61696	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	2266	Dagannoth Prime	0	82	0	129	-17	82	0	24.0	0.57734	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	2267	Dagannoth Rex	0	82	0	129	-17	82	0	24.0	0.57734	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	2215	General Graardor	0	82	0	129	-17	82	0	24.0	1.21900	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	5779	Giant Mole	0	82	0	129	-17	82	0	24.0	1.61551	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	7261	Hill Giant	0	82	0	129	-17	82	0	24.0	4.16061	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	3162	Kree'arra	0	82	0	129	-17	82	0	24.0	0.00000	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	12077	Phantom Muspah	0	82	0	129	-17	82	0	24.0	1.17493	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	12078	Phantom Muspah	0	82	0	129	-17	82	0	24.0	1.17493	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	8059	Vorkath	0	82	0	129	-17	82	0	24.0	1.26762	0	0	0	0	0	0	0	0	
+whip-in-mage-robes	melee	4151	Abyssal whip	Whip	4	2042	Zulrah	0	82	0	129	-17	82	0	24.0	0.00000	0	0	0	0	0	0	0	0	
