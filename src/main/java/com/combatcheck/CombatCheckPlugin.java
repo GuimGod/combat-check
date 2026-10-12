@@ -504,6 +504,28 @@ public class CombatCheckPlugin extends Plugin
 	private net.runelite.api.coords.WorldPoint targetAt;
 	/** The monster itself, to know when it dies or goes away. */
 	private NPC targetNpc;
+	/** After the monster dies it stays remembered this long on a Slayer task of it: 50 ticks are 30 seconds, for the next one. */
+	static final int AFTER_DEATH_TASK_TICKS = 50;
+	/** And this long otherwise: 5 ticks are 3 seconds. */
+	static final int AFTER_DEATH_TICKS = 5;
+	private int deadTicks;
+
+	/** How long a dead monster stays remembered, by whether it is of the player's Slayer task. */
+	static int afterDeathTicks(Boolean onTask)
+	{
+		return Boolean.TRUE.equals(onTask) ? AFTER_DEATH_TASK_TICKS : AFTER_DEATH_TICKS;
+	}
+
+	/** Counts the ticks since the remembered monster died or left the scene; true once that is too long. */
+	private boolean deadTooLong()
+	{
+		if (targetNpc != null && !targetNpc.isDead())
+		{
+			return false;
+		}
+		StyleData.Monster monster = data.monster(targetId);
+		return ++deadTicks > afterDeathTicks(monster == null ? null : onTask(monster));
+	}
 
 	@Subscribe
 	public void onNpcDespawned(net.runelite.api.events.NpcDespawned event)
@@ -655,15 +677,16 @@ public class CombatCheckPlugin extends Plugin
 			targetId = ((NPC) interacting).getId();
 			targetNpc = (NPC) interacting;
 			targetTicks = 0;
+			deadTicks = 0;
 			targetAt = here;
 		}
-		else if (targetId != -1 && (targetNpc == null || targetNpc.isDead() || ++targetTicks > REMEMBER_TARGET_TICKS
+		else if (targetId != -1 && (deadTooLong() || ++targetTicks > REMEMBER_TARGET_TICKS
 			|| leftTheFight(here, targetAt, client.getBoostedSkillLevel(Skill.HITPOINTS))
 			|| (interacting instanceof NPC && canBeFought((NPC) interacting))))
 		{
-			// the monster died, or the player did, or left where the fight was, or attacks a monster that is not
-			// in the table: it is forgotten at once. The minute of memory is only for a monster still alive
-			// that the player stopped attacking for a moment
+			// the monster has been dead for long enough, or the player died, left where the fight was, or attacks
+			// a monster that is not in the table: it is forgotten. The minute of memory is only for a monster
+			// still alive that the player stopped attacking for a moment
 			targetId = -1;
 			targetNpc = null;
 		}
