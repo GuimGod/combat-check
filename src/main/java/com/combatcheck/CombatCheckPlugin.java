@@ -359,6 +359,16 @@ public class CombatCheckPlugin extends Plugin
 	 * @param meleeOn  the name of the melee attack prayer that is on, or null (the same for the other two)
 	 * @param best     the name of the attack prayer of the class in use, for the "off" reminder
 	 */
+	/**
+	 * The two prayer switches as one setting. Not a method of the config interface: RuneLite answers null
+	 * for any method there that is not a config item.
+	 */
+	static CombatCheckConfig.PrayerReminder prayerReminder(boolean noneOn, boolean wrong)
+	{
+		return noneOn ? (wrong ? CombatCheckConfig.PrayerReminder.BOTH : CombatCheckConfig.PrayerReminder.NONE_ON)
+			: wrong ? CombatCheckConfig.PrayerReminder.WRONG : CombatCheckConfig.PrayerReminder.OFF;
+	}
+
 	static String prayerNotice(String combatClass, String meleeOn, String rangedOn, String magicOn, String best,
 		CombatCheckConfig.PrayerReminder mode)
 	{
@@ -655,14 +665,14 @@ public class CombatCheckPlugin extends Plugin
 		// 4. the attack prayer that is on, against the class of the weapon in hand
 		String prayer = null;
 		if (monster != null && targetTicks <= PRAYER_AFTER_FIGHT_TICKS && c.combatClass != null
-			&& config.prayerReminder() != CombatCheckConfig.PrayerReminder.OFF)
+			&& prayerReminder(config.prayerNoneOn(), config.prayerWrong()) != CombatCheckConfig.PrayerReminder.OFF)
 		{
 			prayer = prayerNotice(c.combatClass,
 				on(Prayer.PIETY, Prayer.CHIVALRY, Prayer.ULTIMATE_STRENGTH, Prayer.INCREDIBLE_REFLEXES, Prayer.SUPERHUMAN_STRENGTH,
 					Prayer.IMPROVED_REFLEXES, Prayer.BURST_OF_STRENGTH, Prayer.CLARITY_OF_THOUGHT),
 				on(Prayer.RIGOUR, Prayer.DEADEYE, Prayer.EAGLE_EYE, Prayer.HAWK_EYE, Prayer.SHARP_EYE),
 				on(Prayer.AUGURY, Prayer.MYSTIC_VIGOUR, Prayer.MYSTIC_MIGHT, Prayer.MYSTIC_LORE, Prayer.MYSTIC_WILL),
-				bestPrayer(c.combatClass), config.prayerReminder());
+				bestPrayer(c.combatClass), prayerReminder(config.prayerNoneOn(), config.prayerWrong()));
 		}
 		prayerNotice = prayerTimer.due(tick, prayer != null, config.prayerDelay()) ? prayer : null;
 

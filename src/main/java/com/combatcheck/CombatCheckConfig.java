@@ -114,13 +114,6 @@ public interface CombatCheckConfig extends Config
 		return true;
 	}
 
-	/** The two switches above as one setting. */
-	default PrayerReminder prayerReminder()
-	{
-		return prayerNoneOn() ? (prayerWrong() ? PrayerReminder.BOTH : PrayerReminder.NONE_ON)
-			: prayerWrong() ? PrayerReminder.WRONG : PrayerReminder.OFF;
-	}
-
 	@Range(min = 0, max = 50)
 	@Units(Units.TICKS)
 	@ConfigItem(
