@@ -1419,7 +1419,8 @@ public class CombatCheckPlugin extends Plugin
 		l.category = data.category(weaponId);
 		l.styles = data.styles(weaponId);
 		l.bolt = ammo == null ? 0 : SetCalc.boltKind(ammo.name);
-		l.boltEffect = l.bolt == 0 && ammo != null && ammo.name != null && ammo.name.endsWith("(e)");
+		l.boltEffect = l.bolt == 0 && ammo != null && ammo.name != null && ammo.name.endsWith("(e)")
+			&& !SetCalc.harmlessBolts(ammo.name);
 		// the autocast spell belongs to the weapon in hand: a carried staff has none yet
 		ItemContainer wornNow = client.getItemContainer(InventoryID.WORN);
 		Item inHandNow = wornNow == null ? null : wornNow.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());

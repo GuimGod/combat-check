@@ -242,6 +242,30 @@ public class SetCalcTest
 		assertEquals(115, SetCalc.withPrayerOf(low, StyleCalc.MAGIC).prayerMagic);
 	}
 
+	/** The Ancient Magicks on autocast with a Kodai wand, against an Abyssal demon: the calculator's figures. */
+	@Test
+	public void ancientSpellsAreCloseToTheCalculator() throws IOException
+	{
+		StyleData data = new StyleData();
+		double[][] cases = {{31, 1.79288}, {34, 2.18717}, {36, 2.48325}, {37, 2.97714}, {39, 3.17481}, {42, 3.66914},
+			{43, 3.76804}, {44, 3.96584}, {45, 4.06475}, {46, 4.16366}};
+		for (double[] k : cases)
+		{
+			SetCalc.Loadout l = new SetCalc.Loadout();
+			l.weaponName = "Kodai wand";
+			l.category = "Staff";
+			l.magic = 157;
+			l.magicDamage = 39;
+			l.spell = (int) k[0];
+			assertTrue("the spell has a figure", SetCalc.plain(l));
+			double got = SetCalc.perTick(l, player("magic"), data.monster(415).target(), false);
+			assertTrue("spell " + k[0] + ": " + got + ", calculator " + k[1], Math.abs(got - k[1]) <= FIGURE * k[1]);
+		}
+		assertTrue(SetCalc.harmlessBolts("Sapphire dragon bolts (e)"));
+		assertFalse(SetCalc.harmlessBolts("Onyx bolts (e)"));
+		assertFalse(SetCalc.harmlessBolts("Runite bolts"));
+	}
+
 	@Test
 	public void weaponsWithTheirOwnRulesGetNoFigure()
 	{

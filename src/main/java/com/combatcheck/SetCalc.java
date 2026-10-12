@@ -242,6 +242,16 @@ final class SetCalc
 	}
 
 	/**
+	 * True for enchanted bolts whose effect adds no damage of its own (sapphire and topaz drain a stat, jade knocks
+	 * down, emerald poisons): a crossbow with them is counted as with plain bolts.
+	 */
+	static boolean harmlessBolts(String name)
+	{
+		String n = name == null ? "" : name.toLowerCase(Locale.ROOT);
+		return n.endsWith("(e)") && (n.startsWith("sapphire") || n.startsWith("jade") || n.startsWith("topaz") || n.startsWith("emerald"));
+	}
+
+	/**
 	 * The player as they would be with a weapon of another combat class in hand. While an attack prayer is on,
 	 * the other weapon is counted with the best attack prayer the player has for its own class: with Rigour on
 	 * and a bow in hand, a sword in the inventory is compared with Piety, not with no prayer at all. With no
@@ -574,8 +584,9 @@ final class SetCalc
 		String element = powered ? null : SetEffects.autocastElement(l.spell);
 		if (!powered)
 		{
-			if (element != null)
+			if (spellBase(l.spell, p.magic) > 0)
 			{
+				// an elemental spell of the standard spellbook, or one of the Ancient Magicks
 				base = spellBase(l.spell, p.magic);
 			}
 			else if (!lenient)
@@ -633,6 +644,13 @@ final class SetCalc
 	 */
 	static int spellBase(int spell, int magicLevel)
 	{
+		if (spell >= 31 && spell <= 46)
+		{
+			// the Ancient Magicks: rush, burst, blitz and barrage of smoke, shadow, blood and ice, in the order
+			// of the game's autocast setting. Their max hits do not depend on the Magic level
+			int[][] ancient = {{13, 14, 15, 16}, {17, 18, 21, 22}, {23, 24, 25, 26}, {27, 28, 29, 30}};
+			return ancient[(spell - 31) / 4][(spell - 31) % 4];
+		}
 		int tier = spell >= 1 && spell <= 16 ? (spell - 1) / 4 : spell >= 48 && spell <= 51 ? 4 : -1;
 		if (tier < 0)
 		{
