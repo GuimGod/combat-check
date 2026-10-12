@@ -1305,7 +1305,7 @@ public class CombatCheckPlugin extends Plugin
 		// bosses with forms or phases that call for another weapon
 		"Zulrah", "Dawn", "Dusk", "Kalphite Queen", "Phantom Muspah", "Strange Creature",
 		"The Nightmare", "Phosani's Nightmare", "Crystalline Hunllef", "Corrupted Hunllef", "Abyssal Sire",
-		"The Hueycoatl", "Yama", "Doom of Mokhaiotl", "Kraken", "Zalcano", "Demonic Brutus", "Maggot King",
+		"The Hueycoatl", "Yama", "Doom of Mokhaiotl", "Zalcano", "Demonic Brutus", "Maggot King",
 		// monsters that change their protection, and groups fought together with a different weakness each
 		"Demonic gorilla", "Tortured gorilla", "Tormented Demon",
 		"Branda the Fire Queen", "Eldric the Ice King",

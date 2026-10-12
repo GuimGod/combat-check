@@ -55,6 +55,7 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Zulrah"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("The Leviathan"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Cerberus"));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Kraken"));
 		// a dead monster: 30 seconds on a task of it, about a second otherwise or when the task is not known
 		org.junit.Assert.assertEquals(50, CombatCheckPlugin.afterDeathTicks(true));
 		org.junit.Assert.assertEquals(2, CombatCheckPlugin.afterDeathTicks(false));
