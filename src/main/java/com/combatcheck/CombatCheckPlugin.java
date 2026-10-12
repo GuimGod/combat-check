@@ -1145,6 +1145,18 @@ public class CombatCheckPlugin extends Plugin
 	}
 
 	/** A bow that makes its own arrows: what is in the ammunition slot gives it nothing. */
+	/** True for the weapons that are their own ammunition (thrown weapons, the blowpipe, chinchompas). */
+	static boolean throwsItself(String category)
+	{
+		return "Thrown".equals(category) || "Chinchompas".equals(category);
+	}
+
+	/** True for what a bow, a crossbow or a ballista shoots. */
+	static boolean isShotAmmo(String name)
+	{
+		return has(name, "arrow") || has(name, "bolts") || has(name, "javelin");
+	}
+
 	static boolean shootsNoAmmo(String category, String weaponName)
 	{
 		String weapon = weaponName == null ? "" : weaponName.toLowerCase(java.util.Locale.ROOT);
@@ -1283,6 +1295,11 @@ public class CombatCheckPlugin extends Plugin
 		}
 		else if (ammo != null && shootsNoAmmo(data.category(weaponId), inHand == null ? null : inHand.name))
 		{
+			ammo = null;
+		}
+		else if (ammo != null && throwsItself(data.category(weaponId)) && isShotAmmo(ammo.name))
+		{
+			// a blowpipe, darts, knives, chinchompas: what they throw is their own, not what the slot holds
 			ammo = null;
 		}
 		List<SwitchSet.Piece> counted = new ArrayList<>();

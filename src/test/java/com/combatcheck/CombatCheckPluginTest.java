@@ -55,6 +55,10 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Zulrah"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("The Leviathan"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Cerberus"));
+		// dragon arrows left in the slot give nothing to a blowpipe
+		org.junit.Assert.assertTrue(CombatCheckPlugin.throwsItself("Thrown") && CombatCheckPlugin.isShotAmmo("Dragon arrow"));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.throwsItself("Bow"));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.isShotAmmo("Rada's blessing 4"));
 		net.runelite.api.coords.WorldPoint fight = new net.runelite.api.coords.WorldPoint(1124, 3418, 0);
 		org.junit.Assert.assertFalse(CombatCheckPlugin.leftTheFight(new net.runelite.api.coords.WorldPoint(1130, 3420, 0), fight, 80));
 		org.junit.Assert.assertTrue(CombatCheckPlugin.leftTheFight(new net.runelite.api.coords.WorldPoint(1117, 3449, 0), fight, 80));
