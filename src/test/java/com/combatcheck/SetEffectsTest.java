@@ -191,7 +191,7 @@ public class SetEffectsTest
 	public void whatIsKept()
 	{
 		for (String name : new String[]{"Slayer helmet (i)", "Black mask (10) (i)", "Salve amulet (e)", "Void knight top",
-			"Elite void robe", "Dharok's platebody 100", "Blood moon tassets", "Berserker necklace", "Obsidian platelegs"})
+			"Elite void robe", "Blood moon tassets", "Berserker necklace", "Obsidian platelegs"})
 		{
 			assertTrue(name, SetEffects.keep(name));
 		}

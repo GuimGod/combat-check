@@ -73,6 +73,12 @@ public class CombatCheckPluginTest
 		barrows.ownedNames = java.util.Arrays.asList("Guthan's helm", "Guthan's platebody", "Guthan's chainskirt", "Torva platebody");
 		org.junit.Assert.assertTrue(SetEffects.isBarrowsSetPiece("Guthan's platebody", barrows));
 		org.junit.Assert.assertFalse(SetEffects.isBarrowsSetPiece("Torva platebody", barrows));
+		// kept on with its own weapon and the whole set; with another weapon in hand it is compared like any piece
+		org.junit.Assert.assertTrue(SetEffects.keep("Guthan's platebody", barrows));
+		SetEffects.Context scythe = new SetEffects.Context();
+		scythe.weaponName = "Scythe of vitur";
+		scythe.ownedNames = java.util.Arrays.asList("Dharok's helm 100", "Dharok's platebody 100", "Dharok's platelegs 100", "Dharok's greataxe 100");
+		org.junit.Assert.assertFalse(SetEffects.keep("Dharok's platebody 100", scythe));
 		barrows.ownedNames = java.util.Arrays.asList("Guthan's helm", "Guthan's platebody", "Torva platelegs");
 		org.junit.Assert.assertFalse(SetEffects.isBarrowsSetPiece("Guthan's platebody", barrows));
 		// the names as the game writes them

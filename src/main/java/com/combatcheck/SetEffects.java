@@ -76,7 +76,8 @@ final class SetEffects
 		"Amulet of avarice",
 		// sets that work as a whole
 		"Void ", "Elite void ", "Obsidian helmet", "Obsidian platebody", "Obsidian platelegs", "Berserker necklace",
-		"Dharok's ", "Verac's ", "Karil's ", "Ahrim's ", "Torag's ", "Guthan's ", "Amulet of the damned",
+		// a Barrows set is kept only with its own weapon in hand and all its pieces on the player: isBarrowsSetPiece
+		"Amulet of the damned",
 		"Blood moon ", "Blue moon ", "Eclipse moon ",
 		// worn for the special attack energy it restores; it has no bonuses to compare
 		"Lightbearer",
