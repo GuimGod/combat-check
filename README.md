@@ -52,7 +52,7 @@ And these are fixed, so there is less to set up:
 | Better weapon in the inventory | never sooner than 5 ticks (3 seconds) after it became true |
 | The attack prayer reminder after the fight | stays 8 ticks (about 5 seconds) after your last attack |
 | The ruby or diamond bolts reminder | stays 25 ticks (15 seconds) after your last attack, at the last health the monster showed |
-| The monster you are fighting | the last one you attacked, for 100 ticks (a minute); forgotten at once when you die, walk more than 20 tiles away, attack a monster that is not in the table, log out or hop |
+| The monster you are fighting | the last one you attacked, while it is alive, for up to 100 ticks (a minute) without attacking it; forgotten at once when it dies, when you die, walk more than 20 tiles away, attack a monster that is not in the table, log out or hop |
 | The best attack style | pointed out for any gain at all; styles that tie are left alone |
 
 ## The attack style

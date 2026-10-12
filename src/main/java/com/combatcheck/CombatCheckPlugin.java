@@ -502,6 +502,18 @@ public class CombatCheckPlugin extends Plugin
 	static final int FORGET_DISTANCE = 20;
 	/** Where the player stood at the last attack on the remembered monster. */
 	private net.runelite.api.coords.WorldPoint targetAt;
+	/** The monster itself, to know when it dies or goes away. */
+	private NPC targetNpc;
+
+	@Subscribe
+	public void onNpcDespawned(net.runelite.api.events.NpcDespawned event)
+	{
+		if (event.getNpc() == targetNpc)
+		{
+			// gone from the scene (dead, or the player left): nothing more is said about it
+			targetNpc = null;
+		}
+	}
 
 	/** True when the player died or is no longer near where the fight was. */
 	static boolean leftTheFight(net.runelite.api.coords.WorldPoint here, net.runelite.api.coords.WorldPoint fightAt, int hitpoints)
@@ -539,6 +551,7 @@ public class CombatCheckPlugin extends Plugin
 		boltAdvice = null;
 		piecesGain = Double.NaN;
 		targetId = -1;
+		targetNpc = null;
 		styleTimer.reset();
 		switchTimer.reset();
 		weaponTimer.reset();
@@ -637,19 +650,22 @@ public class CombatCheckPlugin extends Plugin
 		Player me = client.getLocalPlayer();
 		Actor interacting = me.getInteracting();
 		net.runelite.api.coords.WorldPoint here = me.getWorldLocation();
-		if (interacting instanceof NPC && data.monster(((NPC) interacting).getId()) != null)
+		if (interacting instanceof NPC && !((NPC) interacting).isDead() && data.monster(((NPC) interacting).getId()) != null)
 		{
 			targetId = ((NPC) interacting).getId();
+			targetNpc = (NPC) interacting;
 			targetTicks = 0;
 			targetAt = here;
 		}
-		else if (targetId != -1 && (++targetTicks > REMEMBER_TARGET_TICKS
+		else if (targetId != -1 && (targetNpc == null || targetNpc.isDead() || ++targetTicks > REMEMBER_TARGET_TICKS
 			|| leftTheFight(here, targetAt, client.getBoostedSkillLevel(Skill.HITPOINTS))
 			|| (interacting instanceof NPC && canBeFought((NPC) interacting))))
 		{
-			// the minute of memory is for the pause between two kills: dead, gone from where the fight was,
-			// or attacking a monster that is not in the table, the old one is forgotten at once
+			// the monster died, or the player did, or left where the fight was, or attacks a monster that is not
+			// in the table: it is forgotten at once. The minute of memory is only for a monster still alive
+			// that the player stopped attacking for a moment
 			targetId = -1;
+			targetNpc = null;
 		}
 		StyleData.Monster monster = targetId == -1 ? null : data.monster(targetId);
 
