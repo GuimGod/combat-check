@@ -55,6 +55,11 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Zulrah"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("The Leviathan"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Cerberus"));
+		net.runelite.api.coords.WorldPoint fight = new net.runelite.api.coords.WorldPoint(1124, 3418, 0);
+		org.junit.Assert.assertFalse(CombatCheckPlugin.leftTheFight(new net.runelite.api.coords.WorldPoint(1130, 3420, 0), fight, 80));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.leftTheFight(new net.runelite.api.coords.WorldPoint(1117, 3449, 0), fight, 80));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.leftTheFight(new net.runelite.api.coords.WorldPoint(1124, 3418, 1), fight, 80));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.leftTheFight(fight, fight, 0));
 		org.junit.Assert.assertEquals(1420, CombatCheckOverlay.prayerSprite("Rigour"));
 		org.junit.Assert.assertEquals(-1, CombatCheckOverlay.prayerSprite("Melee prayer"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Dagannoth Rex"));

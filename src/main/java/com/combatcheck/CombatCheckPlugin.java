@@ -482,6 +482,38 @@ public class CombatCheckPlugin extends Plugin
 		data = null;
 	}
 
+	/** How far from where the last attack was made the monster stops being the one fought. */
+	static final int FORGET_DISTANCE = 20;
+	/** Where the player stood at the last attack on the remembered monster. */
+	private net.runelite.api.coords.WorldPoint targetAt;
+
+	/** True when the player died or is no longer near where the fight was. */
+	static boolean leftTheFight(net.runelite.api.coords.WorldPoint here, net.runelite.api.coords.WorldPoint fightAt, int hitpoints)
+	{
+		if (hitpoints <= 0)
+		{
+			return true;
+		}
+		return here != null && fightAt != null
+			&& (here.getPlane() != fightAt.getPlane() || here.distanceTo2D(fightAt) > FORGET_DISTANCE);
+	}
+
+	@Subscribe
+	public void onGameStateChanged(net.runelite.api.events.GameStateChanged event)
+	{
+		if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING)
+		{
+			// nothing of the last fight is carried to another world or another login
+			reset();
+			prayerNotice = null;
+			leftOnNotice = null;
+			blowpipeNotice = null;
+			outOfCombat = 0;
+			prayerOnFor = 0;
+			prayerTimer.reset();
+		}
+	}
+
 	private void reset()
 	{
 		advice = null;
@@ -587,13 +619,19 @@ public class CombatCheckPlugin extends Plugin
 	{
 		Player me = client.getLocalPlayer();
 		Actor interacting = me.getInteracting();
+		net.runelite.api.coords.WorldPoint here = me.getWorldLocation();
 		if (interacting instanceof NPC && data.monster(((NPC) interacting).getId()) != null)
 		{
 			targetId = ((NPC) interacting).getId();
 			targetTicks = 0;
+			targetAt = here;
 		}
-		else if (targetId != -1 && ++targetTicks > REMEMBER_TARGET_TICKS)
+		else if (targetId != -1 && (++targetTicks > REMEMBER_TARGET_TICKS
+			|| leftTheFight(here, targetAt, client.getBoostedSkillLevel(Skill.HITPOINTS))
+			|| (interacting instanceof NPC && canBeFought((NPC) interacting))))
 		{
+			// the minute of memory is for the pause between two kills: dead, gone from where the fight was,
+			// or attacking a monster that is not in the table, the old one is forgotten at once
 			targetId = -1;
 		}
 		StyleData.Monster monster = targetId == -1 ? null : data.monster(targetId);
