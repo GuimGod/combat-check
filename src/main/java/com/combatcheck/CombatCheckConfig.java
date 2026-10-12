@@ -310,7 +310,7 @@ public interface CombatCheckConfig extends Config
 	)
 	default int weaponMinimumGain()
 	{
-		return 10;
+		return 1;
 	}
 
 	@ConfigItem(
