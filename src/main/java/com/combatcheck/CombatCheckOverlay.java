@@ -100,7 +100,8 @@ class CombatCheckOverlay extends Overlay
 		CombatCheckPlugin.WeaponAdvice bolts = plugin.boltAdvice();
 		String prayer = plugin.prayerNotice();
 		String leftOn = plugin.leftOnNotice();
-		if (advice == null && !rows && weapon == null && bolts == null && prayer == null && leftOn == null)
+		String blowpipe = plugin.blowpipeNotice();
+		if (advice == null && !rows && weapon == null && bolts == null && prayer == null && leftOn == null && blowpipe == null)
 		{
 			return null;
 		}
@@ -190,6 +191,11 @@ class CombatCheckOverlay extends Overlay
 		if (leftOn != null)
 		{
 			box(graphics, fm, tab.x, y, h, new BufferedImage[0], 0, leftOn, WRONG_BACK, WRONG_EDGE);
+			y -= h + 3;
+		}
+		if (blowpipe != null)
+		{
+			box(graphics, fm, tab.x, y, h, new BufferedImage[0], 0, blowpipe, WRONG_BACK, WRONG_EDGE);
 		}
 		return null;
 	}

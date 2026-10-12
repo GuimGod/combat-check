@@ -94,6 +94,62 @@ bane-void-ranged	ranged	20997	Twisted bow	Bow	6	415	Abyssal demon	0	0	0	-12	115	
 bane-void-ranged	ranged	20997	Twisted bow	Bow	6	5862	Cerberus	0	0	0	-12	115	0	90	0.0	5.79986	0	0	0	0	0	1	0	0	
 bane-void-ranged	ranged	20997	Twisted bow	Bow	6	2215	General Graardor	0	0	0	-12	115	0	90	0.0	1.31045	0	0	0	0	0	1	0	0	
 bane-void-ranged	ranged	20997	Twisted bow	Bow	6	7261	Hill Giant	0	0	0	-12	115	0	90	0.0	1.80785	0	0	0	0	0	1	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	415	Abyssal demon	-8	-8	-8	-19	175	0	68	0.0	6.17652	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	13668	Araxxor	-8	-8	-8	-19	175	0	68	0.0	3.14071	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	13013	Blue Moon	-8	-8	-8	-19	175	0	68	0.0	4.36734	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	5862	Cerberus	-8	-8	-8	-19	175	0	68	0.0	5.53650	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	2266	Dagannoth Prime	-8	-8	-8	-19	175	0	68	0.0	5.35269	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	2267	Dagannoth Rex	-8	-8	-8	-19	175	0	68	0.0	1.51444	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	2215	General Graardor	-8	-8	-8	-19	175	0	68	0.0	3.19756	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	5779	Giant Mole	-8	-8	-8	-19	175	0	68	0.0	4.64623	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	7261	Hill Giant	-8	-8	-8	-19	175	0	68	0.0	7.26787	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	3162	Kree'arra	-8	-8	-8	-19	175	0	68	0.0	1.79592	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	12077	Phantom Muspah	-8	-8	-8	-19	175	0	68	0.0	4.73880	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	12078	Phantom Muspah	-8	-8	-8	-19	175	0	68	0.0	1.87765	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	8059	Vorkath	-8	-8	-8	-19	175	0	68	0.0	5.29356	0	0	0	0	0	0	0	0	
+blowpipe-amethyst	ranged	12926	Toxic blowpipe	Thrown	3	2042	Zulrah	-8	-8	-8	-19	175	0	68	0.0	3.62055	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	415	Abyssal demon	-8	-8	-8	-19	175	0	75	0.0	6.38155	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	13668	Araxxor	-8	-8	-8	-19	175	0	75	0.0	3.24497	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	13013	Blue Moon	-8	-8	-8	-19	175	0	75	0.0	4.47613	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	5862	Cerberus	-8	-8	-8	-19	175	0	75	0.0	5.72028	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	2266	Dagannoth Prime	-8	-8	-8	-19	175	0	75	0.0	5.53037	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	2267	Dagannoth Rex	-8	-8	-8	-19	175	0	75	0.0	1.56471	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	2215	General Graardor	-8	-8	-8	-19	175	0	75	0.0	3.30371	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	5779	Giant Mole	-8	-8	-8	-19	175	0	75	0.0	4.80046	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	7261	Hill Giant	-8	-8	-8	-19	175	0	75	0.0	7.50913	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	3162	Kree'arra	-8	-8	-8	-19	175	0	75	0.0	1.85554	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	12077	Phantom Muspah	-8	-8	-8	-19	175	0	75	0.0	4.89610	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	12078	Phantom Muspah	-8	-8	-8	-19	175	0	75	0.0	1.93998	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	8059	Vorkath	-8	-8	-8	-19	175	0	75	0.0	5.46928	0	0	0	0	0	0	0	0	
+blowpipe-dragon	ranged	12926	Toxic blowpipe	Thrown	3	2042	Zulrah	-8	-8	-8	-19	175	0	75	0.0	3.74074	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	415	Abyssal demon	-8	-8	-8	-19	175	0	49	0.0	5.35671	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	13668	Araxxor	-8	-8	-8	-19	175	0	49	0.0	2.72385	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	13013	Blue Moon	-8	-8	-8	-19	175	0	49	0.0	3.93235	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	5862	Cerberus	-8	-8	-8	-19	175	0	49	0.0	4.80164	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	2266	Dagannoth Prime	-8	-8	-8	-19	175	0	49	0.0	4.64223	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	2267	Dagannoth Rex	-8	-8	-8	-19	175	0	49	0.0	1.31343	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	2215	General Graardor	-8	-8	-8	-19	175	0	49	0.0	2.77315	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	5779	Giant Mole	-8	-8	-8	-19	175	0	49	0.0	4.02954	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	7261	Hill Giant	-8	-8	-8	-19	175	0	49	0.0	6.30321	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	3162	Kree'arra	-8	-8	-8	-19	175	0	49	0.0	1.55755	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	12077	Phantom Muspah	-8	-8	-8	-19	175	0	49	0.0	4.10982	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	12078	Phantom Muspah	-8	-8	-8	-19	175	0	49	0.0	1.62843	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	8059	Vorkath	-8	-8	-8	-19	175	0	49	0.0	4.59095	0	0	0	0	0	0	0	0	
+blowpipe-mithril	ranged	12926	Toxic blowpipe	Thrown	3	2042	Zulrah	-8	-8	-8	-19	175	0	49	0.0	3.14000	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	415	Abyssal demon	-8	-8	-8	-19	175	0	66	0.0	5.97152	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	13668	Araxxor	-8	-8	-8	-19	175	0	66	0.0	3.03647	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	13013	Blue Moon	-8	-8	-8	-19	175	0	66	0.0	4.25856	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	5862	Cerberus	-8	-8	-8	-19	175	0	66	0.0	5.35274	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	2266	Dagannoth Prime	-8	-8	-8	-19	175	0	66	0.0	5.17503	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	2267	Dagannoth Rex	-8	-8	-8	-19	175	0	66	0.0	1.46417	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	2215	General Graardor	-8	-8	-8	-19	175	0	66	0.0	3.09143	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	5779	Giant Mole	-8	-8	-8	-19	175	0	66	0.0	4.49202	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	7261	Hill Giant	-8	-8	-8	-19	175	0	66	0.0	7.02665	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	3162	Kree'arra	-8	-8	-8	-19	175	0	66	0.0	1.73632	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	12077	Phantom Muspah	-8	-8	-8	-19	175	0	66	0.0	4.58152	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	12078	Phantom Muspah	-8	-8	-8	-19	175	0	66	0.0	1.81533	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	8059	Vorkath	-8	-8	-8	-19	175	0	66	0.0	5.11786	0	0	0	0	0	0	0	0	
+blowpipe-rune	ranged	12926	Toxic blowpipe	Thrown	3	2042	Zulrah	-8	-8	-8	-19	175	0	66	0.0	3.50039	0	0	0	0	0	0	0	0	
 fang	melee	26219	Osmumten's fang	Stab Sword	5	415	Abyssal demon	182	189	75	-60	-67	174	0	0.0	5.58940	0	0	0	0	0	0	0	0	
 fang	melee	26219	Osmumten's fang	Stab Sword	5	13668	Araxxor	182	189	75	-60	-67	174	0	0.0	4.30270	0	0	0	0	0	0	0	0	
 fang	melee	26219	Osmumten's fang	Stab Sword	5	13013	Blue Moon	182	189	75	-60	-67	174	0	0.0	6.58391	0	0	0	0	0	0	0	0	

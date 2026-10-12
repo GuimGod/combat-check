@@ -63,6 +63,8 @@ final class SetCalc
 		int spell;
 		/** The element of the charged tome in the shield slot ("fire", "water", "earth"), or null. */
 		String tome;
+		/** A blowpipe whose darts are known: their strength is already in {@link #rangedStrength}. */
+		boolean dartKnown;
 	}
 
 	/** Boosted levels and prayer multipliers (100 for none). */
@@ -220,7 +222,7 @@ final class SetCalc
 	private static final String[] NOT_PLAIN = {
 		"dragon hunter wand", "purging staff", "thammaron", "accursed", "soulreaper", "dharok", "verac",
 		"leaf-bladed sword", "leaf-bladed spear",
-		"dual macuahuitl", "eclipse atlatl", "hunter's spear", "blowpipe", "salamander", "swamp lizard", "chinchompa",
+		"dual macuahuitl", "eclipse atlatl", "hunter's spear", "salamander", "swamp lizard", "chinchompa",
 		"barronite", "blisterwood", "ivandis", "wilderness", "zombie axe", "abyssal bludgeon", "gadderhammer",
 		"brine sabre", "holy water", "ballista", "bone staff", "dawnbringer", "starter", "granite maul",
 	};
@@ -253,6 +255,11 @@ final class SetCalc
 			{
 				return false;
 			}
+		}
+		if (n.contains("blowpipe") && !l.dartKnown)
+		{
+			// the darts inside are most of its damage, and the game only tells which they are when it is checked
+			return false;
 		}
 		String cls = combatClass(l);
 		if (cls == null)

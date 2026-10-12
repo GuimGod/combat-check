@@ -26,6 +26,7 @@ import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.Skill;
 import net.runelite.api.StructComposition;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.gameval.DBTableID;
 import net.runelite.api.gameval.InventoryID;
@@ -162,6 +163,109 @@ public class CombatCheckPlugin extends Plugin
 	private static final int ANCIENT_SPELLBOOK = 1;
 	/** What the player is doing with the weapon in hand, for the conditional effects of armour. */
 	private SetEffects.Context context;
+
+	@Inject
+	private ConfigManager configManager;
+
+	/** Where the darts last seen in the blowpipe are kept, for each account. */
+	private static final String CONFIG_GROUP = "combatcheck";
+	private static final String BLOWPIPE_DART_KEY = "blowpipeDart";
+	/** The darts a blowpipe takes, by the name its Check message gives them, and their item. */
+	private static final String[] DART_NAMES = {"bronze dart", "iron dart", "steel dart", "black dart", "mithril dart",
+		"adamant dart", "rune dart", "amethyst dart", "dragon dart"};
+	private static final int[] DART_ITEMS = {806, 807, 808, 3093, 809, 810, 811, 25849, 11230};
+	private static final java.util.regex.Pattern BLOWPIPE_CHECK =
+		java.util.regex.Pattern.compile("^Darts: (.+?)(?: x [\\d,]+)?\\. Scales: .*");
+	/** The darts in the blowpipe: their item, 0 for none, -1 while the blowpipe has not been checked on this account. */
+	private int blowpipeDart = -1;
+	private volatile String blowpipeNotice;
+
+	/** The "check your blowpipe" reminder to draw now, or null. */
+	String blowpipeNotice()
+	{
+		return blowpipeNotice;
+	}
+
+	/**
+	 * The darts a blowpipe's Check message names ("Darts: Dragon dart x 1,234. Scales: 16,383 (100.0%)."):
+	 * their item, 0 for none, -1 when the message is not that one or the darts are not known.
+	 */
+	static int dartFromCheck(String message)
+	{
+		java.util.regex.Matcher m = message == null ? null : BLOWPIPE_CHECK.matcher(message.trim());
+		if (m == null || !m.matches())
+		{
+			return -1;
+		}
+		String name = m.group(1).trim().toLowerCase(java.util.Locale.ROOT);
+		if (name.equals("none"))
+		{
+			return 0;
+		}
+		for (int i = 0; i < DART_NAMES.length; i++)
+		{
+			if (name.equals(DART_NAMES[i]))
+			{
+				return DART_ITEMS[i];
+			}
+		}
+		return -1;
+	}
+
+	/** True for the blowpipes whose Check message is read: the Toxic blowpipe and its Blazing recolour. */
+	static boolean readsDarts(String weaponName)
+	{
+		String n = weaponName == null ? "" : weaponName.toLowerCase(java.util.Locale.ROOT);
+		return n.contains("toxic blowpipe") || n.contains("blazing blowpipe");
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage event)
+	{
+		if (event.getType() != net.runelite.api.ChatMessageType.GAMEMESSAGE && event.getType() != net.runelite.api.ChatMessageType.SPAM)
+		{
+			return;
+		}
+		String text = net.runelite.client.util.Text.removeTags(event.getMessage());
+		if (!text.startsWith("Darts: "))
+		{
+			return;
+		}
+		int dart = dartFromCheck(text);
+		blowpipeDart = dart;
+		if (dart < 0)
+		{
+			configManager.unsetRSProfileConfiguration(CONFIG_GROUP, BLOWPIPE_DART_KEY);
+		}
+		else
+		{
+			configManager.setRSProfileConfiguration(CONFIG_GROUP, BLOWPIPE_DART_KEY, dart);
+		}
+	}
+
+	/** The darts last seen in this account's blowpipe, and whether to ask for a Check of the one in hand. */
+	private void readBlowpipe()
+	{
+		String saved = configManager.getRSProfileConfiguration(CONFIG_GROUP, BLOWPIPE_DART_KEY);
+		int dart = -1;
+		if (saved != null)
+		{
+			try
+			{
+				dart = Integer.parseInt(saved);
+			}
+			catch (NumberFormatException e)
+			{
+				dart = -1;
+			}
+		}
+		blowpipeDart = dart;
+		ItemContainer worn = client.getItemContainer(InventoryID.WORN);
+		Item inHand = worn == null ? null : worn.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
+		boolean blowpipe = inHand != null && inHand.getId() > 0
+			&& readsDarts(itemManager.getItemComposition(inHand.getId()).getName());
+		blowpipeNotice = blowpipe && dart < 0 ? "Check your blowpipe" : null;
+	}
 
 	@Provides
 	CombatCheckConfig provideConfig(ConfigManager configManager)
@@ -358,6 +462,7 @@ public class CombatCheckPlugin extends Plugin
 				weaponAdvice = null;
 				boltAdvice = null;
 				prayerNotice = null;
+				blowpipeNotice = null;
 				piecesGain = Double.NaN;
 				return;
 			}
@@ -365,16 +470,19 @@ public class CombatCheckPlugin extends Plugin
 			{
 				// this plugin is for fighting monsters: against a player it says nothing at all
 				reset();
+				blowpipeNotice = null;
 				prayerNotice = null;
 				leftOnNotice = null;
 				outOfCombat = 0;
 				prayerTimer.reset();
 				return;
 			}
+			readBlowpipe();
 			update(client.getTickCount());
 		}
 		catch (RuntimeException e)
 		{
+			blowpipeNotice = null;
 			// a cache lookup that fails must not break the tick for every other plugin
 			log.debug("could not check the gear", e);
 			advice = null;
@@ -1126,6 +1234,16 @@ public class CombatCheckPlugin extends Plugin
 		SwitchSet.Piece weapon = pieces.length > SwitchSet.WEAPON ? pieces[SwitchSet.WEAPON] : null;
 		l.weaponName = weapon == null ? "" : weapon.name;
 		l.speed = weapon == null || weapon.speed <= 0 ? 4 : weapon.speed;
+		if (readsDarts(l.weaponName) && blowpipeDart > 0)
+		{
+			// the darts inside the blowpipe, as its last Check named them
+			var dart = itemManager.getItemStats(blowpipeDart);
+			if (dart != null && dart.getEquipment() != null)
+			{
+				l.rangedStrength += dart.getEquipment().getRstr();
+				l.dartKnown = true;
+			}
+		}
 		l.category = data.category(weaponId);
 		l.styles = data.styles(weaponId);
 		l.bolt = ammo == null ? 0 : SetCalc.boltKind(ammo.name);

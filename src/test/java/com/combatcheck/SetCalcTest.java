@@ -66,6 +66,8 @@ public class SetCalcTest
 				l.ranged = Integer.parseInt(c[12]);
 				l.strength = Integer.parseInt(c[13]);
 				l.rangedStrength = Integer.parseInt(c[14]);
+				// the blowpipe cases carry the strength of the darts inside
+				l.dartKnown = c[3].toLowerCase(java.util.Locale.ROOT).contains("blowpipe");
 				l.magicDamage = Double.parseDouble(c[15]);
 				Case k = new Case();
 				k.set = c[0];
