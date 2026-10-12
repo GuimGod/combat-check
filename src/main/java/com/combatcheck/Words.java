@@ -6,7 +6,7 @@ package com.combatcheck;
 
 /**
  * The few words the plugin writes on screen, in the languages of its "Language" setting. Names of items,
- * prayers and attack styles are the game's own and are left as they are.
+ * weapons, prayers and attack styles are the game's own and are never translated.
  */
 final class Words
 {
@@ -21,15 +21,16 @@ final class Words
 		{"Wrong prayer", "Prayer errada", "Rezo equivocado", "Falsches Gebet", "Mauvaise pri\u00e8re"},
 		{"%s off", "%s desligado", "%s apagado", "%s aus", "%s d\u00e9sactiv\u00e9"},
 		{"Prayer still on", "Prayer ainda ligada", "Rezo a\u00fan activo", "Gebet noch an", "Pri\u00e8re encore active"},
-		{"Check your blowpipe", "D\u00ea Check na blowpipe", "Usa Check en la cerbatana", "Blasrohr: Check benutzen", "Fais Check sur la sarbacane"},
+		{"Check your blowpipe", "D\u00ea Check na blowpipe", "Usa Check en la blowpipe", "Blowpipe: Check benutzen", "Fais Check sur la blowpipe"},
 		{"%d left", "faltam %d", "faltan %d", "%d fehlen", "%d restants"},
 		{"%d off", "tire %d", "quita %d", "%d ablegen", "%d \u00e0 retirer"},
 		{"Melee prayer", "Prayer de melee", "Rezo de melee", "Nahkampf-Gebet", "Pri\u00e8re de m\u00eal\u00e9e"},
 		{"Ranged prayer", "Prayer de ranged", "Rezo a distancia", "Fernkampf-Gebet", "Pri\u00e8re \u00e0 distance"},
 		{"Magic prayer", "Prayer de magia", "Rezo de magia", "Magie-Gebet", "Pri\u00e8re de magie"},
-		{"Ruby", "Rubi", "Rub\u00ed", "Rubin", "Rubis"},
-		{"Diamond", "Diamante", "Diamante", "Diamant", "Diamant"},
-		{"quiver", "aljava", "carcaj", "K\u00f6cher", "carquois"},
+		// names of items stay as the game has them, in every language
+		{"Ruby", "Ruby", "Ruby", "Ruby", "Ruby"},
+		{"Diamond", "Diamond", "Diamond", "Diamond", "Diamond"},
+		{"quiver", "quiver", "quiver", "quiver", "quiver"},
 	};
 
 	private Words()

@@ -30,7 +30,9 @@ public class WordsTest
 		assertEquals("Prayer errada: Rigour", Words.prayerNotice(CombatCheckConfig.Language.PORTUGUESE, "Wrong prayer: Rigour"));
 		assertEquals("Piety desligado", Words.prayerNotice(CombatCheckConfig.Language.PORTUGUESE, "Piety off"));
 		assertEquals("Nahkampf-Gebet aus", Words.prayerNotice(CombatCheckConfig.Language.GERMAN, "Melee prayer off"));
-		assertEquals("Diamante +3% (aljava)", Words.bolts(CombatCheckConfig.Language.PORTUGUESE, "Diamond +3% (quiver)"));
+		// names of items are not translated
+		assertEquals("Diamond +3% (quiver)", Words.bolts(CombatCheckConfig.Language.PORTUGUESE, "Diamond +3% (quiver)"));
+		org.junit.Assert.assertTrue(Words.of(CombatCheckConfig.Language.GERMAN, Words.Key.CHECK_BLOWPIPE).contains("lowpipe"));
 		assertEquals("Ruby +15%", Words.bolts(CombatCheckConfig.Language.ENGLISH, "Ruby +15%"));
 		assertEquals("faltam 2", String.format(Words.of(CombatCheckConfig.Language.PORTUGUESE, Words.Key.PIECES_LEFT), 2));
 	}
