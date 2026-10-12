@@ -506,8 +506,8 @@ public class CombatCheckPlugin extends Plugin
 	private NPC targetNpc;
 	/** After the monster dies it stays remembered this long on a Slayer task of it: 50 ticks are 30 seconds, for the next one. */
 	static final int AFTER_DEATH_TASK_TICKS = 50;
-	/** And this long otherwise: 5 ticks are 3 seconds. */
-	static final int AFTER_DEATH_TICKS = 5;
+	/** And this long otherwise: 2 ticks are about a second, so it is gone almost at once. */
+	static final int AFTER_DEATH_TICKS = 2;
 	private int deadTicks;
 
 	/** How long a dead monster stays remembered, by whether it is of the player's Slayer task. */
