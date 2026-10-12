@@ -324,13 +324,13 @@ public class CombatCheckPlugin extends Plugin
 	/** True while the player attacks a monster or a monster attacks the player. */
 	private boolean inCombat(Player me)
 	{
-		if (me.getInteracting() instanceof NPC)
+		if (me.getInteracting() instanceof NPC && canBeFought((NPC) me.getInteracting()))
 		{
 			return true;
 		}
 		for (NPC npc : client.getTopLevelWorldView().npcs())
 		{
-			if (npc != null && npc.getInteracting() == me)
+			if (npc != null && npc.getInteracting() == me && canBeFought(npc))
 			{
 				return true;
 			}
@@ -338,17 +338,49 @@ public class CombatCheckPlugin extends Plugin
 		return false;
 	}
 
-	/** True when a prayer that drains is on, other than the ones kept on between fights. */
-	private boolean drainingPrayerOn()
+	/**
+	 * True for an NPC with an Attack option that is not a follower: a pet walking behind the player, a banker
+	 * or a grave the player last clicked on is not a fight.
+	 */
+	private static boolean canBeFought(NPC npc)
 	{
-		for (Prayer p : Prayer.values())
+		net.runelite.api.NPCComposition composition = npc.getTransformedComposition();
+		if (composition == null || composition.isFollower() || composition.getActions() == null)
 		{
-			if (p != Prayer.PRESERVE && p != Prayer.RAPID_HEAL && p != Prayer.RAPID_RESTORE && client.isPrayerActive(p))
+			return false;
+		}
+		for (String action : composition.getActions())
+		{
+			if ("Attack".equals(action))
 			{
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private volatile List<String> leftOnPrayers = Collections.emptyList();
+
+	/** The prayers that are on and draining, by name ("Piety", "Protect from melee"), for the "still on" reminder. */
+	List<String> leftOnPrayers()
+	{
+		return leftOnPrayers;
+	}
+
+	/** True when a prayer that drains is on, other than the ones kept on between fights. */
+	private boolean drainingPrayerOn()
+	{
+		List<String> on = new ArrayList<>();
+		for (Prayer p : Prayer.values())
+		{
+			if (p != Prayer.PRESERVE && p != Prayer.RAPID_HEAL && p != Prayer.RAPID_RESTORE && client.isPrayerActive(p))
+			{
+				String n = p.name().replace('_', ' ').toLowerCase(java.util.Locale.ROOT);
+				on.add(Character.toUpperCase(n.charAt(0)) + n.substring(1));
+			}
+		}
+		leftOnPrayers = on;
+		return !on.isEmpty();
 	}
 
 	/**

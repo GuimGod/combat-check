@@ -196,7 +196,19 @@ class CombatCheckOverlay extends Overlay
 		}
 		if (leftOn != null)
 		{
-			box(graphics, fm, tab.x, y, h, new BufferedImage[0], 0, leftOn, WRONG_BACK, WRONG_EDGE);
+			// the prayers that are on, as their icons: at most four, so the box stays small
+			List<BufferedImage> symbols = new java.util.ArrayList<>();
+			for (String name : plugin.leftOnPrayers())
+			{
+				int spriteId = prayerSprite(name);
+				BufferedImage symbol = spriteId <= 0 || symbols.size() >= 4 ? null
+					: sprites.computeIfAbsent(spriteId, id -> spriteManager.getSprite(id, 0));
+				if (symbol != null)
+				{
+					symbols.add(symbol);
+				}
+			}
+			box(graphics, fm, tab.x, y, h, symbols.toArray(new BufferedImage[0]), 0, leftOn, WRONG_BACK, WRONG_EDGE);
 			y -= h + 3;
 		}
 		if (blowpipe != null)
@@ -214,6 +226,26 @@ class CombatCheckOverlay extends Overlay
 	{
 		switch (name == null ? "" : name.toLowerCase(java.util.Locale.ROOT))
 		{
+			case "thick skin":
+				return 115;
+			case "rock skin":
+				return 118;
+			case "protect item":
+				return 123;
+			case "steel skin":
+				return 124;
+			case "protect from magic":
+				return 127;
+			case "protect from missiles":
+				return 128;
+			case "protect from melee":
+				return 129;
+			case "redemption":
+				return 130;
+			case "retribution":
+				return 131;
+			case "smite":
+				return 132;
 			case "burst of strength":
 				return 116;
 			case "clarity of thought":
