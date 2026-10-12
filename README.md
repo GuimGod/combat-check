@@ -80,7 +80,7 @@ The plugin looks at the combat class of the weapon in your hand (melee, ranged o
 ## Limits
 
 - The best attack style is worked out for melee weapons only; the other reminders cover melee, ranged and magic.
-- The monster must be in the bundled table (2,817 NPC ids).
+- The monster must be in the bundled table (2,817 NPC ids). An id the table does not list is looked up by the monster's name, so the same monster in another place (a Hellhound in the Catacombs of Kourend) is counted with the figures of the first one of that name.
 - A monster whose defence changes during the fight is compared at its listed values (Vardorvis at full health).
 - The switch pieces are chosen by their bonuses. An item you carry on purpose that beats what you wear in its slot will be marked.
 

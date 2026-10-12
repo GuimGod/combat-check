@@ -667,14 +667,21 @@ public class CombatCheckPlugin extends Plugin
 		return bossOnly && combatLevel < bossLevel ? 0 : delay;
 	}
 
+	/** The table's row for an NPC, by its id or else by its name; null when the table has neither. */
+	private StyleData.Monster tableMonster(NPC npc)
+	{
+		return npc == null ? null : data.monster(npc.getId(), npc.getName());
+	}
+
 	private void update(int tick)
 	{
 		Player me = client.getLocalPlayer();
 		Actor interacting = me.getInteracting();
 		net.runelite.api.coords.WorldPoint here = me.getWorldLocation();
-		if (interacting instanceof NPC && !((NPC) interacting).isDead() && data.monster(((NPC) interacting).getId()) != null)
+		if (interacting instanceof NPC && !((NPC) interacting).isDead() && tableMonster((NPC) interacting) != null)
 		{
-			targetId = ((NPC) interacting).getId();
+			// the id of the table's row: an id the table does not list is found by the monster's name
+			targetId = tableMonster((NPC) interacting).id;
 			targetNpc = (NPC) interacting;
 			targetTicks = 0;
 			deadTicks = 0;
@@ -890,7 +897,7 @@ public class CombatCheckPlugin extends Plugin
 		{
 			seen = client.getVarbitValue(net.runelite.api.gameval.VarbitID.HPBAR_HUD_HP);
 		}
-		if (seen <= 0 && fighting instanceof NPC && data.monster(((NPC) fighting).getId()) == monster
+		if (seen <= 0 && fighting instanceof NPC && tableMonster((NPC) fighting) == monster
 			&& fighting.getHealthRatio() > 0 && fighting.getHealthScale() > 0)
 		{
 			seen = Math.max(1, (int) ((long) monster.hitpoints * fighting.getHealthRatio() / fighting.getHealthScale()));

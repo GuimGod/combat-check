@@ -206,6 +206,18 @@ public class SetCalcTest
 	}
 
 	@Test
+	public void anIdTheTableDoesNotListIsFoundByName() throws IOException
+	{
+		StyleData data = new StyleData();
+		// the Hellhound of the Catacombs of Kourend
+		org.junit.Assert.assertNull(data.monster(7256));
+		org.junit.Assert.assertNotNull(data.monster(7256, "Hellhound"));
+		org.junit.Assert.assertEquals("Hellhound", data.monster(7256, "Hellhound").name);
+		org.junit.Assert.assertNull(data.monster(7256, "No such monster"));
+		org.junit.Assert.assertSame(data.monster(415), data.monster(415, "Something else"));
+	}
+
+	@Test
 	public void weaponsWithTheirOwnRulesGetNoFigure()
 	{
 		SetCalc.Loadout l = new SetCalc.Loadout();

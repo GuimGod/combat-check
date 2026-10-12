@@ -44,6 +44,8 @@ final class StyleData
 	/** A monster's Defence and Magic levels, its defence bonuses, its size and what the Twisted bow scales with. */
 	static final class Monster
 	{
+		/** The NPC id of the table's row. */
+		int id;
 		final String name;
 		final int level;
 		final int stab;
@@ -153,6 +155,8 @@ final class StyleData
 	private final Map<Integer, String> weaponCategory = new HashMap<>();
 	private final Map<String, List<Style>> categoryStyles = new HashMap<>();
 	private final Map<Integer, Monster> monsters = new HashMap<>();
+	/** The first monster of each name, in lower case: for the ids of the same monster that the table does not list. */
+	private final Map<String, Monster> monstersByName = new HashMap<>();
 	private final Set<String> slayerCategories = new HashSet<>();
 
 	StyleData() throws IOException
@@ -174,7 +178,12 @@ final class StyleData
 		for (String[] c : rows("monsters.tsv"))
 		{
 			Monster m = new Monster(c);
-			monsters.put(Integer.parseInt(c[0]), m);
+			m.id = Integer.parseInt(c[0]);
+			monsters.put(m.id, m);
+			if (m.name != null)
+			{
+				monstersByName.putIfAbsent(m.name.toLowerCase(java.util.Locale.ROOT), m);
+			}
 			slayerCategories.addAll(m.slayer);
 		}
 	}
@@ -196,6 +205,17 @@ final class StyleData
 	Monster monster(int npcId)
 	{
 		return monsters.get(npcId);
+	}
+
+	/**
+	 * The monster by its NPC id or, when the table does not list that id, by its name: the game has several
+	 * ids for the same monster in different places (the Hellhound of the Catacombs of Kourend), and the table
+	 * holds one for each version the OSRS Wiki's calculator has.
+	 */
+	Monster monster(int npcId, String name)
+	{
+		Monster m = monsters.get(npcId);
+		return m != null || name == null ? m : monstersByName.get(name.toLowerCase(java.util.Locale.ROOT));
 	}
 
 	/** Every Slayer category the table knows, as {@link SetEffects#taskKey} writes them. */
