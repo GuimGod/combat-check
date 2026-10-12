@@ -16,6 +16,10 @@ The figures come from the standard accuracy and max hit formulas for melee, rang
 
 The first section of the settings has one switch for each reminder: best attack style, switch pieces left behind, pieces to take off, better weapon in the inventory, ruby or diamond bolts, no attack prayer on, wrong attack prayer on, and prayer left on. The Slayer task is always read: it has no switch. Everything else in the settings is how each one looks and how long it waits.
 
+## Language
+
+The words the plugin writes on screen ("Wrong prayer", "2 left", "Prayer still on") can be shown in English, Portuguese, Spanish, German or French: the "Language" setting. Names of items, prayers and attack styles stay as the game has them, and the settings panel itself is in English.
+
 ## What it never does
 
 - It never names what a monster is weak to. Its defences and elemental weakness, as the OSRS Wiki lists them, only go into the figure of what your own gear would do to it.

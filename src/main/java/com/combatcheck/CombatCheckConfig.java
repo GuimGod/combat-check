@@ -57,6 +57,39 @@ public interface CombatCheckConfig extends Config
 	}
 
 	/** When the attack prayer reminder speaks. */
+	enum Language
+	{
+		ENGLISH("English"),
+		PORTUGUESE("Portugu\u00eas"),
+		SPANISH("Espa\u00f1ol"),
+		GERMAN("Deutsch"),
+		FRENCH("Fran\u00e7ais");
+
+		private final String label;
+
+		Language(String label)
+		{
+			this.label = label;
+		}
+
+		@Override
+		public String toString()
+		{
+			return label;
+		}
+	}
+
+	@ConfigItem(
+		keyName = "language",
+		name = "Language",
+		description = "The language of the words the plugin writes on screen. Names of items, prayers and attack styles stay as the game has them",
+		position = -20
+	)
+	default Language language()
+	{
+		return Language.ENGLISH;
+	}
+
 	enum PrayerReminder
 	{
 		OFF("Off"),

@@ -153,8 +153,9 @@ class CombatCheckOverlay extends Overlay
 			{
 				pictures[i] = icon(all.get(i));
 			}
-			String text = missing.isEmpty() ? off.size() + " off"
-				: off.isEmpty() ? missing.size() + " left" : missing.size() + " left, " + off.size() + " off";
+			String left = String.format(Words.of(config.language(), Words.Key.PIECES_LEFT), missing.size());
+			String takeOff = String.format(Words.of(config.language(), Words.Key.PIECES_OFF), off.size());
+			String text = missing.isEmpty() ? takeOff : off.isEmpty() ? left : left + ", " + takeOff;
 			String more = plugin.piecesGainText();
 			if (more != null)
 			{
@@ -178,7 +179,8 @@ class CombatCheckOverlay extends Overlay
 			iconH = BOLT_ICON_H;
 			int bh = Math.max(BOLT_ICON_H, big.getHeight()) + 2 * PAD + 2;
 			y -= bh - h;
-			box(graphics, big, tab.x, y, bh, new BufferedImage[]{icon(bolts.itemId)}, 0, bolts.text, RIGHT_BACK, RIGHT_EDGE);
+			box(graphics, big, tab.x, y, bh, new BufferedImage[]{icon(bolts.itemId)}, 0, Words.bolts(config.language(), bolts.text),
+				RIGHT_BACK, RIGHT_EDGE);
 			iconH = ICON_H;
 			graphics.setFont(FontManager.getRunescapeSmallFont());
 			y -= h + 3;
@@ -190,7 +192,8 @@ class CombatCheckOverlay extends Overlay
 			String named = wrong ? prayer.substring(WRONG_PRAYER.length()) : prayer.endsWith(" off") ? prayer.substring(0, prayer.length() - 4) : "";
 			int spriteId = prayerSprite(named);
 			BufferedImage symbol = spriteId <= 0 ? null : sprites.computeIfAbsent(spriteId, id -> spriteManager.getSprite(id, 0));
-			box(graphics, fm, tab.x, y, h, symbol == null ? new BufferedImage[0] : new BufferedImage[]{symbol}, wrong ? 1 : 0, prayer,
+			box(graphics, fm, tab.x, y, h, symbol == null ? new BufferedImage[0] : new BufferedImage[]{symbol}, wrong ? 1 : 0,
+				Words.prayerNotice(config.language(), prayer),
 				WRONG_BACK, WRONG_EDGE);
 			y -= h + 3;
 		}
@@ -208,12 +211,14 @@ class CombatCheckOverlay extends Overlay
 					symbols.add(symbol);
 				}
 			}
-			box(graphics, fm, tab.x, y, h, symbols.toArray(new BufferedImage[0]), 0, leftOn, WRONG_BACK, WRONG_EDGE);
+			box(graphics, fm, tab.x, y, h, symbols.toArray(new BufferedImage[0]), 0,
+				Words.of(config.language(), Words.Key.PRAYER_STILL_ON), WRONG_BACK, WRONG_EDGE);
 			y -= h + 3;
 		}
 		if (blowpipe != null)
 		{
-			box(graphics, fm, tab.x, y, h, new BufferedImage[0], 0, blowpipe, WRONG_BACK, WRONG_EDGE);
+			box(graphics, fm, tab.x, y, h, new BufferedImage[0], 0, Words.of(config.language(), Words.Key.CHECK_BLOWPIPE),
+				WRONG_BACK, WRONG_EDGE);
 		}
 		return null;
 	}
