@@ -185,7 +185,13 @@ class CombatCheckOverlay extends Overlay
 		}
 		if (prayer != null)
 		{
-			box(graphics, fm, tab.x, y, h, new BufferedImage[0], 0, prayer, WRONG_BACK, WRONG_EDGE);
+			// the prayer the notice names, as its icon: crossed out when it is the wrong one that is on
+			boolean wrong = prayer.startsWith(WRONG_PRAYER);
+			String named = wrong ? prayer.substring(WRONG_PRAYER.length()) : prayer.endsWith(" off") ? prayer.substring(0, prayer.length() - 4) : "";
+			int spriteId = prayerSprite(named);
+			BufferedImage symbol = spriteId <= 0 ? null : sprites.computeIfAbsent(spriteId, id -> spriteManager.getSprite(id, 0));
+			box(graphics, fm, tab.x, y, h, symbol == null ? new BufferedImage[0] : new BufferedImage[]{symbol}, wrong ? 1 : 0, prayer,
+				WRONG_BACK, WRONG_EDGE);
 			y -= h + 3;
 		}
 		if (leftOn != null)
@@ -201,6 +207,54 @@ class CombatCheckOverlay extends Overlay
 	}
 
 	/** A box with a row of pictures and a few words after them; the last {@code crossed} pictures get an X over them. */
+	private static final String WRONG_PRAYER = "Wrong prayer: ";
+
+	/** The sprite of an attack prayer by its name as the notice writes it ("Rigour", "Eagle eye"), or -1. */
+	static int prayerSprite(String name)
+	{
+		switch (name == null ? "" : name.toLowerCase(java.util.Locale.ROOT))
+		{
+			case "burst of strength":
+				return 116;
+			case "clarity of thought":
+				return 117;
+			case "superhuman strength":
+				return 119;
+			case "improved reflexes":
+				return 120;
+			case "ultimate strength":
+				return 125;
+			case "incredible reflexes":
+				return 126;
+			case "sharp eye":
+				return 133;
+			case "mystic will":
+				return 134;
+			case "hawk eye":
+				return 502;
+			case "mystic lore":
+				return 503;
+			case "eagle eye":
+				return 504;
+			case "mystic might":
+				return 505;
+			case "chivalry":
+				return 945;
+			case "piety":
+				return 946;
+			case "rigour":
+				return 1420;
+			case "augury":
+				return 1421;
+			case "deadeye":
+				return 1422;
+			case "mystic vigour":
+				return 1423;
+			default:
+				return -1;
+		}
+	}
+
 	private void box(Graphics2D graphics, FontMetrics fm, int x, int y, int h, BufferedImage[] images, int crossed, String text,
 		Color back, Color edge)
 	{
