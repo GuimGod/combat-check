@@ -31,7 +31,8 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertNull(CombatCheckPlugin.ammoKind("Bow", "Webweaver bow"));
 		org.junit.Assert.assertNull(CombatCheckPlugin.ammoKind("Bow", "Bow of faerdhinen (c)"));
 		org.junit.Assert.assertTrue(CombatCheckPlugin.shootsNoAmmo("Bow", "Webweaver bow"));
-		org.junit.Assert.assertTrue(CombatCheckPlugin.shootsNoAmmo("Bow", "Venator bow"));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.shootsNoAmmo("Bow", "Venator bow"));
+		org.junit.Assert.assertEquals("arrow", CombatCheckPlugin.ammoKind("Bow", "Venator bow"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.shootsNoAmmo("Bow", "Twisted bow"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.shootsNoAmmo("Crossbow", "Zaryte crossbow"));
 	}

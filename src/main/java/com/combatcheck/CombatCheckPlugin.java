@@ -957,7 +957,7 @@ public class CombatCheckPlugin extends Plugin
 	{
 		String weapon = weaponName == null ? "" : weaponName.toLowerCase(java.util.Locale.ROOT);
 		return "Bow".equals(category) && (weapon.contains("crystal bow") || weapon.contains("faerdhinen")
-			|| weapon.contains("craw's bow") || weapon.contains("webweaver bow") || weapon.contains("venator bow"));
+			|| weapon.contains("craw's bow") || weapon.contains("webweaver bow"));
 	}
 
 	private static boolean has(String name, String part)
