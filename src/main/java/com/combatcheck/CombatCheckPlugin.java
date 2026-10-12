@@ -110,6 +110,9 @@ public class CombatCheckPlugin extends Plugin
 	private CombatCheckOverlay overlay;
 
 	@Inject
+	private StyleButtonOverlay buttonOverlay;
+
+	@Inject
 	private MissingItemsOverlay missingOverlay;
 
 	private StyleData data;
@@ -465,6 +468,7 @@ public class CombatCheckPlugin extends Plugin
 		data = new StyleData();
 		reset();
 		overlayManager.add(overlay);
+		overlayManager.add(buttonOverlay);
 		overlayManager.add(missingOverlay);
 	}
 
@@ -472,6 +476,7 @@ public class CombatCheckPlugin extends Plugin
 	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
+		overlayManager.remove(buttonOverlay);
 		overlayManager.remove(missingOverlay);
 		reset();
 		data = null;

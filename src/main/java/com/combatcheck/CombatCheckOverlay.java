@@ -65,6 +65,8 @@ class CombatCheckOverlay extends Overlay
 	/** The bolts box is a little larger: the same look as the Bolt Swap Reminder plugin's. */
 	private static final int BOLT_ICON_H = 22;
 	private int iconH = ICON_H;
+	/** How wide the notices drawn this frame are, for the overlay's size. */
+	private int drawnWidth;
 	/** At most this many missing pieces are drawn as icons; the count says the rest. */
 	private static final int MAX_ICONS = 8;
 
@@ -85,7 +87,8 @@ class CombatCheckOverlay extends Overlay
 		this.itemManager = itemManager;
 		this.plugin = plugin;
 		this.config = config;
-		setPosition(OverlayPosition.DYNAMIC);
+		// an ordinary overlay: Alt-drag moves it, and it snaps to the usual places
+		setPosition(OverlayPosition.BOTTOM_RIGHT);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 	}
 
@@ -105,42 +108,20 @@ class CombatCheckOverlay extends Overlay
 		{
 			return null;
 		}
-		if (advice != null && config.outlineButton() && advice.bestIndex >= 0 && advice.bestIndex < STYLE_BUTTONS.length)
-		{
-			Rectangle button = bounds(STYLE_BUTTONS[advice.bestIndex]);
-			if (button != null)
-			{
-				graphics.setColor(advice.selected ? RIGHT_EDGE : WRONG_EDGE);
-				graphics.setStroke(new BasicStroke(2));
-				graphics.drawRect(button.x, button.y, button.width - 1, button.height - 1);
-			}
-		}
-		Rectangle tab = null;
-		for (int id : COMBAT_TABS)
-		{
-			tab = bounds(id);
-			if (tab != null)
-			{
-				break;
-			}
-		}
-		if (tab == null)
-		{
-			return null;
-		}
 		graphics.setFont(FontManager.getRunescapeSmallFont());
 		graphics.setStroke(new BasicStroke(1));
 		FontMetrics fm = graphics.getFontMetrics();
 		int h = Math.max(ICON_H, fm.getHeight()) + 2 * PAD;
-		// one row above the tab's edge, leaving the row right above the tab to other notices
-		int y = tab.y - 2 * h - 5;
+		// the notices one under the other, from the overlay's own corner
+		int y = 0;
+		drawnWidth = 0;
 		if (advice != null && config.showBox())
 		{
 			// the weapon's icon; with nothing in hand, the picture on the style's own button (a fist, a foot)
 			BufferedImage picture = advice.weaponItemId > 0 ? icon(advice.weaponItemId) : styleIcon(advice.bestIndex);
-			box(graphics, fm, tab.x, y, h, new BufferedImage[]{picture}, 0, advice.text,
+			box(graphics, fm, 0, y, h, new BufferedImage[]{picture}, 0, advice.text,
 				advice.selected ? RIGHT_BACK : WRONG_BACK, advice.selected ? RIGHT_EDGE : WRONG_EDGE);
-			y -= h + 3;
+			y += h + 3;
 		}
 		if (rows)
 		{
@@ -161,15 +142,15 @@ class CombatCheckOverlay extends Overlay
 			{
 				text += " " + more;
 			}
-			box(graphics, fm, tab.x, y, h, pictures, Math.max(0, n - Math.min(n, missing.size())), text, WRONG_BACK, WRONG_EDGE);
-			y -= h + 3;
+			box(graphics, fm, 0, y, h, pictures, Math.max(0, n - Math.min(n, missing.size())), text, WRONG_BACK, WRONG_EDGE);
+			y += h + 3;
 		}
 		if (weapon != null)
 		{
 			// a weapon in the inventory whose set would deal much more: its icon and how much
-			box(graphics, fm, tab.x, y, h, weapon.alsoItemId > 0
+			box(graphics, fm, 0, y, h, weapon.alsoItemId > 0
 				? new BufferedImage[]{icon(weapon.itemId), icon(weapon.alsoItemId)} : new BufferedImage[]{icon(weapon.itemId)}, 0, weapon.text, WRONG_BACK, WRONG_EDGE);
-			y -= h + 3;
+			y += h + 3;
 		}
 		if (bolts != null)
 		{
@@ -178,12 +159,11 @@ class CombatCheckOverlay extends Overlay
 			FontMetrics big = graphics.getFontMetrics();
 			iconH = BOLT_ICON_H;
 			int bh = Math.max(BOLT_ICON_H, big.getHeight()) + 2 * PAD + 2;
-			y -= bh - h;
-			box(graphics, big, tab.x, y, bh, new BufferedImage[]{icon(bolts.itemId)}, 0, Words.bolts(config.language(), bolts.text),
+			box(graphics, big, 0, y, bh, new BufferedImage[]{icon(bolts.itemId)}, 0, Words.bolts(config.language(), bolts.text),
 				RIGHT_BACK, RIGHT_EDGE);
 			iconH = ICON_H;
 			graphics.setFont(FontManager.getRunescapeSmallFont());
-			y -= h + 3;
+			y += bh + 3;
 		}
 		if (prayer != null)
 		{
@@ -192,10 +172,10 @@ class CombatCheckOverlay extends Overlay
 			String named = wrong ? prayer.substring(WRONG_PRAYER.length()) : prayer.endsWith(" off") ? prayer.substring(0, prayer.length() - 4) : "";
 			int spriteId = prayerSprite(named);
 			BufferedImage symbol = spriteId <= 0 ? null : sprites.computeIfAbsent(spriteId, id -> spriteManager.getSprite(id, 0));
-			box(graphics, fm, tab.x, y, h, symbol == null ? new BufferedImage[0] : new BufferedImage[]{symbol}, wrong ? 1 : 0,
+			box(graphics, fm, 0, y, h, symbol == null ? new BufferedImage[0] : new BufferedImage[]{symbol}, wrong ? 1 : 0,
 				Words.prayerNotice(config.language(), prayer),
 				WRONG_BACK, WRONG_EDGE);
-			y -= h + 3;
+			y += h + 3;
 		}
 		if (leftOn != null)
 		{
@@ -211,16 +191,17 @@ class CombatCheckOverlay extends Overlay
 					symbols.add(symbol);
 				}
 			}
-			box(graphics, fm, tab.x, y, h, symbols.toArray(new BufferedImage[0]), 0,
+			box(graphics, fm, 0, y, h, symbols.toArray(new BufferedImage[0]), 0,
 				Words.of(config.language(), Words.Key.PRAYER_STILL_ON), WRONG_BACK, WRONG_EDGE);
-			y -= h + 3;
+			y += h + 3;
 		}
 		if (blowpipe != null)
 		{
-			box(graphics, fm, tab.x, y, h, new BufferedImage[0], 0, Words.of(config.language(), Words.Key.CHECK_BLOWPIPE),
+			box(graphics, fm, 0, y, h, new BufferedImage[0], 0, Words.of(config.language(), Words.Key.CHECK_BLOWPIPE),
 				WRONG_BACK, WRONG_EDGE);
+			y += h + 3;
 		}
-		return null;
+		return y <= 0 ? null : new Dimension(drawnWidth, y - 2);
 	}
 
 	/** A box with a row of pictures and a few words after them; the last {@code crossed} pictures get an X over them. */
@@ -303,6 +284,7 @@ class CombatCheckOverlay extends Overlay
 			iconsW += images[i] == null ? 0 : widths[i] + PAD;
 		}
 		int w = iconsW + fm.stringWidth(text) + 2 * PAD;
+		drawnWidth = Math.max(drawnWidth, x + w + 1);
 		graphics.setColor(back);
 		graphics.fillRect(x, y, w, h);
 		graphics.setColor(edge);
