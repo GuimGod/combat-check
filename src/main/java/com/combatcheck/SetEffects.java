@@ -5,6 +5,7 @@
 package com.combatcheck;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The effects of armour that the numbers on the item do not show. A piece is ranked for a gear
@@ -150,6 +151,10 @@ final class SetEffects
 		{
 			return VOID_PIECE;
 		}
+		if (isBarrowsSetPiece(itemName, c))
+		{
+			return VOID_PIECE;
+		}
 		boolean melee = StyleCalc.MELEE.equals(c.combatClass);
 		int salve = salveKind(itemName);
 		if (salve != 0 && Boolean.TRUE.equals(c.undead) && (melee || salve == SALVE_I || salve == SALVE_EI))
@@ -278,6 +283,10 @@ final class SetEffects
 		{
 			return true;
 		}
+		if (c != null && isBarrowsSetPiece(itemName, c))
+		{
+			return true;
+		}
 		for (String prefix : KEPT)
 		{
 			if (itemName.startsWith(prefix))
@@ -343,9 +352,97 @@ final class SetEffects
 		return hasHelm && gloves && top > 0 && robe > 0 ? (top == 2 && robe == 2 ? 2 : 1) : 0;
 	}
 
+	private static final String[] BROTHERS = {"ahrim's ", "dharok's ", "guthan's ", "karil's ", "torag's ", "verac's "};
+	private static final String[] BARROWS_WEAPONS = {"staff", "greataxe", "warspear", "crossbow", "hammers", "flail"};
+	private static final String[] BARROWS_HEADS = {"helm", "hood", "coif"};
+	private static final String[] BARROWS_BODIES = {"platebody", "robetop", "leathertop", "brassard"};
+	private static final String[] BARROWS_LEGS = {"platelegs", "robeskirt", "chainskirt", "leatherskirt", "plateskirt"};
+
+	/** The Barrows brother an item belongs to ("dharok's "), or null. */
+	static String brother(String itemName)
+	{
+		String n = itemName == null ? "" : itemName.toLowerCase(java.util.Locale.ROOT);
+		for (String b : BROTHERS)
+		{
+			if (n.startsWith(b))
+			{
+				return b;
+			}
+		}
+		return null;
+	}
+
+	/** Which part of a Barrows set an item is: 0 the weapon, 1 the head, 2 the body, 3 the legs; -1 for none. */
+	static int barrowsPart(String itemName)
+	{
+		String b = brother(itemName);
+		// the pieces carry how worn they are in their name ("Dharok's helm 75"); one at 0 is broken, cannot be
+		// worn and is no part of a set
+		if (b == null || itemName.endsWith(" 0"))
+		{
+			return -1;
+		}
+		String rest = itemName.toLowerCase(java.util.Locale.ROOT).substring(b.length());
+		String[][] parts = {BARROWS_WEAPONS, BARROWS_HEADS, BARROWS_BODIES, BARROWS_LEGS};
+		for (int i = 0; i < parts.length; i++)
+		{
+			for (String word : parts[i])
+			{
+				if (rest.startsWith(word))
+				{
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
+	/** True when the names hold the weapon, the head, the body and the legs of one Barrows brother. */
+	static boolean wholeBarrowsSet(Collection<String> names, String brother)
+	{
+		if (names == null || brother == null)
+		{
+			return false;
+		}
+		boolean[] has = new boolean[4];
+		for (String name : names)
+		{
+			int part = brother.equals(brother(name)) ? barrowsPart(name) : -1;
+			if (part >= 0)
+			{
+				has[part] = true;
+			}
+		}
+		return has[0] && has[1] && has[2] && has[3];
+	}
+
+	/**
+	 * True for an armour piece of the Barrows brother whose weapon is in hand, when the player has the whole
+	 * set on them (worn or carried): the set's effect needs all four, so the pieces go together and none is
+	 * asked off for a piece with better numbers. With a piece missing the set does nothing and each piece is
+	 * compared like any other.
+	 */
+	static boolean isBarrowsSetPiece(String itemName, Context c)
+	{
+		if (c == null || c.ownedNames == null || barrowsPart(c.weaponName) != 0 || barrowsPart(itemName) <= 0)
+		{
+			return false;
+		}
+		String b = brother(c.weaponName);
+		if (!b.equals(brother(itemName)))
+		{
+			return false;
+		}
+		List<String> all = new java.util.ArrayList<>(c.ownedNames);
+		all.add(c.weaponName);
+		return wholeBarrowsSet(all, b);
+	}
+
 	static boolean isCrystalBow(String weaponName)
 	{
-		return startsWith(weaponName, "Bow of faerdhinen") || startsWith(weaponName, "Crystal bow");
+		// the game writes "Bow of Faerdhinen (c)": the comparison must not depend on capitals
+		String n = weaponName == null ? "" : weaponName.toLowerCase(java.util.Locale.ROOT);
+		return n.startsWith("bow of faerdhinen") || n.startsWith("crystal bow");
 	}
 
 	/**

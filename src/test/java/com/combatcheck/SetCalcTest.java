@@ -175,6 +175,36 @@ public class SetCalcTest
 		assertTrue(off.size() + " off: " + off, off.isEmpty());
 	}
 
+	/** Dharok's whole set against an Abyssal demon, with Piety and a super combat: the calculator's figures at 99, 50 and 10 hitpoints. */
+	@Test
+	public void dharoksSetGrowsWithTheHitpointsLost() throws IOException
+	{
+		StyleData data = new StyleData();
+		double[][] cases = {{99, 3.12754}, {50, 4.58398}, {10, 5.82363}};
+		for (double[] k : cases)
+		{
+			SetCalc.Loadout l = new SetCalc.Loadout();
+			l.weaponName = "Dharok's greataxe";
+			l.category = "Axe";
+			l.speed = 7;
+			l.styles = data.styles(4718);
+			l.stab = 43;
+			l.slash = 150;
+			l.crush = 142;
+			l.strength = 156;
+			l.dharokSet = true;
+			SetCalc.Player p = player("melee");
+			p.hitpoints = (int) k[0];
+			double got = SetCalc.perTick(l, p, data.monster(415).target(), false);
+			assertTrue("at " + k[0] + " hitpoints: " + got + ", calculator " + k[1], Math.abs(got - k[1]) <= FIGURE * k[1]);
+		}
+		// without the whole set it is an ordinary axe
+		SetCalc.Loadout plain = new SetCalc.Loadout();
+		plain.weaponName = "Dharok's greataxe";
+		plain.category = "Axe";
+		assertTrue(SetCalc.plain(plain));
+	}
+
 	@Test
 	public void weaponsWithTheirOwnRulesGetNoFigure()
 	{

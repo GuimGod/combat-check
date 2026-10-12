@@ -1352,6 +1352,7 @@ public class CombatCheckPlugin extends Plugin
 			names.add(p.name);
 		}
 		l.voidMelee = SetEffects.voidKind(names, StyleCalc.MELEE);
+		l.dharokSet = SetEffects.wholeBarrowsSet(names, "dharok's ");
 		l.voidRanged = SetEffects.voidKind(names, StyleCalc.RANGED);
 		SwitchSet.Piece weapon = pieces.length > SwitchSet.WEAPON ? pieces[SwitchSet.WEAPON] : null;
 		l.weaponName = weapon == null ? "" : weapon.name;
@@ -1410,6 +1411,7 @@ public class CombatCheckPlugin extends Plugin
 		p.prayerMagicDamage = prayer(Prayer.AUGURY, 4, Prayer.MYSTIC_VIGOUR, 3, Prayer.MYSTIC_MIGHT, 2, Prayer.MYSTIC_LORE, 1);
 		p.kandarinDiary = client.getVarbitValue(VarbitID.KANDARIN_DIARY_HARD_COMPLETE) == 1;
 		p.hitpoints = client.getBoostedSkillLevel(Skill.HITPOINTS);
+		p.hitpointsMax = client.getRealSkillLevel(Skill.HITPOINTS);
 		return p;
 	}
 

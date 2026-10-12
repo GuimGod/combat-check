@@ -63,6 +63,8 @@ final class SetCalc
 		int spell;
 		/** The element of the charged tome in the shield slot ("fire", "water", "earth"), or null. */
 		String tome;
+		/** Dharok's whole set is worn: the max hit grows with the hitpoints the player has lost. */
+		boolean dharokSet;
 		/** A blowpipe whose darts are known: their strength is already in {@link #rangedStrength}. */
 		boolean dartKnown;
 	}
@@ -85,6 +87,8 @@ final class SetCalc
 		boolean kandarinDiary;
 		/** The player's own hitpoints: the ruby effect does nothing under 10. */
 		int hitpoints = 99;
+		/** The player's Hitpoints level, for Dharok's set. */
+		int hitpointsMax = 99;
 	}
 
 	static final class Target
@@ -220,7 +224,7 @@ final class SetCalc
 
 	/** Weapons with a rule of their own that is not modelled here: no figure is shown for them. */
 	private static final String[] NOT_PLAIN = {
-		"dragon hunter wand", "purging staff", "thammaron", "accursed", "soulreaper", "dharok", "verac",
+		"dragon hunter wand", "purging staff", "thammaron", "accursed", "soulreaper", "verac",
 		"leaf-bladed sword", "leaf-bladed spear",
 		"dual macuahuitl", "eclipse atlatl", "hunter's spear", "salamander", "swamp lizard", "chinchompa",
 		"barronite", "blisterwood", "ivandis", "wilderness", "zombie axe", "abyssal bludgeon", "gadderhammer",
@@ -406,6 +410,11 @@ final class SetCalc
 			}
 			double[] cm = StyleCalc.chanceAndMax(in, s.type, s.stance);
 			long max = (long) cm[1];
+			if (l.dharokSet)
+			{
+				// Dharok's set: 1% more for each hitpoint lost, scaled by the Hitpoints level over 100
+				max = max * (10000 + (long) Math.max(0, p.hitpointsMax - p.hitpoints) * p.hitpointsMax) / 10000;
+			}
 			boolean fangStab = in.fang && StyleCalc.STAB.equals(s.type);
 			double average = fangStab ? landed(max * 3 / 20, max - max * 3 / 20, t) : landed(0, max, t);
 			for (int h = 1; h < hits; h++)

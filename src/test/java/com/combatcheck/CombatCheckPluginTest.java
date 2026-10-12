@@ -55,6 +55,30 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Zulrah"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("The Leviathan"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Cerberus"));
+		// Barrows sets
+		org.junit.Assert.assertEquals(0, SetEffects.barrowsPart("Dharok's greataxe 75"));
+		org.junit.Assert.assertEquals(2, SetEffects.barrowsPart("Karil's leathertop"));
+		org.junit.Assert.assertEquals(-1, SetEffects.barrowsPart("Rune platebody"));
+		// every state of wear is the same piece, except the broken one
+		org.junit.Assert.assertEquals(1, SetEffects.barrowsPart("Dharok's helm 100"));
+		org.junit.Assert.assertEquals(3, SetEffects.barrowsPart("Verac's plateskirt 25"));
+		org.junit.Assert.assertEquals(1, SetEffects.barrowsPart("Ahrim's hood"));
+		org.junit.Assert.assertEquals(-1, SetEffects.barrowsPart("Dharok's helm 0"));
+		org.junit.Assert.assertTrue(SetEffects.wholeBarrowsSet(java.util.Arrays.asList("Dharok's greataxe", "Dharok's helm 100",
+			"Dharok's platebody", "Dharok's platelegs 25"), "dharok's "));
+		org.junit.Assert.assertFalse(SetEffects.wholeBarrowsSet(java.util.Arrays.asList("Dharok's greataxe", "Dharok's helm",
+			"Torag's platebody", "Dharok's platelegs"), "dharok's "));
+		SetEffects.Context barrows = new SetEffects.Context();
+		barrows.weaponName = "Guthan's warspear";
+		barrows.ownedNames = java.util.Arrays.asList("Guthan's helm", "Guthan's platebody", "Guthan's chainskirt", "Torva platebody");
+		org.junit.Assert.assertTrue(SetEffects.isBarrowsSetPiece("Guthan's platebody", barrows));
+		org.junit.Assert.assertFalse(SetEffects.isBarrowsSetPiece("Torva platebody", barrows));
+		barrows.ownedNames = java.util.Arrays.asList("Guthan's helm", "Guthan's platebody", "Torva platelegs");
+		org.junit.Assert.assertFalse(SetEffects.isBarrowsSetPiece("Guthan's platebody", barrows));
+		// the names as the game writes them
+		org.junit.Assert.assertTrue(SetEffects.isCrystalBow("Bow of Faerdhinen (c)"));
+		org.junit.Assert.assertTrue(SetEffects.isCrystalBow("Crystal bow"));
+		org.junit.Assert.assertFalse(SetEffects.isCrystalBow("Blade of Saeldor (c)"));
 		org.junit.Assert.assertEquals("-5.0%", CombatCheckPlugin.differenceText(-5));
 		org.junit.Assert.assertEquals("-15%", CombatCheckPlugin.differenceText(-15));
 		org.junit.Assert.assertEquals(CombatCheckPlugin.gainText(12), CombatCheckPlugin.differenceText(12));
