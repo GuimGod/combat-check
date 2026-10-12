@@ -240,6 +240,14 @@ public class SetCalcTest
 		low.augury = false;
 		low.vigour = false;
 		assertEquals(115, SetCalc.withPrayerOf(low, StyleCalc.MAGIC).prayerMagic);
+		// Prayer 99 without the Knight Waves: the two single melee prayers, not Piety
+		SetCalc.Player noWaves = player("ranged");
+		noWaves.piety = false;
+		noWaves.chivalry = false;
+		assertEquals(115, SetCalc.withPrayerOf(noWaves, StyleCalc.MELEE).prayerAttack);
+		assertEquals(115, SetCalc.withPrayerOf(noWaves, StyleCalc.MELEE).prayerStrength);
+		noWaves.chivalry = true;
+		assertEquals(118, SetCalc.withPrayerOf(noWaves, StyleCalc.MELEE).prayerStrength);
 	}
 
 	/** The Ancient Magicks on autocast with a Kodai wand, against an Abyssal demon: the calculator's figures. */

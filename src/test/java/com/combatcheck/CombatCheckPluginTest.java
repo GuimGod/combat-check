@@ -27,6 +27,8 @@ public class CombatCheckPluginTest
 	public void ammunitionCountsOnlyWithAWeaponThatShootsIt()
 	{
 		org.junit.Assert.assertEquals("bolts", CombatCheckPlugin.ammoKind("Crossbow", "Zaryte crossbow"));
+		org.junit.Assert.assertEquals("bolt rack", CombatCheckPlugin.ammoKind("Crossbow", "Karil's crossbow 100"));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.isShotAmmo("Bolt rack"));
 		org.junit.Assert.assertEquals("arrow", CombatCheckPlugin.ammoKind("Bow", "Twisted bow"));
 		org.junit.Assert.assertNull(CombatCheckPlugin.ammoKind("Bow", "Webweaver bow"));
 		org.junit.Assert.assertNull(CombatCheckPlugin.ammoKind("Bow", "Bow of faerdhinen (c)"));
@@ -94,12 +96,24 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertEquals("-15%", CombatCheckPlugin.differenceText(-15));
 		org.junit.Assert.assertEquals(CombatCheckPlugin.gainText(12), CombatCheckPlugin.differenceText(12));
 		// the best attack prayer the player has
-		org.junit.Assert.assertEquals("Rigour", CombatCheckPlugin.bestPrayer("ranged", 99, true, true, true, true));
-		org.junit.Assert.assertEquals("Deadeye", CombatCheckPlugin.bestPrayer("ranged", 99, false, true, false, false));
-		org.junit.Assert.assertEquals("Eagle eye", CombatCheckPlugin.bestPrayer("ranged", 70, false, false, false, false));
-		org.junit.Assert.assertEquals("Mystic might", CombatCheckPlugin.bestPrayer("magic", 50, false, false, false, false));
-		org.junit.Assert.assertEquals("Chivalry", CombatCheckPlugin.bestPrayer("melee", 65, false, false, false, false));
-		org.junit.Assert.assertEquals("Melee prayer", CombatCheckPlugin.bestPrayer("melee", 43, false, false, false, false));
+		org.junit.Assert.assertEquals("Rigour", CombatCheckPlugin.bestPrayer("ranged", 99, true, true, true, true, true, true));
+		org.junit.Assert.assertEquals("Deadeye", CombatCheckPlugin.bestPrayer("ranged", 99, true, true, false, true, false, false));
+		org.junit.Assert.assertEquals("Eagle eye", CombatCheckPlugin.bestPrayer("ranged", 70, true, true, false, false, false, false));
+		org.junit.Assert.assertEquals("Mystic might", CombatCheckPlugin.bestPrayer("magic", 50, false, false, false, false, false, false));
+		org.junit.Assert.assertEquals("Chivalry", CombatCheckPlugin.bestPrayer("melee", 65, false, true, false, false, false, false));
+		org.junit.Assert.assertEquals("Melee prayer", CombatCheckPlugin.bestPrayer("melee", 43, false, false, false, false, false, false));
+		// Prayer 99 without the Knight Waves: neither Piety nor Chivalry
+		org.junit.Assert.assertEquals("Melee prayer", CombatCheckPlugin.bestPrayer("melee", 99, false, false, true, true, true, true));
+		org.junit.Assert.assertEquals("Piety", CombatCheckPlugin.bestPrayer("melee", 99, true, true, true, true, true, true));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.unlockedByKnightWaves(99, 99, 0, 70, 70));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.unlockedByKnightWaves(99, 69, 8, 70, 70));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.unlockedByKnightWaves(70, 70, 8, 70, 70));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.unlockedByKnightWaves(60, 65, 8, 60, 65));
+		// a dead monster still faced by the player is not another monster; one that is not the remembered one is
+		Object remembered = new Object();
+		org.junit.Assert.assertFalse(CombatCheckPlugin.attacksAnother(remembered, remembered, true));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.attacksAnother(new Object(), remembered, true));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.attacksAnother(new Object(), remembered, false));
 		org.junit.Assert.assertTrue(CombatCheckOverlay.prayerSprite("Mystic vigour") > 0);
 		// dragon arrows left in the slot give nothing to a blowpipe
 		org.junit.Assert.assertTrue(CombatCheckPlugin.throwsItself("Thrown") && CombatCheckPlugin.isShotAmmo("Dragon arrow"));

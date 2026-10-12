@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,19 +34,6 @@ import net.runelite.client.ui.overlay.OverlayPosition;
  */
 class CombatCheckOverlay extends Overlay
 {
-	/** The Combat Options tab in the three game layouts. */
-	private static final int[] COMBAT_TABS = {
-		InterfaceID.ToplevelOsrsStretch.STONE0,
-		InterfaceID.ToplevelPreEoc.STONE0,
-		InterfaceID.Toplevel.STONE0,
-	};
-	/** The four style buttons of the Combat Options tab, by position. */
-	private static final int[] STYLE_BUTTONS = {
-		InterfaceID.CombatInterface._0,
-		InterfaceID.CombatInterface._1,
-		InterfaceID.CombatInterface._2,
-		InterfaceID.CombatInterface._3,
-	};
 	/** The picture on each of those buttons. */
 	private static final int[] STYLE_ICONS = {
 		InterfaceID.CombatInterface._0_ICON,
@@ -329,17 +315,5 @@ class CombatCheckOverlay extends Overlay
 		Widget w = client.getWidget(STYLE_ICONS[styleIndex]);
 		int sprite = w == null ? -1 : w.getSpriteId();
 		return sprite <= 0 ? null : sprites.computeIfAbsent(sprite, id -> spriteManager.getSprite(id, 0));
-	}
-
-	/** The on-screen box of a widget that is loaded and showing, or null. */
-	private Rectangle bounds(int widgetId)
-	{
-		Widget w = client.getWidget(widgetId);
-		if (w == null || w.isHidden())
-		{
-			return null;
-		}
-		Rectangle b = w.getBounds();
-		return b == null || b.width <= 0 || b.height <= 0 ? null : b;
 	}
 }

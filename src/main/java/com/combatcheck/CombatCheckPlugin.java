@@ -42,7 +42,8 @@ import net.runelite.client.ui.overlay.OverlayManager;
 /**
  * An attention check for the player's own gear. It reminds the player of what they left undone and
  * never anticipates anything a monster will do. With the weapon the player chose to hold, it
- * reminds them of two things:
+ * reminds them of these, and of the others the README lists (a better weapon in the inventory, the
+ * attack prayer, a prayer left on):
  *
  * <ul>
  * <li>the melee attack style of that weapon that deals the most damage to the monster being
@@ -60,13 +61,12 @@ import net.runelite.client.ui.overlay.OverlayManager;
 @Slf4j
 @PluginDescriptor(
 	name = "Combat Check",
-	description = "Attention check: reminds you of the best melee style of the weapon in your hand and of switch pieces left in your inventory. After a delay it also points at a much better weapon you are carrying",
+	description = "Attention check: reminds you of the best melee style of the weapon in your hand and of switch pieces left in your inventory. It also reminds you of a better weapon you are carrying and of your attack prayer",
 	tags = {"combat", "attack", "style", "stab", "slash", "crush", "switch", "gear", "missing", "reminder", "pvm"}
 )
 public class CombatCheckPlugin extends Plugin
 {
-	/** What the overlay draws about the attack style of the weapon in hand. */
-	/** A carried weapon whose set would deal much more than what is worn. */
+	/** A carried weapon whose set would deal more than what is worn. */
 	static final class WeaponAdvice
 	{
 		int itemId;
@@ -447,20 +447,43 @@ public class CombatCheckPlugin extends Plugin
 	/** The attack prayer to name for a combat class: the top one when the player has it, the class otherwise. */
 	private String bestPrayer(String combatClass)
 	{
-		return bestPrayer(combatClass, client.getRealSkillLevel(Skill.PRAYER),
+		return bestPrayer(combatClass, client.getRealSkillLevel(Skill.PRAYER), hasPiety(), hasChivalry(),
 			client.getVarbitValue(VarbitID.PRAYER_RIGOUR_UNLOCKED) == 1, client.getVarbitValue(VarbitID.PRAYER_DEADEYE_UNLOCKED) == 1,
 			client.getVarbitValue(VarbitID.PRAYER_AUGURY_UNLOCKED) == 1, client.getVarbitValue(VarbitID.PRAYER_MYSTIC_VIGOUR_UNLOCKED) == 1);
 	}
 
+	/** The Knight Waves training ground is finished at this value of its varbit. */
+	private static final int KNIGHT_WAVES_DONE = 8;
+
+	/** Piety: Prayer 70, Defence 70 and the Knight Waves. */
+	private boolean hasPiety()
+	{
+		return unlockedByKnightWaves(client.getRealSkillLevel(Skill.PRAYER), client.getRealSkillLevel(Skill.DEFENCE),
+			client.getVarbitValue(VarbitID.KR_KNIGHTWAVES_STATE), 70, 70);
+	}
+
+	/** Chivalry: Prayer 60, Defence 65 and the Knight Waves. */
+	private boolean hasChivalry()
+	{
+		return unlockedByKnightWaves(client.getRealSkillLevel(Skill.PRAYER), client.getRealSkillLevel(Skill.DEFENCE),
+			client.getVarbitValue(VarbitID.KR_KNIGHTWAVES_STATE), 60, 65);
+	}
+
+	static boolean unlockedByKnightWaves(int prayer, int defence, int knightWaves, int prayerNeeded, int defenceNeeded)
+	{
+		return knightWaves >= KNIGHT_WAVES_DONE && prayer >= prayerNeeded && defence >= defenceNeeded;
+	}
+
 	/**
-	 * The best single attack prayer for a combat class at a Prayer level, with the scrolls the player has read.
-	 * Below Chivalry melee takes two prayers at once, so it is named by its class; so is a class with none yet.
+	 * The best single attack prayer for a combat class at a Prayer level, with what the player has unlocked.
+	 * Without Piety or Chivalry melee takes two prayers at once, so it is named by its class; so is a class with none yet.
 	 */
-	static String bestPrayer(String combatClass, int level, boolean rigour, boolean deadeye, boolean augury, boolean vigour)
+	static String bestPrayer(String combatClass, int level, boolean piety, boolean chivalry, boolean rigour, boolean deadeye,
+		boolean augury, boolean vigour)
 	{
 		if (StyleCalc.MELEE.equals(combatClass))
 		{
-			return level >= 70 ? "Piety" : level >= 60 ? "Chivalry" : "Melee prayer";
+			return piety ? "Piety" : chivalry ? "Chivalry" : "Melee prayer";
 		}
 		if (StyleCalc.RANGED.equals(combatClass))
 		{
@@ -532,9 +555,23 @@ public class CombatCheckPlugin extends Plugin
 	{
 		if (event.getNpc() == targetNpc)
 		{
-			// gone from the scene (dead, or the player left): nothing more is said about it
+			// gone from the scene, dead or not (the player walked away, or it left): from here it is counted
+			// as a dead one, so it is forgotten after the same short time
 			targetNpc = null;
 		}
+	}
+
+	/** True when what the player faces is a monster to fight that is not the remembered one. */
+	static boolean attacksAnother(Object facing, Object remembered, boolean canBeFought)
+	{
+		return canBeFought && facing != remembered;
+	}
+
+	/** True for a pet walking behind a player: it can carry a monster's name and is never the monster fought. */
+	private static boolean isFollower(NPC npc)
+	{
+		net.runelite.api.NPCComposition composition = npc.getTransformedComposition();
+		return composition != null && composition.isFollower();
 	}
 
 	/** True when the player died or is no longer near where the fight was. */
@@ -678,7 +715,8 @@ public class CombatCheckPlugin extends Plugin
 		Player me = client.getLocalPlayer();
 		Actor interacting = me.getInteracting();
 		net.runelite.api.coords.WorldPoint here = me.getWorldLocation();
-		if (interacting instanceof NPC && !((NPC) interacting).isDead() && tableMonster((NPC) interacting) != null)
+		if (interacting instanceof NPC && !((NPC) interacting).isDead() && !isFollower((NPC) interacting)
+			&& tableMonster((NPC) interacting) != null)
 		{
 			// the id of the table's row: an id the table does not list is found by the monster's name
 			targetId = tableMonster((NPC) interacting).id;
@@ -689,11 +727,12 @@ public class CombatCheckPlugin extends Plugin
 		}
 		else if (targetId != -1 && (deadTooLong() || ++targetTicks > REMEMBER_TARGET_TICKS
 			|| leftTheFight(here, targetAt, client.getBoostedSkillLevel(Skill.HITPOINTS))
-			|| (interacting instanceof NPC && canBeFought((NPC) interacting))))
+			|| attacksAnother(interacting, targetNpc, interacting instanceof NPC && canBeFought((NPC) interacting))))
 		{
 			// the monster has been dead for long enough, or the player died, left where the fight was, or attacks
 			// a monster that is not in the table: it is forgotten. The minute of memory is only for a monster
-			// still alive that the player stopped attacking for a moment
+			// still alive that the player stopped attacking for a moment. The dead monster itself, still faced
+			// by the player, is not "another monster": it is kept for the time a dead one is kept
 			targetId = -1;
 			targetNpc = null;
 		}
@@ -920,7 +959,8 @@ public class CombatCheckPlugin extends Plugin
 	{
 		SwitchSet.Piece ammo = shotAmmo(on, weaponId);
 		int worn = ammo == null ? 0 : SetCalc.boltKind(ammo.name);
-		if (target.hitpointsNow <= 0 || !"Crossbow".equals(data.category(weaponId)))
+		SwitchSet.Piece inHand = on.length > SwitchSet.WEAPON ? on[SwitchSet.WEAPON] : null;
+		if (target.hitpointsNow <= 0 || !"bolts".equals(ammoKind(data.category(weaponId), inHand == null ? null : inHand.name)))
 		{
 			return null;
 		}
@@ -1059,7 +1099,11 @@ public class CombatCheckPlugin extends Plugin
 		}
 		SetCalc.Player stats = stats();
 		SetCalc.Target target = target(monster);
-		double current = SetCalc.perTick(now, stats, target, false);
+		// the weapon in hand is counted the way the other one is: with the attack prayer of its own class
+		// and with its own switch finished, so a prayer or a piece left behind is not read as a better weapon
+		String classNow = SetCalc.combatClass(now);
+		SetCalc.Player statsNow = SetCalc.withPrayerOf(stats, classNow);
+		double current = SetCalc.perTick(now, statsNow, target, false);
 		if (current < 0)
 		{
 			return null;
@@ -1068,6 +1112,11 @@ public class CombatCheckPlugin extends Plugin
 		if (inventory == null)
 		{
 			return null;
+		}
+		SetCalc.Loadout finished = loadout(SwitchSet.after(classNow, null, on, inventoryPieces()), weaponId);
+		if (SetCalc.plain(finished))
+		{
+			current = Math.max(current, SetCalc.perTick(finished, statsNow, target, false));
 		}
 		SetEffects.Context mine = context;
 		WeaponAdvice best = null;
@@ -1125,7 +1174,8 @@ public class CombatCheckPlugin extends Plugin
 					ammo.addAll(carried);
 					for (SwitchSet.Piece b : ammo)
 					{
-						if (b == null || b.slot != SwitchSet.AMMO || !isBolts(b.name))
+						if (b == null || b.slot != SwitchSet.AMMO
+							|| !has(b.name, ammoKind(bare.category, weapon == null ? null : weapon.name)))
 						{
 							continue;
 						}
@@ -1208,12 +1258,12 @@ public class CombatCheckPlugin extends Plugin
 	{
 		if ("Crossbow".equals(category))
 		{
-			return "bolts";
+			// Karil's crossbow shoots bolt racks and nothing else; no other crossbow shoots them
+			return has(weaponName, "karil's crossbow") ? "bolt rack" : "bolts";
 		}
 		return "Bow".equals(category) && !shootsNoAmmo(category, weaponName) ? "arrow" : null;
 	}
 
-	/** A bow that makes its own arrows: what is in the ammunition slot gives it nothing. */
 	/** True for the weapons that are their own ammunition (thrown weapons, the blowpipe, chinchompas). */
 	static boolean throwsItself(String category)
 	{
@@ -1223,9 +1273,10 @@ public class CombatCheckPlugin extends Plugin
 	/** True for what a bow, a crossbow or a ballista shoots. */
 	static boolean isShotAmmo(String name)
 	{
-		return has(name, "arrow") || has(name, "bolts") || has(name, "javelin");
+		return has(name, "arrow") || has(name, "bolts") || has(name, "bolt rack") || has(name, "javelin");
 	}
 
+	/** A bow that makes its own arrows: what is in the ammunition slot gives it nothing. */
 	static boolean shootsNoAmmo(String category, String weaponName)
 	{
 		String weapon = weaponName == null ? "" : weaponName.toLowerCase(java.util.Locale.ROOT);
@@ -1244,7 +1295,8 @@ public class CombatCheckPlugin extends Plugin
 	 */
 	private WeaponAdvice boltsToPutOn(SwitchSet.Piece[] on, List<SwitchSet.Piece> carried, int weaponId)
 	{
-		if (!"Crossbow".equals(data.category(weaponId)))
+		SwitchSet.Piece inHand = on.length > SwitchSet.WEAPON ? on[SwitchSet.WEAPON] : null;
+		if (!"bolts".equals(ammoKind(data.category(weaponId), inHand == null ? null : inHand.name)))
 		{
 			return null;
 		}
@@ -1463,6 +1515,8 @@ public class CombatCheckPlugin extends Plugin
 		p.hitpoints = client.getBoostedSkillLevel(Skill.HITPOINTS);
 		p.hitpointsMax = client.getRealSkillLevel(Skill.HITPOINTS);
 		p.prayerLevel = client.getRealSkillLevel(Skill.PRAYER);
+		p.piety = hasPiety();
+		p.chivalry = hasChivalry();
 		p.rigour = client.getVarbitValue(VarbitID.PRAYER_RIGOUR_UNLOCKED) == 1;
 		p.deadeye = client.getVarbitValue(VarbitID.PRAYER_DEADEYE_UNLOCKED) == 1;
 		p.augury = client.getVarbitValue(VarbitID.PRAYER_AUGURY_UNLOCKED) == 1;

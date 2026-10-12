@@ -91,6 +91,8 @@ final class SetCalc
 		int hitpointsMax = 99;
 		/** The Prayer level and the prayer scrolls read, to know the best attack prayer of each class. */
 		int prayerLevel = 99;
+		boolean piety = true;
+		boolean chivalry = true;
 		boolean rigour = true;
 		boolean deadeye = true;
 		boolean augury = true;
@@ -281,6 +283,8 @@ final class SetCalc
 		q.hitpoints = p.hitpoints;
 		q.hitpointsMax = p.hitpointsMax;
 		q.prayerLevel = p.prayerLevel;
+		q.piety = p.piety;
+		q.chivalry = p.chivalry;
 		q.rigour = p.rigour;
 		q.deadeye = p.deadeye;
 		q.augury = p.augury;
@@ -289,8 +293,8 @@ final class SetCalc
 		if (StyleCalc.MELEE.equals(combatClass))
 		{
 			// Piety, Chivalry, or the two best single prayers of the level
-			q.prayerAttack = level >= 70 ? 120 : level >= 60 ? 115 : level >= 34 ? 115 : level >= 16 ? 110 : level >= 7 ? 105 : 100;
-			q.prayerStrength = level >= 70 ? 123 : level >= 60 ? 118 : level >= 31 ? 115 : level >= 13 ? 110 : level >= 4 ? 105 : 100;
+			q.prayerAttack = p.piety ? 120 : p.chivalry ? 115 : level >= 34 ? 115 : level >= 16 ? 110 : level >= 7 ? 105 : 100;
+			q.prayerStrength = p.piety ? 123 : p.chivalry ? 118 : level >= 31 ? 115 : level >= 13 ? 110 : level >= 4 ? 105 : 100;
 		}
 		else if (StyleCalc.RANGED.equals(combatClass))
 		{
