@@ -20,7 +20,7 @@ The first section of the settings has one switch for each reminder: best attack 
 
 - It never names what a monster is weak to. Its defences and elemental weakness, as the OSRS Wiki lists them, only go into the figure of what your own gear would do to it.
 - It never anticipates anything a monster will do.
-- It never suggests another weapon against a boss (combat level 150 and up), nor against a monster that changes form or phase during the fight (the Nylocas, the Grotesque Guardians and others): which weapon to bring to those, and when to change it, is the fight itself. Once you have changed weapon yourself, the pieces that go with it are listed as usual, and so is the best attack style.
+- It never suggests another weapon against a monster that changes form or phase during the fight (Verzik, the Nylocas, Zulrah, the Alchemical Hydra, the Grotesque Guardians, the Nightmare, the Hunllef, the Phantom Muspah, the Dagannoth Kings and others): which weapon each form calls for is the fight itself. Once you have changed weapon yourself, the pieces that go with it are listed as usual, and so is the best attack style.
 - It does not click, equip, change the attack style or touch any menu. It only draws.
 - It says nothing in a fight with another player. While you target a player or a player targets you, and for a minute after, every reminder is off: it is a tool for fighting monsters.
 
@@ -40,7 +40,7 @@ And these are fixed, so there is less to set up:
 | What | Fixed at |
 |---|---|
 | A boss, for the attack style wait | combat level 150 and up. Against anything else the style is pointed out at once |
-| Better weapon in the inventory | never sooner than 5 ticks (3 seconds) after it became true, and never against a monster of combat level 150 and up |
+| Better weapon in the inventory | never sooner than 5 ticks (3 seconds) after it became true |
 | The attack prayer reminder after the fight | stays 8 ticks (about 5 seconds) after your last attack |
 | The ruby or diamond bolts reminder | stays 25 ticks (15 seconds) after your last attack, at the last health the monster showed |
 | The monster you are fighting | the last one you attacked, for 100 ticks (a minute) |

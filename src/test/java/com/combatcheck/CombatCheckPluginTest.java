@@ -55,6 +55,10 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Zulrah"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("The Leviathan"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Cerberus"));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Dagannoth Rex"));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Dagannoth"));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Vanguard"));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Vorkath"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm(null));
 	}
 }

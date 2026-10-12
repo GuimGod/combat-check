@@ -530,9 +530,8 @@ public class CombatCheckPlugin extends Plugin
 		piecesGain = gain;
 
 		// 3. a carried weapon whose set would deal much more to this monster than what is worn
-		// never against a boss (combat level 150 and up) nor against a monster that changes form during the fight:
-		// which weapon to bring to those, and when to change it, is the fight itself
-		WeaponAdvice better = monster != null && config.weaponNotice() && level < BOSS_COMBAT_LEVEL && !changesForm(monster.name)
+		// never against a monster that changes form or phase during the fight: which weapon each form calls for is the fight itself
+		WeaponAdvice better = monster != null && config.weaponNotice() && !changesForm(monster.name)
 			? betterWeapon(monster, worn, weaponId, on) : null;
 		boolean wait = !weaponTimer.due(tick, better != null, WEAPON_DELAY_FLOOR);
 		weaponAdvice = wait ? null : better;
@@ -1027,11 +1026,17 @@ public class CombatCheckPlugin extends Plugin
 	 * go with the weapon in hand are still listed, since that follows the player's own choice of weapon.
 	 */
 	private static final String[] CHANGES_FORM = {
-		"Verzik Vitur", "Nylocas", "Great Olm", "Zulrah", "Alchemical Hydra", "Dawn", "Dusk", "Kalphite Queen",
-		"Phantom Muspah", "Strange Creature", "The Nightmare", "Phosani's Nightmare", "Crystalline Hunllef",
-		"Corrupted Hunllef", "Demonic gorilla", "Tortured gorilla", "Tormented Demon", "Abyssal Sire",
-		"Elidinis' Warden", "Tumeken's Warden", "The Hueycoatl", "Yama", "Galvek", "Balance Elemental", "Damis",
-		"Koschei the deathless", "Doom of Mokhaiotl", "Kraken", "Tekton", "Zalcano",
+		// raids
+		"Verzik Vitur", "Nylocas", "Great Olm", "Tekton", "Vanguard", "Elidinis' Warden", "Tumeken's Warden",
+		// bosses with forms or phases that call for another weapon
+		"Zulrah", "Alchemical Hydra", "Dawn", "Dusk", "Kalphite Queen", "Phantom Muspah", "Strange Creature",
+		"The Nightmare", "Phosani's Nightmare", "Crystalline Hunllef", "Corrupted Hunllef", "Abyssal Sire",
+		"The Hueycoatl", "Yama", "Doom of Mokhaiotl", "Kraken", "Zalcano", "Demonic Brutus", "Maggot King",
+		// monsters that change their protection, and groups fought together with a different weakness each
+		"Demonic gorilla", "Tortured gorilla", "Tormented Demon", "Dagannoth Rex", "Dagannoth Prime", "Dagannoth Supreme",
+		"Branda the Fire Queen", "Eldric the Ice King",
+		// quests
+		"Galvek", "Balance Elemental", "Damis", "Koschei the deathless", "Vanstrom Klause",
 	};
 
 	static boolean changesForm(String monsterName)
