@@ -87,7 +87,8 @@ final class SetEffects
 	/** Carried to be used, not worn for the fight: never asked for, whatever their bonuses. */
 	private static final String[] CARRIED_FOR_USE = {
 		// a teleport
-		"Ring of shadows",
+		"Ring of shadows", "Xeric's talisman", "Digsite pendant", "Skills necklace", "Games necklace", "Necklace of passage",
+		"Burning amulet", "Ring of dueling", "Ring of wealth", "Drakan's medallion", "Ring of the elements",
 		// diary and utility items carried for their teleports and perks; their +1 bonuses are not why they are there
 		"Karamja gloves", "Explorer's ring", "Slayer ring", "Ardougne cloak", "Desert amulet", "Morytania legs",
 		"Fremennik sea boots", "Kandarin headgear", "Falador shield", "Varrock armour", "Western banner", "Wilderness sword",

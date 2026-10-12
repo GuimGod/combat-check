@@ -203,6 +203,12 @@ final class SwitchSet
 			}
 			double current = on == null ? 0 : on.score(combatClass, meleeType);
 			double offered = p.score(combatClass, meleeType);
+			if (offered <= 0)
+			{
+				// a piece with nothing to give this combat class is never asked for: a teleport amulet does not
+				// "beat" a melee amulet under a bow. The worn piece that holds the class back is asked off instead
+				continue;
+			}
 			if (offered > current && (best[p.slot] == null || offered > best[p.slot].score(combatClass, meleeType)))
 			{
 				best[p.slot] = p;
