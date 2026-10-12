@@ -786,9 +786,10 @@ public class CombatCheckPlugin extends Plugin
 		piecesGain = gain;
 
 		// 3. a carried weapon whose set would deal much more to this monster than what is worn
-		// never against a monster that changes form or phase during the fight: which weapon each form calls for is the fight itself
-		WeaponAdvice better = monster != null && config.weaponNotice() && !changesForm(monster.name)
-			? betterWeapon(monster, worn, weaponId, on) : null;
+		// against a monster that changes form or phase during the fight, only a weapon of the same combat class is
+		// pointed at (a better sword for the sword in hand): which class each form calls for is the fight itself
+		WeaponAdvice better = monster != null && config.weaponNotice()
+			? betterWeapon(monster, worn, weaponId, on, changesForm(monster.name)) : null;
 		boolean wait = !weaponTimer.due(tick, better != null, WEAPON_DELAY_FLOOR);
 		weaponAdvice = wait ? null : better;
 
@@ -1048,7 +1049,8 @@ public class CombatCheckPlugin extends Plugin
 	 * at least the configured gain; null otherwise, and whenever either side has a rule the plugin
 	 * does not know (no figure is better than a wrong one).
 	 */
-	private WeaponAdvice betterWeapon(StyleData.Monster monster, ItemContainer worn, int weaponId, SwitchSet.Piece[] on)
+	private WeaponAdvice betterWeapon(StyleData.Monster monster, ItemContainer worn, int weaponId, SwitchSet.Piece[] on,
+		boolean sameClassOnly)
 	{
 		SetCalc.Loadout now = loadout(on, weaponId);
 		if (!SetCalc.plain(now))
@@ -1089,7 +1091,7 @@ public class CombatCheckPlugin extends Plugin
 				SetCalc.Loadout bare = new SetCalc.Loadout();
 				bare.category = data.category(id);
 				String cls = SetCalc.combatClass(bare);
-				if (cls == null)
+				if (cls == null || (sameClassOnly && !cls.equals(SetCalc.combatClass(now))))
 				{
 					continue;
 				}
