@@ -6,6 +6,7 @@ package com.combatcheck;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -215,6 +216,30 @@ public class SetCalcTest
 		org.junit.Assert.assertEquals("Hellhound", data.monster(7256, "Hellhound").name);
 		org.junit.Assert.assertNull(data.monster(7256, "No such monster"));
 		org.junit.Assert.assertSame(data.monster(415), data.monster(415, "Something else"));
+	}
+
+	@Test
+	public void anotherClassIsComparedWithItsOwnBestPrayer()
+	{
+		// Rigour on, a bow in hand: the melee weapon in the inventory is counted with Piety
+		SetCalc.Player rigour = player("ranged");
+		SetCalc.Player melee = SetCalc.withPrayerOf(rigour, StyleCalc.MELEE);
+		assertEquals(120, melee.prayerAttack);
+		assertEquals(123, melee.prayerStrength);
+		// the class already prayed for is left as it is
+		assertSame(rigour, SetCalc.withPrayerOf(rigour, StyleCalc.RANGED));
+		// no attack prayer on: none is added to the other class either
+		SetCalc.Player none = new SetCalc.Player();
+		assertSame(none, SetCalc.withPrayerOf(none, StyleCalc.MELEE));
+		// without the scrolls and at a lower level, the best the player has
+		SetCalc.Player low = player("melee");
+		low.prayerLevel = 50;
+		low.rigour = false;
+		low.deadeye = false;
+		assertEquals(115, SetCalc.withPrayerOf(low, StyleCalc.RANGED).prayerRanged);
+		low.augury = false;
+		low.vigour = false;
+		assertEquals(115, SetCalc.withPrayerOf(low, StyleCalc.MAGIC).prayerMagic);
 	}
 
 	@Test

@@ -89,6 +89,12 @@ final class SetCalc
 		int hitpoints = 99;
 		/** The player's Hitpoints level, for Dharok's set. */
 		int hitpointsMax = 99;
+		/** The Prayer level and the prayer scrolls read, to know the best attack prayer of each class. */
+		int prayerLevel = 99;
+		boolean rigour = true;
+		boolean deadeye = true;
+		boolean augury = true;
+		boolean vigour = true;
 	}
 
 	static final class Target
@@ -233,6 +239,64 @@ final class SetCalc
 
 	private SetCalc()
 	{
+	}
+
+	/**
+	 * The player as they would be with a weapon of another combat class in hand. While an attack prayer is on,
+	 * the other weapon is counted with the best attack prayer the player has for its own class: with Rigour on
+	 * and a bow in hand, a sword in the inventory is compared with Piety, not with no prayer at all. With no
+	 * attack prayer on, nothing is added to either.
+	 */
+	static Player withPrayerOf(Player p, String combatClass)
+	{
+		boolean anyOn = p.prayerAttack > 100 || p.prayerStrength > 100 || p.prayerRanged > 100 || p.prayerMagic > 100;
+		boolean ownOn = StyleCalc.MELEE.equals(combatClass) ? p.prayerAttack > 100 || p.prayerStrength > 100
+			: StyleCalc.RANGED.equals(combatClass) ? p.prayerRanged > 100 : p.prayerMagic > 100;
+		if (!anyOn || ownOn)
+		{
+			return p;
+		}
+		Player q = new Player();
+		q.attack = p.attack;
+		q.strength = p.strength;
+		q.ranged = p.ranged;
+		q.magic = p.magic;
+		q.prayerAttack = p.prayerAttack;
+		q.prayerStrength = p.prayerStrength;
+		q.prayerRanged = p.prayerRanged;
+		q.prayerRangedStrength = p.prayerRangedStrength;
+		q.prayerMagic = p.prayerMagic;
+		q.prayerMagicDamage = p.prayerMagicDamage;
+		q.kandarinDiary = p.kandarinDiary;
+		q.hitpoints = p.hitpoints;
+		q.hitpointsMax = p.hitpointsMax;
+		q.prayerLevel = p.prayerLevel;
+		q.rigour = p.rigour;
+		q.deadeye = p.deadeye;
+		q.augury = p.augury;
+		q.vigour = p.vigour;
+		int level = p.prayerLevel;
+		if (StyleCalc.MELEE.equals(combatClass))
+		{
+			// Piety, Chivalry, or the two best single prayers of the level
+			q.prayerAttack = level >= 70 ? 120 : level >= 60 ? 115 : level >= 34 ? 115 : level >= 16 ? 110 : level >= 7 ? 105 : 100;
+			q.prayerStrength = level >= 70 ? 123 : level >= 60 ? 118 : level >= 31 ? 115 : level >= 13 ? 110 : level >= 4 ? 105 : 100;
+		}
+		else if (StyleCalc.RANGED.equals(combatClass))
+		{
+			boolean top = level >= 74 && p.rigour;
+			int other = level >= 62 && p.deadeye ? 118 : level >= 44 ? 115 : level >= 26 ? 110 : level >= 8 ? 105 : 100;
+			q.prayerRanged = top ? 120 : other;
+			q.prayerRangedStrength = top ? 123 : other;
+		}
+		else
+		{
+			boolean top = level >= 77 && p.augury;
+			boolean second = level >= 63 && p.vigour;
+			q.prayerMagic = top ? 125 : second ? 118 : level >= 45 ? 115 : level >= 27 ? 110 : level >= 9 ? 105 : 100;
+			q.prayerMagicDamage = top ? 4 : second ? 3 : level >= 45 ? 2 : level >= 27 ? 1 : 0;
+		}
+		return q;
 	}
 
 	static String combatClass(Loadout l)

@@ -1093,8 +1093,9 @@ public class CombatCheckPlugin extends Plugin
 				{
 					continue;
 				}
-				// the pieces as they count with that weapon in hand
+				// the pieces as they count with that weapon in hand, and the attack prayer that goes with it
 				context = contextFor(id, cls, null, worn);
+				SetCalc.Player with0 = SetCalc.withPrayerOf(stats, cls);
 				SwitchSet.Piece weapon = piece(id);
 				SwitchSet.Piece[] with = pieces(worn);
 				with[SwitchSet.WEAPON] = weapon;
@@ -1129,7 +1130,7 @@ public class CombatCheckPlugin extends Plugin
 						SwitchSet.Piece[] shot = after.clone();
 						shot[SwitchSet.AMMO] = b;
 						SetCalc.Loadout l = loadout(shot, id);
-						double d = SetCalc.plain(l) ? SetCalc.perTick(l, stats, target, false) : -1;
+						double d = SetCalc.plain(l) ? SetCalc.perTick(l, with0, target, false) : -1;
 						if (d > other)
 						{
 							other = d;
@@ -1155,7 +1156,7 @@ public class CombatCheckPlugin extends Plugin
 					{
 						continue;
 					}
-					other = SetCalc.perTick(then, stats, target, false);
+					other = SetCalc.perTick(then, with0, target, false);
 				}
 				// nothing lands now and something would: the notice says so instead of a percentage
 				double gain = current == 0 ? (other > 0 ? Double.POSITIVE_INFINITY : Double.NaN) : SetCalc.gain(current, other);
@@ -1458,6 +1459,11 @@ public class CombatCheckPlugin extends Plugin
 		p.kandarinDiary = client.getVarbitValue(VarbitID.KANDARIN_DIARY_HARD_COMPLETE) == 1;
 		p.hitpoints = client.getBoostedSkillLevel(Skill.HITPOINTS);
 		p.hitpointsMax = client.getRealSkillLevel(Skill.HITPOINTS);
+		p.prayerLevel = client.getRealSkillLevel(Skill.PRAYER);
+		p.rigour = client.getVarbitValue(VarbitID.PRAYER_RIGOUR_UNLOCKED) == 1;
+		p.deadeye = client.getVarbitValue(VarbitID.PRAYER_DEADEYE_UNLOCKED) == 1;
+		p.augury = client.getVarbitValue(VarbitID.PRAYER_AUGURY_UNLOCKED) == 1;
+		p.vigour = client.getVarbitValue(VarbitID.PRAYER_MYSTIC_VIGOUR_UNLOCKED) == 1;
 		return p;
 	}
 
