@@ -55,11 +55,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
  * selected style, the monster attacked) and only draws: it changes no style, equips nothing and
  * clicks nothing. Each reminder can wait a configured number of ticks ({@link AttentionTimer}).
  *
- * <p>Precedents for each part (README, "Precedents"): RuneLite's Attack Styles plugin reads the
- * weapon's styles the same way and warns about them; on the Plugin Hub, Warriors Guild Dummy
- * Helper names the style to use and highlights its button in the combat tab, Dynamic Inventory
- * Tags marks the gear missing from the current switch according to the weapon equipped, and
- * Combat Insight compares damage against the current target.
+ * <p>RuneLite's Attack Styles plugin reads the weapon's styles the same way and warns about them.
  */
 @Slf4j
 @PluginDescriptor(
