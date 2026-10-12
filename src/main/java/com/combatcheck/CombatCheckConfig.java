@@ -115,7 +115,7 @@ public interface CombatCheckConfig extends Config
 		keyName = "boltReminder",
 		name = "Ruby or diamond bolts",
 		description = "With a crossbow and both ruby and diamond bolts (e) on you, show the ones in your inventory when they would deal more to the monster at its current health (\"Diamond +3%\")",
-		position = 4,
+		position = 5,
 		section = master
 	)
 	default boolean boltReminder()
@@ -127,7 +127,7 @@ public interface CombatCheckConfig extends Config
 		keyName = "boltAlwaysShow",
 		name = "Bolts: show the difference all the time",
 		description = "Show the other bolts and the difference even while the ones you have on are still the better ones (\"Diamond -5%\", in red), so you can see the switch coming. Off: only once the other bolts deal more, and the notice goes away when you switch",
-		position = 4,
+		position = 6,
 		section = master
 	)
 	default boolean boltAlwaysShow()
@@ -139,7 +139,7 @@ public interface CombatCheckConfig extends Config
 		keyName = "prayerNoneOn",
 		name = "No attack prayer on",
 		description = "While fighting, remind you when no attack prayer is on, naming the one for the weapon in your hand (\"Piety off\")",
-		position = 5,
+		position = 7,
 		section = master
 	)
 	default boolean prayerNoneOn()
@@ -151,7 +151,7 @@ public interface CombatCheckConfig extends Config
 		keyName = "prayerWrong",
 		name = "Wrong attack prayer on",
 		description = "While fighting, remind you when the attack prayer that is on belongs to another style than your weapon (\"Wrong prayer: Rigour\")",
-		position = 5,
+		position = 8,
 		section = master
 	)
 	default boolean prayerWrong()
@@ -174,10 +174,22 @@ public interface CombatCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "blowpipeReminder",
+		name = "Blowpipe: ask for a Check",
+		description = "With a Toxic or Blazing blowpipe in hand whose darts the plugin has not seen yet, ask you to use its Check option once: the game only tells which darts are inside in that message. Off: the blowpipe simply gets no figure until you check it",
+		position = 10,
+		section = master
+	)
+	default boolean blowpipeReminder()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "prayerLeftOn",
 		name = "Prayer left on reminder",
 		description = "Out of combat, remind you that a prayer is still on and draining. Preserve, Rapid Heal and Rapid Restore are left alone",
-		position = 6,
+		position = 9,
 		section = master
 	)
 	default boolean prayerLeftOn()
@@ -260,7 +272,7 @@ public interface CombatCheckConfig extends Config
 		keyName = "showGain",
 		name = "Show the gain %",
 		description = "Write how much more damage you would deal, in percent: after the best style's name, and after the count of switch pieces left",
-		position = 8,
+		position = 11,
 		section = master
 	)
 	default boolean showGain()

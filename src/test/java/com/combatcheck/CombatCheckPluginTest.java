@@ -85,6 +85,7 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertEquals(-1, CombatCheckPlugin.dartFromCheck("Your blowpipe is empty."));
 		org.junit.Assert.assertTrue(CombatCheckPlugin.readsDarts("Blazing blowpipe"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.readsDarts("Drygore blowpipe"));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.readsDarts("Toxic blowpipe (empty)"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Dagannoth"));
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Vanguard"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Vorkath"));

@@ -232,7 +232,7 @@ public class CombatCheckPlugin extends Plugin
 	static boolean readsDarts(String weaponName)
 	{
 		String n = weaponName == null ? "" : weaponName.toLowerCase(java.util.Locale.ROOT);
-		return n.contains("toxic blowpipe") || n.contains("blazing blowpipe");
+		return (n.contains("toxic blowpipe") || n.contains("blazing blowpipe")) && !n.contains("(empty)");
 	}
 
 	@Subscribe
@@ -247,16 +247,10 @@ public class CombatCheckPlugin extends Plugin
 		{
 			return;
 		}
+		// darts this plugin does not know are saved as such: the blowpipe gets no figure, and no reminder either
 		int dart = dartFromCheck(text);
 		blowpipeDart = dart;
-		if (dart < 0)
-		{
-			configManager.unsetRSProfileConfiguration(CONFIG_GROUP, BLOWPIPE_DART_KEY);
-		}
-		else
-		{
-			configManager.setRSProfileConfiguration(CONFIG_GROUP, BLOWPIPE_DART_KEY, dart);
-		}
+		configManager.setRSProfileConfiguration(CONFIG_GROUP, BLOWPIPE_DART_KEY, dart);
 	}
 
 	/** The darts last seen in this account's blowpipe, and whether to ask for a Check of the one in hand. */
@@ -280,7 +274,8 @@ public class CombatCheckPlugin extends Plugin
 		Item inHand = worn == null ? null : worn.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
 		boolean blowpipe = inHand != null && inHand.getId() > 0
 			&& readsDarts(itemManager.getItemComposition(inHand.getId()).getName());
-		blowpipeNotice = blowpipe && dart < 0 ? "Check your blowpipe" : null;
+		// asked for only while nothing at all is known about the darts, and only when the reminder is on
+		blowpipeNotice = blowpipe && saved == null && config.blowpipeReminder() ? "Check your blowpipe" : null;
 	}
 
 	@Provides
@@ -589,6 +584,7 @@ public class CombatCheckPlugin extends Plugin
 			blowpipeNotice = null;
 			// a cache lookup that fails must not break the tick for every other plugin
 			log.debug("could not check the gear", e);
+			leftOnNotice = null;
 			advice = null;
 			missing = Collections.emptyList();
 			takeOff = Collections.emptyList();
@@ -765,6 +761,7 @@ public class CombatCheckPlugin extends Plugin
 		// 4. the attack prayer that is on, against the class of the weapon in hand
 		String prayer = null;
 		if (monster != null && targetTicks <= PRAYER_AFTER_FIGHT_TICKS && c.combatClass != null
+			&& client.getBoostedSkillLevel(Skill.PRAYER) > 0
 			&& prayerReminder(config.prayerNoneOn(), config.prayerWrong()) != CombatCheckConfig.PrayerReminder.OFF)
 		{
 			prayer = prayerNotice(c.combatClass,
