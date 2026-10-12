@@ -79,6 +79,19 @@ public class CombatCheckPlugin extends Plugin
 		/** How much more, as the notice writes it. */
 		String text;
 		double gain;
+		/** The bolts shown deal less than the ones on: they are shown only to see the switch coming. */
+		boolean worse;
+	}
+
+	/** A difference in percent with its sign: "+12%", "+0.4%", "-5%". */
+	static String differenceText(double gain)
+	{
+		if (gain >= 0.05)
+		{
+			return gainText(gain);
+		}
+		double loss = -gain;
+		return loss < 0.05 ? "0%" : loss < 10 ? String.format(java.util.Locale.ROOT, "-%.1f%%", loss) : String.format(java.util.Locale.ROOT, "-%.0f%%", loss);
 	}
 
 	static final class Advice
@@ -932,14 +945,16 @@ public class CombatCheckPlugin extends Plugin
 			with[SwitchSet.AMMO] = p;
 			double then = SetCalc.perTick(loadout(with, weaponId), stats, target, true);
 			double gain = SetCalc.gain(now, then);
-			if (Double.isNaN(gain) || gain < 0.1)
+			if (Double.isNaN(gain) || (gain < 0.1 && !config.boltAlwaysShow()))
 			{
 				return null;
 			}
 			WeaponAdvice advice = new WeaponAdvice();
 			advice.itemId = p.itemId;
 			advice.gain = gain;
-			advice.text = (kind == SetCalc.DIAMOND ? "Diamond " : "Ruby ") + gainText(gain) + (p == quiver ? " (quiver)" : "");
+			// with "all the time" on, the other bolts are shown while they are still the worse ones, in red
+			advice.worse = gain < 0.1;
+			advice.text = (kind == SetCalc.DIAMOND ? "Diamond " : "Ruby ") + differenceText(gain) + (p == quiver ? " (quiver)" : "");
 			return advice;
 		}
 		return null;

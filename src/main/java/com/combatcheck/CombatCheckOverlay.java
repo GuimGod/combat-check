@@ -160,7 +160,7 @@ class CombatCheckOverlay extends Overlay
 			iconH = BOLT_ICON_H;
 			int bh = Math.max(BOLT_ICON_H, big.getHeight()) + 2 * PAD + 2;
 			box(graphics, big, 0, y, bh, new BufferedImage[]{icon(bolts.itemId)}, 0, Words.bolts(config.language(), bolts.text),
-				RIGHT_BACK, RIGHT_EDGE);
+				bolts.worse ? WRONG_BACK : RIGHT_BACK, bolts.worse ? WRONG_EDGE : RIGHT_EDGE);
 			iconH = ICON_H;
 			graphics.setFont(FontManager.getRunescapeSmallFont());
 			y += bh + 3;

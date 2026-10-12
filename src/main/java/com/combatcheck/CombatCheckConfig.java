@@ -124,6 +124,18 @@ public interface CombatCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "boltAlwaysShow",
+		name = "Bolts: show the difference all the time",
+		description = "Show the other bolts and the difference even while the ones you have on are still the better ones (\"Diamond -5%\", in red), so you can see the switch coming. Off: only once the other bolts deal more, and the notice goes away when you switch",
+		position = 4,
+		section = master
+	)
+	default boolean boltAlwaysShow()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "prayerNoneOn",
 		name = "No attack prayer on",
 		description = "While fighting, remind you when no attack prayer is on, naming the one for the weapon in your hand (\"Piety off\")",

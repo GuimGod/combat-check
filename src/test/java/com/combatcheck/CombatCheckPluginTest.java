@@ -55,6 +55,9 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Zulrah"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("The Leviathan"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Cerberus"));
+		org.junit.Assert.assertEquals("-5.0%", CombatCheckPlugin.differenceText(-5));
+		org.junit.Assert.assertEquals("-15%", CombatCheckPlugin.differenceText(-15));
+		org.junit.Assert.assertEquals(CombatCheckPlugin.gainText(12), CombatCheckPlugin.differenceText(12));
 		// the best attack prayer the player has
 		org.junit.Assert.assertEquals("Rigour", CombatCheckPlugin.bestPrayer("ranged", 99, true, true, true, true));
 		org.junit.Assert.assertEquals("Deadeye", CombatCheckPlugin.bestPrayer("ranged", 99, false, true, false, false));
