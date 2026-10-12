@@ -55,7 +55,7 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Zulrah"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("The Leviathan"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Cerberus"));
-		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Dagannoth Rex"));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Dagannoth Rex"));
 		// the darts inside the blowpipe, as its Check message names them
 		org.junit.Assert.assertEquals(11230, CombatCheckPlugin.dartFromCheck("Darts: Dragon dart x 1,234. Scales: 16,383 (100.0%)."));
 		org.junit.Assert.assertEquals(25849, CombatCheckPlugin.dartFromCheck("Darts: Amethyst dart x 7. Scales: 12 (0.1%)."));

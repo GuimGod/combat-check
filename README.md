@@ -21,7 +21,7 @@ The first section of the settings has one switch for each reminder: best attack 
 - It never names what a monster is weak to. Its defences and elemental weakness, as the OSRS Wiki lists them, only go into the figure of what your own gear would do to it.
 - It never anticipates anything a monster will do.
 - The Toxic blowpipe (and the Blazing one) is counted with the darts inside it. The game only tells which darts those are in the message of its Check option, so the plugin reads that message and remembers the darts for the account; until it has seen one, "Check your blowpipe" is shown while the blowpipe is in hand, and the blowpipe gets no figure.
-- It never suggests another weapon against a monster that changes form or phase during the fight (Verzik, the Nylocas, Zulrah, the Alchemical Hydra, the Grotesque Guardians, the Nightmare, the Hunllef, the Phantom Muspah, the Dagannoth Kings and others): which weapon each form calls for is the fight itself. Once you have changed weapon yourself, the pieces that go with it are listed as usual, and so is the best attack style.
+- It never suggests another weapon against a monster that changes form or phase during the fight (Verzik, the Nylocas, Zulrah, the Grotesque Guardians, the Nightmare, the Hunllef, the Phantom Muspah and others): which weapon each form calls for is the fight itself. Once you have changed weapon yourself, the pieces that go with it are listed as usual, and so is the best attack style.
 - It does not click, equip, change the attack style or touch any menu. It only draws.
 - It says nothing in a fight with another player. While you target a player or a player targets you, and for a minute after, every reminder is off: it is a tool for fighting monsters.
 
