@@ -443,16 +443,28 @@ public class CombatCheckPlugin extends Plugin
 	/** The attack prayer to name for a combat class: the top one when the player has it, the class otherwise. */
 	private String bestPrayer(String combatClass)
 	{
-		int level = client.getRealSkillLevel(Skill.PRAYER);
+		return bestPrayer(combatClass, client.getRealSkillLevel(Skill.PRAYER),
+			client.getVarbitValue(VarbitID.PRAYER_RIGOUR_UNLOCKED) == 1, client.getVarbitValue(VarbitID.PRAYER_DEADEYE_UNLOCKED) == 1,
+			client.getVarbitValue(VarbitID.PRAYER_AUGURY_UNLOCKED) == 1, client.getVarbitValue(VarbitID.PRAYER_MYSTIC_VIGOUR_UNLOCKED) == 1);
+	}
+
+	/**
+	 * The best single attack prayer for a combat class at a Prayer level, with the scrolls the player has read.
+	 * Below Chivalry melee takes two prayers at once, so it is named by its class; so is a class with none yet.
+	 */
+	static String bestPrayer(String combatClass, int level, boolean rigour, boolean deadeye, boolean augury, boolean vigour)
+	{
 		if (StyleCalc.MELEE.equals(combatClass))
 		{
-			return level >= 70 ? "Piety" : "Melee prayer";
+			return level >= 70 ? "Piety" : level >= 60 ? "Chivalry" : "Melee prayer";
 		}
 		if (StyleCalc.RANGED.equals(combatClass))
 		{
-			return level >= 74 && client.getVarbitValue(VarbitID.PRAYER_RIGOUR_UNLOCKED) == 1 ? "Rigour" : "Ranged prayer";
+			return level >= 74 && rigour ? "Rigour" : level >= 62 && deadeye ? "Deadeye" : level >= 44 ? "Eagle eye"
+				: level >= 26 ? "Hawk eye" : level >= 8 ? "Sharp eye" : "Ranged prayer";
 		}
-		return level >= 77 && client.getVarbitValue(VarbitID.PRAYER_AUGURY_UNLOCKED) == 1 ? "Augury" : "Magic prayer";
+		return level >= 77 && augury ? "Augury" : level >= 63 && vigour ? "Mystic vigour" : level >= 45 ? "Mystic might"
+			: level >= 27 ? "Mystic lore" : level >= 9 ? "Mystic will" : "Magic prayer";
 	}
 
 	/** What the pieces left will add, as the notice writes it ("+18%"), or null when there is no figure. */

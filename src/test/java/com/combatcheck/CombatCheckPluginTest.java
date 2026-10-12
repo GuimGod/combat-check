@@ -55,6 +55,14 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Zulrah"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("The Leviathan"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Cerberus"));
+		// the best attack prayer the player has
+		org.junit.Assert.assertEquals("Rigour", CombatCheckPlugin.bestPrayer("ranged", 99, true, true, true, true));
+		org.junit.Assert.assertEquals("Deadeye", CombatCheckPlugin.bestPrayer("ranged", 99, false, true, false, false));
+		org.junit.Assert.assertEquals("Eagle eye", CombatCheckPlugin.bestPrayer("ranged", 70, false, false, false, false));
+		org.junit.Assert.assertEquals("Mystic might", CombatCheckPlugin.bestPrayer("magic", 50, false, false, false, false));
+		org.junit.Assert.assertEquals("Chivalry", CombatCheckPlugin.bestPrayer("melee", 65, false, false, false, false));
+		org.junit.Assert.assertEquals("Melee prayer", CombatCheckPlugin.bestPrayer("melee", 43, false, false, false, false));
+		org.junit.Assert.assertTrue(CombatCheckOverlay.prayerSprite("Mystic vigour") > 0);
 		// dragon arrows left in the slot give nothing to a blowpipe
 		org.junit.Assert.assertTrue(CombatCheckPlugin.throwsItself("Thrown") && CombatCheckPlugin.isShotAmmo("Dragon arrow"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.throwsItself("Bow"));
