@@ -33,11 +33,13 @@ import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.util.LinkBrowser;
 
 /**
  * An attention check for the player's own gear. It reminds the player of what they left undone and
@@ -1854,5 +1856,18 @@ public class CombatCheckPlugin extends Plugin
 		}
 		String n = weaponName.toLowerCase();
 		return isFang(weaponName) || n.contains("halberd") || (n.contains("spear") && !n.startsWith("blue moon spear"));
+	}
+
+	/** The author's form for a bug or a suggestion, with the plugin's name filled in. The player writes and sends it in the browser. */
+	static final String REPORT_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSclvrdcVzomW3-4lj7-gnvbzmerY6qwHepApCuI7e4Q8raDyw/viewform?usp=pp_url&entry.2100394972=Combat%20Check";
+
+	/** "Bug or suggestion" in the settings works as a button: each click opens the form, whichever way the box ends up. */
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if ("combatcheck".equals(event.getGroup()) && "reportBug".equals(event.getKey()) && event.getNewValue() != null)
+		{
+			LinkBrowser.browse(REPORT_FORM);
+		}
 	}
 }

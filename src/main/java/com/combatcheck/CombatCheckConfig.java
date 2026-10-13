@@ -448,4 +448,15 @@ public interface CombatCheckConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = "reportBug",
+		name = "Bug or suggestion",
+		description = "Click to open the report form in your browser (a Google Form of the plugin's author), to write what is wrong or what you would like. The plugin itself sends nothing",
+		position = 100
+	)
+	default boolean reportBug()
+	{
+		return false;
+	}
 }

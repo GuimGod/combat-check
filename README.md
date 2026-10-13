@@ -116,3 +116,7 @@ A blessing left in the inventory is listed when the ammunition slot is empty and
 ## Data
 
 Weapon categories, their styles and the monsters' defence come from the [OSRS Wiki](https://oldschool.runescape.wiki) through its DPS calculator project; each monster's Slayer category comes from the wiki's monster infoboxes. The tests compare the recommended style with the calculator's over 2,350 weapon and monster pairs, and the figure of a set with the calculator's over 387 set and monster pairs.
+
+## Bug or suggestion
+
+Click "Bug or suggestion" in the plugin's settings: it opens a form in your browser where you write what is wrong or what you would like. The plugin itself sends nothing. You can also open an issue on this repository.
