@@ -27,7 +27,7 @@ import org.junit.Test;
 public class SetCalcTest
 {
 	/** How far a figure may be from the calculator's, as a fraction of it. */
-	private static final double FIGURE = 0.05;
+	private static final double FIGURE = 0.001;
 	/** How far the gain of one set over another may be from the calculator's, in percentage points. */
 	private static final double GAIN_POINTS = 6;
 
