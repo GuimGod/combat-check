@@ -173,6 +173,58 @@ public interface CombatCheckConfig extends Config
 		return 0;
 	}
 
+	@Range(min = 1, max = 120)
+	@Units(Units.SECONDS)
+	@ConfigItem(
+		keyName = "prayerShowFor",
+		name = "Attack prayer: show for",
+		description = "How long the \"no attack prayer on\" reminder stays on screen. After that it keeps quiet until you turn an attack prayer on: fighting without one on purpose is not nagged about. The \"wrong prayer\" reminder always stays until it is put right",
+		position = 6,
+		section = delays
+	)
+	default int prayerShowFor()
+	{
+		return 5;
+	}
+
+	@ConfigItem(
+		keyName = "prayerKeep",
+		name = "Attack prayer: keep on screen",
+		description = "Keep the \"no attack prayer on\" reminder on screen until an attack prayer is on, however long that takes",
+		position = 7,
+		section = delays
+	)
+	default boolean prayerKeep()
+	{
+		return false;
+	}
+
+	@Range(min = 1, max = 120)
+	@Units(Units.SECONDS)
+	@ConfigItem(
+		keyName = "switchShowFor",
+		name = "Switch pieces: show for",
+		description = "How long the pieces to put on or take off stay on screen. After that they are not shown again until you change a piece of armour (a shield counts; the weapon and the ammunition do not): changing only the weapon does not bring them back",
+		position = 8,
+		section = delays
+	)
+	default int switchShowFor()
+	{
+		return 5;
+	}
+
+	@ConfigItem(
+		keyName = "switchKeep",
+		name = "Switch pieces: keep on screen",
+		description = "Keep the pieces to put on or take off on screen until the switch is complete, however long that takes",
+		position = 9,
+		section = delays
+	)
+	default boolean switchKeep()
+	{
+		return false;
+	}
+
 	@ConfigItem(
 		keyName = "blowpipeReminder",
 		name = "Blowpipe: ask for a Check",

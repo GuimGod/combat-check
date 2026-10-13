@@ -44,6 +44,15 @@ Four waits are yours to set, in game ticks (0.6 seconds each):
 | Attack prayer | "Attack prayer": how long it must stay wrong or off | 0 |
 | Prayer left on | "Prayer left on": how long out of combat with a prayer on, and how long the prayer has been on | 17 (about 10 seconds) |
 
+Two reminders are shown for a while and then keep quiet, so that doing something on purpose is not nagged about:
+
+| Reminder | Shown for | Shown again when |
+|---|---|---|
+| No attack prayer on | "Attack prayer: show for", 5 seconds by default | you turn an attack prayer on (and then fight without one again) |
+| Pieces to put on or take off | "Switch pieces: show for", 5 seconds by default | you change a piece of armour; a shield counts, the weapon and the ammunition do not |
+
+Dying, logging in or hopping lets each be shown once more. "Attack prayer: keep on screen" and "Switch pieces: keep on screen" keep them there until the mistake is put right, as before. The wrong attack prayer always stays until it is put right.
+
 And these are fixed, so there is less to set up:
 
 | What | Fixed at |

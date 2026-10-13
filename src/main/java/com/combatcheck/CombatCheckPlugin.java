@@ -172,6 +172,12 @@ public class CombatCheckPlugin extends Plugin
 	private int targetId = -1;
 	private int targetTicks;
 	private final AttentionTimer switchTimer = new AttentionTimer();
+	/** The pieces are shown for a while and then not again until a piece of armour is changed. */
+	private final ShownFor piecesShown = new ShownFor();
+	/** "No attack prayer on" is shown for a while and then not again until an attack prayer is turned on. */
+	private final ShownFor noPrayerShown = new ShownFor();
+	/** The item ids worn, by slot, the last tick: to tell when the armour changes. */
+	private int[] wornBefore;
 	/** The value of the spellbook varbit on the Ancient Magicks. */
 	private static final int ANCIENT_SPELLBOOK = 1;
 	/** What the player is doing with the weapon in hand, for the conditional effects of armour. */
@@ -599,6 +605,10 @@ public class CombatCheckPlugin extends Plugin
 			outOfCombat = 0;
 			prayerOnFor = 0;
 			prayerTimer.reset();
+			// another login: each reminder may be shown once more
+			piecesShown.arm();
+			noPrayerShown.arm();
+			wornBefore = null;
 		}
 	}
 
@@ -815,7 +825,24 @@ public class CombatCheckPlugin extends Plugin
 					SetCalc.perTick(loadout(done, weaponId), stats, target, true));
 			}
 		}
-		if (!switchTimer.due(tick, !left.isEmpty() || !off.isEmpty(), config.switchDelay()))
+		// the pieces are shown for a while; after that only a change of armour (not of weapon) brings them back
+		Item[] wornItems = worn == null ? new Item[0] : worn.getItems();
+		int[] wornNowIds = new int[Math.max(wornItems.length, ShownFor.AMMO_SLOT + 1)];
+		for (int slot = 0; slot < wornNowIds.length; slot++)
+		{
+			wornNowIds[slot] = slot < wornItems.length && wornItems[slot] != null ? wornItems[slot].getId() : -1;
+		}
+		if (ShownFor.armourChanged(wornBefore, wornNowIds) || me.isDead())
+		{
+			piecesShown.arm();
+		}
+		wornBefore = wornNowIds;
+		if (me.isDead())
+		{
+			noPrayerShown.arm();
+		}
+		boolean piecesDue = switchTimer.due(tick, !left.isEmpty() || !off.isEmpty(), config.switchDelay());
+		if (!piecesShown.visible(piecesDue, config.switchKeep() ? 0 : ShownFor.ticks(config.switchShowFor())))
 		{
 			left = Collections.emptyList();
 			off = Collections.emptyList();
@@ -843,18 +870,31 @@ public class CombatCheckPlugin extends Plugin
 
 		// 4. the attack prayer that is on, against the class of the weapon in hand
 		String prayer = null;
+		String meleePrayer = on(Prayer.PIETY, Prayer.CHIVALRY, Prayer.ULTIMATE_STRENGTH, Prayer.INCREDIBLE_REFLEXES, Prayer.SUPERHUMAN_STRENGTH,
+			Prayer.IMPROVED_REFLEXES, Prayer.BURST_OF_STRENGTH, Prayer.CLARITY_OF_THOUGHT);
+		String rangedPrayer = on(Prayer.RIGOUR, Prayer.DEADEYE, Prayer.EAGLE_EYE, Prayer.HAWK_EYE, Prayer.SHARP_EYE);
+		String magicPrayer = on(Prayer.AUGURY, Prayer.MYSTIC_VIGOUR, Prayer.MYSTIC_MIGHT, Prayer.MYSTIC_LORE, Prayer.MYSTIC_WILL);
+		boolean noAttackPrayer = meleePrayer == null && rangedPrayer == null && magicPrayer == null;
+		if (!noAttackPrayer)
+		{
+			// an attack prayer was turned on: without one again, the reminder is worth showing once more
+			noPrayerShown.arm();
+		}
 		if (monster != null && targetTicks <= PRAYER_AFTER_FIGHT_TICKS && c.combatClass != null
 			&& client.getBoostedSkillLevel(Skill.PRAYER) > 0
 			&& prayerReminder(config.prayerNoneOn(), config.prayerWrong()) != CombatCheckConfig.PrayerReminder.OFF)
 		{
-			prayer = prayerNotice(c.combatClass,
-				on(Prayer.PIETY, Prayer.CHIVALRY, Prayer.ULTIMATE_STRENGTH, Prayer.INCREDIBLE_REFLEXES, Prayer.SUPERHUMAN_STRENGTH,
-					Prayer.IMPROVED_REFLEXES, Prayer.BURST_OF_STRENGTH, Prayer.CLARITY_OF_THOUGHT),
-				on(Prayer.RIGOUR, Prayer.DEADEYE, Prayer.EAGLE_EYE, Prayer.HAWK_EYE, Prayer.SHARP_EYE),
-				on(Prayer.AUGURY, Prayer.MYSTIC_VIGOUR, Prayer.MYSTIC_MIGHT, Prayer.MYSTIC_LORE, Prayer.MYSTIC_WILL),
+			prayer = prayerNotice(c.combatClass, meleePrayer, rangedPrayer, magicPrayer,
 				bestPrayer(c.combatClass), prayerReminder(config.prayerNoneOn(), config.prayerWrong()));
 		}
-		prayerNotice = prayerTimer.due(tick, prayer != null, config.prayerDelay()) ? prayer : null;
+		boolean prayerDue = prayerTimer.due(tick, prayer != null, config.prayerDelay());
+		// "no attack prayer on" is shown for a while and then keeps quiet; the wrong prayer stays until put right
+		if (prayerDue && noAttackPrayer
+			&& !noPrayerShown.visible(true, config.prayerKeep() ? 0 : ShownFor.ticks(config.prayerShowFor())))
+		{
+			prayerDue = false;
+		}
+		prayerNotice = prayerDue ? prayer : null;
 
 		// 5. a prayer left on after the fight
 		outOfCombat = inCombat(me) ? 0 : outOfCombat + 1;
