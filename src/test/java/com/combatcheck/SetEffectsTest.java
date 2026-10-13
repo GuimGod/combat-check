@@ -232,4 +232,19 @@ public class SetEffectsTest
 		c.autocastElement = null;
 		org.junit.Assert.assertFalse(SetEffects.tomeInUse("Tome of fire", c));
 	}
+
+	@Test
+	public void aWeaponHeldForItsSpecialAttackIsKnown()
+	{
+		for (String name : new String[]{"Dragon claws", "Burning claws", "Voidwaker", "Dragon dagger(p++)", "Dragon warhammer",
+			"Elder maul (or)", "Saradomin godsword", "Armadyl godsword (or)", "Dark bow", "Crimson kisten"})
+		{
+			org.junit.Assert.assertTrue(name, SetEffects.isSpecialAttackWeapon(name));
+		}
+		for (String name : new String[]{"Scythe of vitur", "Abyssal whip", "Osmumten's fang", "Twisted bow", "Toxic blowpipe",
+			"Emberlight", "Soulreaper axe", "Zaryte crossbow", "Tumeken's shadow", null})
+		{
+			org.junit.Assert.assertFalse(String.valueOf(name), SetEffects.isSpecialAttackWeapon(name));
+		}
+	}
 }

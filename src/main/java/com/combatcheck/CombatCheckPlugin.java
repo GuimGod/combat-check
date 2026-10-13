@@ -1097,6 +1097,11 @@ public class CombatCheckPlugin extends Plugin
 		{
 			return null;
 		}
+		if (SetEffects.isSpecialAttackWeapon(now.weaponName))
+		{
+			// a weapon taken out for its special attack: going back to the other one is the player's own timing
+			return null;
+		}
 		SetCalc.Player stats = stats();
 		SetCalc.Target target = target(monster);
 		// the weapon in hand is counted the way the other one is: with the attack prayer of its own class

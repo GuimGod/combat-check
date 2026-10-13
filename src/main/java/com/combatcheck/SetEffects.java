@@ -199,6 +199,39 @@ final class SetEffects
 	}
 
 	/** True for a blessing: the one thing worn in the ammunition slot that is not ammunition. */
+	/**
+	 * Weapons held for their special attack and put away again, by a part of their name in lower case:
+	 * with one of them in hand, the weapon it was taken out for is not the one to go back to yet.
+	 */
+	private static final String[] SPECIAL_ATTACK_WEAPONS = {
+		// damage
+		"dragon claws", "burning claws", "voidwaker", "armadyl godsword", "crimson kisten", "dragon dagger", "abyssal dagger",
+		"granite maul", "dark bow", "magic shortbow", "dragon thrownaxe", "dragon knife", "dragon halberd", "crystal halberd",
+		"dragon mace", "dragon longsword", "dragon sword", "dragon 2h sword", "saradomin sword", "saradomin's blessed sword",
+		"vesta's longsword", "vesta's spear", "statius's warhammer", "morrigan's javelin", "morrigan's throwing axe",
+		"dragon crossbow", "armadyl crossbow", "light ballista", "heavy ballista", "volatile nightmare staff",
+		"eldritch nightmare staff", "rune claws", "brine sabre",
+		// the monster's defence or other levels
+		"dragon warhammer", "elder maul", "bandos godsword", "barrelchest anchor", "bone dagger", "darklight", "seercull",
+		"ancient mace", "dorgeshuun crossbow",
+		// healing, holding in place, a boost
+		"saradomin godsword", "zamorak godsword", "ancient godsword", "dragon spear", "zamorakian spear", "dragon battleaxe",
+		"excalibur", "dinh's bulwark"};
+
+	/** Whether the weapon is one held for its special attack rather than to fight with. */
+	static boolean isSpecialAttackWeapon(String weaponName)
+	{
+		String n = weaponName == null ? "" : weaponName.toLowerCase(java.util.Locale.ROOT);
+		for (String part : SPECIAL_ATTACK_WEAPONS)
+		{
+			if (n.contains(part))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	static boolean isBlessing(String itemName)
 	{
 		return itemName != null && itemName.toLowerCase(java.util.Locale.ROOT).contains(" blessing");
