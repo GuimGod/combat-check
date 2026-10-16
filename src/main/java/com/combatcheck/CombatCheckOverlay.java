@@ -94,6 +94,9 @@ class CombatCheckOverlay extends Overlay
 		{
 			return null;
 		}
+		// a special attack estimated in the Defence used: each figure gets "~", and the first box the note
+		estimated = plugin.drainsEstimated();
+		noteDue = estimated;
 		graphics.setFont(FontManager.getRunescapeSmallFont());
 		graphics.setStroke(new BasicStroke(1));
 		FontMetrics fm = graphics.getFontMetrics();
@@ -259,9 +262,31 @@ class CombatCheckOverlay extends Overlay
 		}
 	}
 
+	/** True while the Defence used this frame counts a special attack estimated from what the client shows. */
+	private boolean estimated;
+	/** The note "spec estimated" is still to be written this frame: it goes in the first box only. */
+	private boolean noteDue;
+	private static final java.util.regex.Pattern FIGURE = java.util.regex.Pattern.compile("(?<![~\\w.])([+-]?\\d+(\\.\\d+)?%)");
+
+	/**
+	 * A notice's words with its figures marked as estimates ("Slash +12%" to "Slash ~+12%"), and the note after them when
+	 * there is one ("Slash ~+12% (spec estimated)").
+	 */
+	static String marked(String text, String note)
+	{
+		String m = FIGURE.matcher(text).replaceAll("~$1");
+		return note == null ? m : m + " (" + note + ")";
+	}
+
 	private void box(Graphics2D graphics, FontMetrics fm, int x, int y, int h, BufferedImage[] images, int crossed, String text,
 		Color back, Color edge)
 	{
+		if (estimated)
+		{
+			// the one place where the estimate is marked: every box's figures, and the note in the first box
+			text = marked(text, noteDue ? Words.of(config.language(), Words.Key.SPEC_ESTIMATED) : null);
+			noteDue = false;
+		}
 		int iconsW = 0;
 		int[] widths = new int[images.length];
 		for (int i = 0; i < images.length; i++)

@@ -18,7 +18,9 @@ import org.junit.Test;
  * Checks the reduced formula against the OSRS Wiki DPS calculator: cases.tsv holds the
  * calculator's DPS for every melee style of a weapon against a monster (99 Attack and
  * Strength, super combat, Piety). For each weapon and monster the style this plugin would
- * recommend must be one the calculator puts within 1% of its best.
+ * recommend must be one the calculator puts within 1% of its best. The Tormented Demon's are
+ * the mean of two of the calculator's phases, as the plugin counts half of the attacks on it
+ * without defence.
  */
 public class StyleCalcTest
 {
@@ -56,10 +58,13 @@ public class StyleCalcTest
 				in.crush = Integer.parseInt(c[11]);
 				in.strength = Integer.parseInt(c[12]);
 				in.inquisitor = Integer.parseInt(c[13]);
-				in.fang = CombatCheckPlugin.isFang(weapon);
-				in.corpbane = CombatCheckPlugin.isCorpbane(weapon);
+				in.fang = Weapons.isFang(weapon);
+				in.corpbane = Weapons.isCorpbane(weapon);
 				in.corporealBeast = "Corporeal Beast".equals(c[4]);
-				in.alwaysHit = CombatCheckPlugin.alwaysHit(c[4]);
+				// the Tormented Demon: half of the attacks without defence, every one of them landing, as the plugin
+				// counts it until it reads the demon's state; its cases are the mean of the calculator's phases
+				// "Shielded" and "Shielded (Defenceless)" (tools/gen_data.py, PHASE_MEAN)
+				in.defencelessShare = Weapons.defencelessShare(c[4]);
 				String[] m = monsters().get(Integer.parseInt(c[3]));
 				in.defenceLevel = Integer.parseInt(m[2]);
 				in.defenceStab = Integer.parseInt(m[3]);

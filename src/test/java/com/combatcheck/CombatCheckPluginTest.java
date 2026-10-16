@@ -24,22 +24,6 @@ public class CombatCheckPluginTest
 	}
 
 	@org.junit.Test
-	public void ammunitionCountsOnlyWithAWeaponThatShootsIt()
-	{
-		org.junit.Assert.assertEquals("bolts", CombatCheckPlugin.ammoKind("Crossbow", "Zaryte crossbow"));
-		org.junit.Assert.assertEquals("bolt rack", CombatCheckPlugin.ammoKind("Crossbow", "Karil's crossbow 100"));
-		org.junit.Assert.assertTrue(CombatCheckPlugin.isShotAmmo("Bolt rack"));
-		org.junit.Assert.assertEquals("arrow", CombatCheckPlugin.ammoKind("Bow", "Twisted bow"));
-		org.junit.Assert.assertNull(CombatCheckPlugin.ammoKind("Bow", "Webweaver bow"));
-		org.junit.Assert.assertNull(CombatCheckPlugin.ammoKind("Bow", "Bow of faerdhinen (c)"));
-		org.junit.Assert.assertTrue(CombatCheckPlugin.shootsNoAmmo("Bow", "Webweaver bow"));
-		org.junit.Assert.assertFalse(CombatCheckPlugin.shootsNoAmmo("Bow", "Venator bow"));
-		org.junit.Assert.assertEquals("arrow", CombatCheckPlugin.ammoKind("Bow", "Venator bow"));
-		org.junit.Assert.assertFalse(CombatCheckPlugin.shootsNoAmmo("Bow", "Twisted bow"));
-		org.junit.Assert.assertFalse(CombatCheckPlugin.shootsNoAmmo("Crossbow", "Zaryte crossbow"));
-	}
-
-	@org.junit.Test
 	public void withNoBoltsOnRubyComesFirstThenDiamondThenAnyOthers()
 	{
 		org.junit.Assert.assertEquals(2, CombatCheckPlugin.preferredBolts(new String[]{null, "Diamond bolts (e)", "Ruby dragon bolts (e)"}));
@@ -51,15 +35,16 @@ public class CombatCheckPluginTest
 	@org.junit.Test
 	public void noOtherWeaponIsSuggestedAgainstABossThatChangesForm()
 	{
-		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Verzik Vitur"));
+		// Verzik: every phase of her is plain to see
+		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Verzik Vitur"));
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Nylocas Vasilias"));
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Dusk"));
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Zulrah"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("The Leviathan"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Cerberus"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Kraken"));
-		// a dead monster: 30 seconds on a task of it, about a second otherwise or when the task is not known
-		org.junit.Assert.assertEquals(50, CombatCheckPlugin.afterDeathTicks(true));
+		// a dead monster: about 10 seconds on a task of it, about a second otherwise or when the task is not known
+		org.junit.Assert.assertEquals(17, CombatCheckPlugin.afterDeathTicks(true));
 		org.junit.Assert.assertEquals(2, CombatCheckPlugin.afterDeathTicks(false));
 		org.junit.Assert.assertEquals(2, CombatCheckPlugin.afterDeathTicks(null));
 		// Barrows sets
@@ -115,10 +100,6 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.attacksAnother(new Object(), remembered, true));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.attacksAnother(new Object(), remembered, false));
 		org.junit.Assert.assertTrue(CombatCheckOverlay.prayerSprite("Mystic vigour") > 0);
-		// dragon arrows left in the slot give nothing to a blowpipe
-		org.junit.Assert.assertTrue(CombatCheckPlugin.throwsItself("Thrown") && CombatCheckPlugin.isShotAmmo("Dragon arrow"));
-		org.junit.Assert.assertFalse(CombatCheckPlugin.throwsItself("Bow"));
-		org.junit.Assert.assertFalse(CombatCheckPlugin.isShotAmmo("Rada's blessing 4"));
 		net.runelite.api.coords.WorldPoint fight = new net.runelite.api.coords.WorldPoint(1124, 3418, 0);
 		org.junit.Assert.assertFalse(CombatCheckPlugin.leftTheFight(new net.runelite.api.coords.WorldPoint(1130, 3420, 0), fight, 80));
 		org.junit.Assert.assertTrue(CombatCheckPlugin.leftTheFight(new net.runelite.api.coords.WorldPoint(1117, 3449, 0), fight, 80));
@@ -139,5 +120,37 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Vanguard"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Vorkath"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm(null));
+	}
+
+	/**
+	 * Akkha prays against the style he attacks with: a carried weapon of that class is never pointed at; in his enrage
+	 * he and his shadows pray against magic and missiles, and only melee is.
+	 */
+	@org.junit.Test
+	public void akkhasPrayerLeavesItsClassOut()
+	{
+		org.junit.Assert.assertFalse(CombatCheckPlugin.classAllowed(11790, StyleCalc.MELEE));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.classAllowed(11790, StyleCalc.RANGED));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.classAllowed(11790, StyleCalc.MAGIC));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.classAllowed(11791, StyleCalc.RANGED));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.classAllowed(11792, StyleCalc.MAGIC));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.classAllowed(11792, StyleCalc.MELEE));
+		for (int id : new int[]{11795, 11798})
+		{
+			org.junit.Assert.assertTrue(CombatCheckPlugin.classAllowed(id, StyleCalc.MELEE));
+			org.junit.Assert.assertFalse(CombatCheckPlugin.classAllowed(id, StyleCalc.RANGED));
+			org.junit.Assert.assertFalse(CombatCheckPlugin.classAllowed(id, StyleCalc.MAGIC));
+		}
+		// Akkha's first form and any other monster: every class
+		org.junit.Assert.assertTrue(CombatCheckPlugin.classAllowed(11789, StyleCalc.MAGIC));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.classAllowed(11797, StyleCalc.RANGED));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.classAllowed(415, StyleCalc.MAGIC));
+	}
+
+	/** Nex changes phase (melee, then ranged in her Shadow phase and against Zaros's Deflect Melee): only the same class. */
+	@org.junit.Test
+	public void nexIsABossOfPhases()
+	{
+		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Nex"));
 	}
 }

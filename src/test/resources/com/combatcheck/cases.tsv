@@ -119,10 +119,10 @@ plain	26219	Osmumten's fang	12078	Phantom Muspah	0	Stab	stab	Accurate	105	75	0	1
 plain	26219	Osmumten's fang	12078	Phantom Muspah	1	Lunge	stab	Aggressive	105	75	0	103	0	2.20427
 plain	26219	Osmumten's fang	12078	Phantom Muspah	2	Slash	slash	Aggressive	105	75	0	103	0	1.70994
 plain	26219	Osmumten's fang	12078	Phantom Muspah	3	Block	stab	Defensive	105	75	0	103	0	2.15051
-plain	26219	Osmumten's fang	13599	Tormented Demon	0	Stab	stab	Accurate	105	75	0	103	0	5.19540
-plain	26219	Osmumten's fang	13599	Tormented Demon	1	Lunge	stab	Aggressive	105	75	0	103	0	5.33333
-plain	26219	Osmumten's fang	13599	Tormented Demon	2	Slash	slash	Aggressive	105	75	0	103	0	5.33333
-plain	26219	Osmumten's fang	13599	Tormented Demon	3	Block	stab	Defensive	105	75	0	103	0	5.19540
+plain	26219	Osmumten's fang	13599	Tormented Demon	0	Stab	stab	Accurate	105	75	0	103	0	4.55439
+plain	26219	Osmumten's fang	13599	Tormented Demon	1	Lunge	stab	Aggressive	105	75	0	103	0	4.64854
+plain	26219	Osmumten's fang	13599	Tormented Demon	2	Slash	slash	Aggressive	105	75	0	103	0	3.39333
+plain	26219	Osmumten's fang	13599	Tormented Demon	3	Block	stab	Defensive	105	75	0	103	0	4.52832
 plain	26219	Osmumten's fang	14176	Yama	0	Stab	stab	Accurate	105	75	0	103	0	2.97496
 plain	26219	Osmumten's fang	14176	Yama	1	Lunge	stab	Aggressive	105	75	0	103	0	2.98915
 plain	26219	Osmumten's fang	14176	Yama	2	Slash	slash	Aggressive	105	75	0	103	0	2.09997
@@ -381,9 +381,9 @@ plain	4151	Abyssal whip	13685	Amoxliatl	2	Deflect	slash	Defensive	0	82	0	82	0	5.
 plain	4151	Abyssal whip	12078	Phantom Muspah	0	Flick	slash	Accurate	0	82	0	82	0	1.95821
 plain	4151	Abyssal whip	12078	Phantom Muspah	1	Lash	slash	Controlled	0	82	0	82	0	1.93245
 plain	4151	Abyssal whip	12078	Phantom Muspah	2	Deflect	slash	Defensive	0	82	0	82	0	1.91956
-plain	4151	Abyssal whip	13599	Tormented Demon	0	Flick	slash	Accurate	0	82	0	82	0	7.30324
-plain	4151	Abyssal whip	13599	Tormented Demon	1	Lash	slash	Controlled	0	82	0	82	0	7.30324
-plain	4151	Abyssal whip	13599	Tormented Demon	2	Deflect	slash	Defensive	0	82	0	82	0	7.30324
+plain	4151	Abyssal whip	13599	Tormented Demon	0	Flick	slash	Accurate	0	82	0	82	0	4.71784
+plain	4151	Abyssal whip	13599	Tormented Demon	1	Lash	slash	Controlled	0	82	0	82	0	4.70381
+plain	4151	Abyssal whip	13599	Tormented Demon	2	Deflect	slash	Defensive	0	82	0	82	0	4.69679
 plain	4151	Abyssal whip	14176	Yama	0	Flick	slash	Accurate	0	82	0	82	0	2.40487
 plain	4151	Abyssal whip	14176	Yama	1	Lash	slash	Controlled	0	82	0	82	0	2.37322
 plain	4151	Abyssal whip	14176	Yama	2	Deflect	slash	Defensive	0	82	0	82	0	2.35740
@@ -630,10 +630,10 @@ plain	4587	Dragon scimitar	12078	Phantom Muspah	0	Chop	slash	Accurate	8	67	-2	66
 plain	4587	Dragon scimitar	12078	Phantom Muspah	1	Slash	slash	Aggressive	8	67	-2	66	0	1.57520
 plain	4587	Dragon scimitar	12078	Phantom Muspah	2	Lunge	stab	Controlled	8	67	-2	66	0	0.67148
 plain	4587	Dragon scimitar	12078	Phantom Muspah	3	Block	slash	Defensive	8	67	-2	66	0	1.52616
-plain	4587	Dragon scimitar	13599	Tormented Demon	0	Chop	slash	Accurate	8	67	-2	66	0	5.02604
-plain	4587	Dragon scimitar	13599	Tormented Demon	1	Slash	slash	Aggressive	8	67	-2	66	0	5.18939
-plain	4587	Dragon scimitar	13599	Tormented Demon	2	Lunge	stab	Controlled	8	67	-2	66	0	5.02604
-plain	4587	Dragon scimitar	13599	Tormented Demon	3	Block	slash	Defensive	8	67	-2	66	0	5.02604
+plain	4587	Dragon scimitar	13599	Tormented Demon	0	Chop	slash	Accurate	8	67	-2	66	0	3.17140
+plain	4587	Dragon scimitar	13599	Tormented Demon	1	Slash	slash	Aggressive	8	67	-2	66	0	3.26106
+plain	4587	Dragon scimitar	13599	Tormented Demon	2	Lunge	stab	Controlled	8	67	-2	66	0	3.12701
+plain	4587	Dragon scimitar	13599	Tormented Demon	3	Block	slash	Defensive	8	67	-2	66	0	3.15840
 plain	4587	Dragon scimitar	14176	Yama	0	Chop	slash	Accurate	8	67	-2	66	0	1.91200
 plain	4587	Dragon scimitar	14176	Yama	1	Slash	slash	Aggressive	8	67	-2	66	0	1.93449
 plain	4587	Dragon scimitar	14176	Yama	2	Lunge	stab	Controlled	8	67	-2	66	0	0.91058
@@ -922,10 +922,10 @@ plain	22324	Ghrazi rapier	12078	Phantom Muspah	0	Stab	stab	Accurate	100	55	0	93	
 plain	22324	Ghrazi rapier	12078	Phantom Muspah	1	Lunge	stab	Aggressive	100	55	0	93	0	1.86112
 plain	22324	Ghrazi rapier	12078	Phantom Muspah	2	Slash	slash	Aggressive	100	55	0	93	0	1.69828
 plain	22324	Ghrazi rapier	12078	Phantom Muspah	3	Block	stab	Defensive	100	55	0	93	0	1.86112
-plain	22324	Ghrazi rapier	13599	Tormented Demon	0	Stab	stab	Accurate	100	55	0	93	0	6.18590
-plain	22324	Ghrazi rapier	13599	Tormented Demon	1	Lunge	stab	Aggressive	100	55	0	93	0	6.18590
-plain	22324	Ghrazi rapier	13599	Tormented Demon	2	Slash	slash	Aggressive	100	55	0	93	0	6.18590
-plain	22324	Ghrazi rapier	13599	Tormented Demon	3	Block	stab	Defensive	100	55	0	93	0	6.18590
+plain	22324	Ghrazi rapier	13599	Tormented Demon	0	Stab	stab	Accurate	100	55	0	93	0	4.81473
+plain	22324	Ghrazi rapier	13599	Tormented Demon	1	Lunge	stab	Aggressive	100	55	0	93	0	4.78713
+plain	22324	Ghrazi rapier	13599	Tormented Demon	2	Slash	slash	Aggressive	100	55	0	93	0	3.81450
+plain	22324	Ghrazi rapier	13599	Tormented Demon	3	Block	stab	Defensive	100	55	0	93	0	4.78713
 plain	22324	Ghrazi rapier	14176	Yama	0	Stab	stab	Accurate	100	55	0	93	0	2.57463
 plain	22324	Ghrazi rapier	14176	Yama	1	Lunge	stab	Aggressive	100	55	0	93	0	2.52381
 plain	22324	Ghrazi rapier	14176	Yama	2	Slash	slash	Aggressive	100	55	0	93	0	2.08564
@@ -1214,10 +1214,10 @@ plain	24417	Inquisitor's mace	12078	Phantom Muspah	0	Pound	crush	Accurate	52	-4	
 plain	24417	Inquisitor's mace	12078	Phantom Muspah	1	Pummel	crush	Aggressive	52	-4	102	96	0	2.61619
 plain	24417	Inquisitor's mace	12078	Phantom Muspah	2	Spike	stab	Controlled	52	-4	102	96	0	1.36002
 plain	24417	Inquisitor's mace	12078	Phantom Muspah	3	Block	crush	Defensive	52	-4	102	96	0	2.54928
-plain	24417	Inquisitor's mace	13599	Tormented Demon	0	Pound	crush	Accurate	52	-4	102	96	0	6.18590
-plain	24417	Inquisitor's mace	13599	Tormented Demon	1	Pummel	crush	Aggressive	52	-4	102	96	0	6.35417
-plain	24417	Inquisitor's mace	13599	Tormented Demon	2	Spike	stab	Controlled	52	-4	102	96	0	6.35417
-plain	24417	Inquisitor's mace	13599	Tormented Demon	3	Block	crush	Defensive	52	-4	102	96	0	6.18590
+plain	24417	Inquisitor's mace	13599	Tormented Demon	0	Pound	crush	Accurate	52	-4	102	96	0	4.89947
+plain	24417	Inquisitor's mace	13599	Tormented Demon	1	Pummel	crush	Aggressive	52	-4	102	96	0	5.00614
+plain	24417	Inquisitor's mace	13599	Tormented Demon	2	Spike	stab	Controlled	52	-4	102	96	0	4.42768
+plain	24417	Inquisitor's mace	13599	Tormented Demon	3	Block	crush	Defensive	52	-4	102	96	0	4.87357
 plain	24417	Inquisitor's mace	14176	Yama	0	Pound	crush	Accurate	52	-4	102	96	0	1.07656
 plain	24417	Inquisitor's mace	14176	Yama	1	Pummel	crush	Aggressive	52	-4	102	96	0	1.08301
 plain	24417	Inquisitor's mace	14176	Yama	2	Spike	stab	Controlled	52	-4	102	96	0	1.84428
@@ -1506,10 +1506,10 @@ plain	4718	Dharok's greataxe	12078	Phantom Muspah	0	Chop	slash	Accurate	-4	103	9
 plain	4718	Dharok's greataxe	12078	Phantom Muspah	1	Hack	slash	Aggressive	-4	103	95	105	0	1.46913
 plain	4718	Dharok's greataxe	12078	Phantom Muspah	2	Smash	crush	Aggressive	-4	103	95	105	0	1.50517
 plain	4718	Dharok's greataxe	12078	Phantom Muspah	3	Block	slash	Defensive	-4	103	95	105	0	1.43338
-plain	4718	Dharok's greataxe	13599	Tormented Demon	0	Chop	slash	Accurate	-4	103	95	105	0	3.72822
-plain	4718	Dharok's greataxe	13599	Tormented Demon	1	Hack	slash	Aggressive	-4	103	95	105	0	3.82086
-plain	4718	Dharok's greataxe	13599	Tormented Demon	2	Smash	crush	Aggressive	-4	103	95	105	0	3.82086
-plain	4718	Dharok's greataxe	13599	Tormented Demon	3	Block	slash	Defensive	-4	103	95	105	0	3.72822
+plain	4718	Dharok's greataxe	13599	Tormented Demon	0	Chop	slash	Accurate	-4	103	95	105	0	2.48669
+plain	4718	Dharok's greataxe	13599	Tormented Demon	1	Hack	slash	Aggressive	-4	103	95	105	0	2.53589
+plain	4718	Dharok's greataxe	13599	Tormented Demon	2	Smash	crush	Aggressive	-4	103	95	105	0	2.97459
+plain	4718	Dharok's greataxe	13599	Tormented Demon	3	Block	slash	Defensive	-4	103	95	105	0	2.47440
 plain	4718	Dharok's greataxe	14176	Yama	0	Chop	slash	Accurate	-4	103	95	105	0	1.79576
 plain	4718	Dharok's greataxe	14176	Yama	1	Hack	slash	Aggressive	-4	103	95	105	0	1.80422
 plain	4718	Dharok's greataxe	14176	Yama	2	Smash	crush	Aggressive	-4	103	95	105	0	0.62309
@@ -1798,10 +1798,10 @@ plain	28338	Soulreaper axe	12078	Phantom Muspah	0	Chop	slash	Accurate	28	134	66	
 plain	28338	Soulreaper axe	12078	Phantom Muspah	1	Hack	slash	Aggressive	28	134	66	125	0	2.73532
 plain	28338	Soulreaper axe	12078	Phantom Muspah	2	Smash	crush	Aggressive	28	134	66	125	0	1.93256
 plain	28338	Soulreaper axe	12078	Phantom Muspah	3	Block	slash	Defensive	28	134	66	125	0	2.67596
-plain	28338	Soulreaper axe	13599	Tormented Demon	0	Chop	slash	Accurate	28	134	66	125	0	5.88406
-plain	28338	Soulreaper axe	13599	Tormented Demon	1	Hack	slash	Aggressive	28	134	66	125	0	6.01418
-plain	28338	Soulreaper axe	13599	Tormented Demon	2	Smash	crush	Aggressive	28	134	66	125	0	6.01418
-plain	28338	Soulreaper axe	13599	Tormented Demon	3	Block	slash	Defensive	28	134	66	125	0	5.88406
+plain	28338	Soulreaper axe	13599	Tormented Demon	0	Chop	slash	Accurate	28	134	66	125	0	4.10701
+plain	28338	Soulreaper axe	13599	Tormented Demon	1	Hack	slash	Aggressive	28	134	66	125	0	4.17434
+plain	28338	Soulreaper axe	13599	Tormented Demon	2	Smash	crush	Aggressive	28	134	66	125	0	4.39466
+plain	28338	Soulreaper axe	13599	Tormented Demon	3	Block	slash	Defensive	28	134	66	125	0	4.08402
 plain	28338	Soulreaper axe	14176	Yama	0	Chop	slash	Accurate	28	134	66	125	0	3.35250
 plain	28338	Soulreaper axe	14176	Yama	1	Hack	slash	Aggressive	28	134	66	125	0	3.35922
 plain	28338	Soulreaper axe	14176	Yama	2	Smash	crush	Aggressive	28	134	66	125	0	0.80001
@@ -2090,10 +2090,10 @@ plain	22978	Dragon hunter lance	12078	Phantom Muspah	0	Lunge	stab	Controlled	85	
 plain	22978	Dragon hunter lance	12078	Phantom Muspah	1	Swipe	slash	Controlled	85	65	65	70	0	1.56156
 plain	22978	Dragon hunter lance	12078	Phantom Muspah	2	Pound	crush	Controlled	85	65	65	70	0	1.68037
 plain	22978	Dragon hunter lance	12078	Phantom Muspah	3	Block	stab	Defensive	85	65	65	70	0	1.42469
-plain	22978	Dragon hunter lance	13599	Tormented Demon	0	Lunge	stab	Controlled	85	65	65	70	0	5.18939
-plain	22978	Dragon hunter lance	13599	Tormented Demon	1	Swipe	slash	Controlled	85	65	65	70	0	5.18939
-plain	22978	Dragon hunter lance	13599	Tormented Demon	2	Pound	crush	Controlled	85	65	65	70	0	5.18939
-plain	22978	Dragon hunter lance	13599	Tormented Demon	3	Block	stab	Defensive	85	65	65	70	0	5.18939
+plain	22978	Dragon hunter lance	13599	Tormented Demon	0	Lunge	stab	Controlled	85	65	65	70	0	3.90644
+plain	22978	Dragon hunter lance	13599	Tormented Demon	1	Swipe	slash	Controlled	85	65	65	70	0	3.25529
+plain	22978	Dragon hunter lance	13599	Tormented Demon	2	Pound	crush	Controlled	85	65	65	70	0	3.79074
+plain	22978	Dragon hunter lance	13599	Tormented Demon	3	Block	stab	Defensive	85	65	65	70	0	3.89783
 plain	22978	Dragon hunter lance	14176	Yama	0	Lunge	stab	Controlled	85	65	65	70	0	1.94494
 plain	22978	Dragon hunter lance	14176	Yama	1	Swipe	slash	Controlled	85	65	65	70	0	1.91774
 plain	22978	Dragon hunter lance	14176	Yama	2	Pound	crush	Controlled	85	65	65	70	0	0.69562
@@ -2382,10 +2382,10 @@ plain	11889	Zamorakian hasta	12078	Phantom Muspah	0	Lunge	stab	Controlled	85	65	
 plain	11889	Zamorakian hasta	12078	Phantom Muspah	1	Swipe	slash	Controlled	85	65	65	75	0	1.61018
 plain	11889	Zamorakian hasta	12078	Phantom Muspah	2	Pound	crush	Controlled	85	65	65	75	0	1.73269
 plain	11889	Zamorakian hasta	12078	Phantom Muspah	3	Block	stab	Defensive	85	65	65	75	0	1.46904
-plain	11889	Zamorakian hasta	13599	Tormented Demon	0	Lunge	stab	Controlled	85	65	65	75	0	5.35539
-plain	11889	Zamorakian hasta	13599	Tormented Demon	1	Swipe	slash	Controlled	85	65	65	75	0	5.35539
-plain	11889	Zamorakian hasta	13599	Tormented Demon	2	Pound	crush	Controlled	85	65	65	75	0	5.35539
-plain	11889	Zamorakian hasta	13599	Tormented Demon	3	Block	stab	Defensive	85	65	65	75	0	5.35539
+plain	11889	Zamorakian hasta	13599	Tormented Demon	0	Lunge	stab	Controlled	85	65	65	75	0	4.03140
+plain	11889	Zamorakian hasta	13599	Tormented Demon	1	Swipe	slash	Controlled	85	65	65	75	0	3.35942
+plain	11889	Zamorakian hasta	13599	Tormented Demon	2	Pound	crush	Controlled	85	65	65	75	0	3.91200
+plain	11889	Zamorakian hasta	13599	Tormented Demon	3	Block	stab	Defensive	85	65	65	75	0	4.02251
 plain	11889	Zamorakian hasta	14176	Yama	0	Lunge	stab	Controlled	85	65	65	75	0	2.00550
 plain	11889	Zamorakian hasta	14176	Yama	1	Swipe	slash	Controlled	85	65	65	75	0	1.97745
 plain	11889	Zamorakian hasta	14176	Yama	2	Pound	crush	Controlled	85	65	65	75	0	0.71728
@@ -2674,10 +2674,10 @@ plain	13265	Abyssal dagger	12078	Phantom Muspah	0	Stab	stab	Accurate	75	40	-4	75
 plain	13265	Abyssal dagger	12078	Phantom Muspah	1	Lunge	stab	Aggressive	75	40	-4	75	0	1.41184
 plain	13265	Abyssal dagger	12078	Phantom Muspah	2	Slash	slash	Aggressive	75	40	-4	75	0	1.32842
 plain	13265	Abyssal dagger	12078	Phantom Muspah	3	Block	stab	Defensive	75	40	-4	75	0	1.37045
-plain	13265	Abyssal dagger	13599	Tormented Demon	0	Stab	stab	Accurate	75	40	-4	75	0	6.88725
-plain	13265	Abyssal dagger	13599	Tormented Demon	1	Lunge	stab	Aggressive	75	40	-4	75	0	7.09524
-plain	13265	Abyssal dagger	13599	Tormented Demon	2	Slash	slash	Aggressive	75	40	-4	75	0	7.09524
-plain	13265	Abyssal dagger	13599	Tormented Demon	3	Block	stab	Defensive	75	40	-4	75	0	6.88725
+plain	13265	Abyssal dagger	13599	Tormented Demon	0	Stab	stab	Accurate	75	40	-4	75	0	5.08956
+plain	13265	Abyssal dagger	13599	Tormented Demon	1	Lunge	stab	Aggressive	75	40	-4	75	0	5.20979
+plain	13265	Abyssal dagger	13599	Tormented Demon	2	Slash	slash	Aggressive	75	40	-4	75	0	4.27092
+plain	13265	Abyssal dagger	13599	Tormented Demon	3	Block	stab	Defensive	75	40	-4	75	0	5.05708
 plain	13265	Abyssal dagger	14176	Yama	0	Stab	stab	Accurate	75	40	-4	75	0	1.89585
 plain	13265	Abyssal dagger	14176	Yama	1	Lunge	stab	Aggressive	75	40	-4	75	0	1.91455
 plain	13265	Abyssal dagger	14176	Yama	2	Slash	slash	Aggressive	75	40	-4	75	0	1.63142
@@ -2966,10 +2966,10 @@ plain	13652	Dragon claws	12078	Phantom Muspah	0	Chop	slash	Accurate	41	57	-4	56	
 plain	13652	Dragon claws	12078	Phantom Muspah	1	Slash	slash	Aggressive	41	57	-4	56	0	1.31909
 plain	13652	Dragon claws	12078	Phantom Muspah	2	Lunge	stab	Controlled	41	57	-4	56	0	0.91633
 plain	13652	Dragon claws	12078	Phantom Muspah	3	Block	slash	Defensive	41	57	-4	56	0	1.31909
-plain	13652	Dragon claws	13599	Tormented Demon	0	Chop	slash	Accurate	41	57	-4	56	0	4.69444
-plain	13652	Dragon claws	13599	Tormented Demon	1	Slash	slash	Aggressive	41	57	-4	56	0	4.69444
-plain	13652	Dragon claws	13599	Tormented Demon	2	Lunge	stab	Controlled	41	57	-4	56	0	4.69444
-plain	13652	Dragon claws	13599	Tormented Demon	3	Block	slash	Defensive	41	57	-4	56	0	4.69444
+plain	13652	Dragon claws	13599	Tormented Demon	0	Chop	slash	Accurate	41	57	-4	56	0	2.91522
+plain	13652	Dragon claws	13599	Tormented Demon	1	Slash	slash	Aggressive	41	57	-4	56	0	2.90401
+plain	13652	Dragon claws	13599	Tormented Demon	2	Lunge	stab	Controlled	41	57	-4	56	0	3.18354
+plain	13652	Dragon claws	13599	Tormented Demon	3	Block	slash	Defensive	41	57	-4	56	0	2.90401
 plain	13652	Dragon claws	14176	Yama	0	Chop	slash	Accurate	41	57	-4	56	0	1.65258
 plain	13652	Dragon claws	14176	Yama	1	Slash	slash	Aggressive	41	57	-4	56	0	1.61996
 plain	13652	Dragon claws	14176	Yama	2	Lunge	stab	Controlled	41	57	-4	56	0	1.24261
@@ -3228,9 +3228,9 @@ plain	29796	Noxious halberd	13685	Amoxliatl	2	Fend	stab	Defensive	80	132	0	142	0
 plain	29796	Noxious halberd	12078	Phantom Muspah	0	Jab	stab	Controlled	80	132	0	142	0	1.73073
 plain	29796	Noxious halberd	12078	Phantom Muspah	1	Swipe	slash	Aggressive	80	132	0	142	0	2.94272
 plain	29796	Noxious halberd	12078	Phantom Muspah	2	Fend	stab	Defensive	80	132	0	142	0	1.68486
-plain	29796	Noxious halberd	13599	Tormented Demon	0	Jab	stab	Controlled	80	132	0	142	0	6.54902
-plain	29796	Noxious halberd	13599	Tormented Demon	1	Swipe	slash	Aggressive	80	132	0	142	0	6.54902
-plain	29796	Noxious halberd	13599	Tormented Demon	2	Fend	stab	Defensive	80	132	0	142	0	6.41333
+plain	29796	Noxious halberd	13599	Tormented Demon	0	Jab	stab	Controlled	80	132	0	142	0	4.87458
+plain	29796	Noxious halberd	13599	Tormented Demon	1	Swipe	slash	Aggressive	80	132	0	142	0	4.53272
+plain	29796	Noxious halberd	13599	Tormented Demon	2	Fend	stab	Defensive	80	132	0	142	0	4.76314
 plain	29796	Noxious halberd	14176	Yama	0	Jab	stab	Controlled	80	132	0	142	0	2.34699
 plain	29796	Noxious halberd	14176	Yama	1	Swipe	slash	Aggressive	80	132	0	142	0	3.61394
 plain	29796	Noxious halberd	14176	Yama	2	Fend	stab	Defensive	80	132	0	142	0	2.28479
@@ -3447,9 +3447,9 @@ plain	21003	Elder maul	13685	Amoxliatl	2	Block	crush	Defensive	0	0	135	147	0	6.3
 plain	21003	Elder maul	12078	Phantom Muspah	0	Pound	crush	Accurate	0	0	135	147	0	2.73319
 plain	21003	Elder maul	12078	Phantom Muspah	1	Pummel	crush	Aggressive	0	0	135	147	0	2.73274
 plain	21003	Elder maul	12078	Phantom Muspah	2	Block	crush	Defensive	0	0	135	147	0	2.67924
-plain	21003	Elder maul	13599	Tormented Demon	0	Pound	crush	Accurate	0	0	135	147	0	5.45752
-plain	21003	Elder maul	13599	Tormented Demon	1	Pummel	crush	Aggressive	0	0	135	147	0	5.56624
-plain	21003	Elder maul	13599	Tormented Demon	2	Block	crush	Defensive	0	0	135	147	0	5.45752
+plain	21003	Elder maul	13599	Tormented Demon	0	Pound	crush	Accurate	0	0	135	147	0	4.51076
+plain	21003	Elder maul	13599	Tormented Demon	1	Pummel	crush	Aggressive	0	0	135	147	0	4.58118
+plain	21003	Elder maul	13599	Tormented Demon	2	Block	crush	Defensive	0	0	135	147	0	4.49170
 plain	21003	Elder maul	14176	Yama	0	Pound	crush	Accurate	0	0	135	147	0	1.13145
 plain	21003	Elder maul	14176	Yama	1	Pummel	crush	Aggressive	0	0	135	147	0	1.13126
 plain	21003	Elder maul	14176	Yama	2	Block	crush	Defensive	0	0	135	147	0	1.10911
@@ -3696,10 +3696,10 @@ plain	1205	Bronze dagger	12078	Phantom Muspah	0	Stab	stab	Accurate	4	2	-4	3	0	0.
 plain	1205	Bronze dagger	12078	Phantom Muspah	1	Lunge	stab	Aggressive	4	2	-4	3	0	0.32687
 plain	1205	Bronze dagger	12078	Phantom Muspah	2	Slash	slash	Aggressive	4	2	-4	3	0	0.39897
 plain	1205	Bronze dagger	12078	Phantom Muspah	3	Block	stab	Defensive	4	2	-4	3	0	0.32687
-plain	1205	Bronze dagger	13599	Tormented Demon	0	Stab	stab	Accurate	4	2	-4	3	0	2.54902
-plain	1205	Bronze dagger	13599	Tormented Demon	1	Lunge	stab	Aggressive	4	2	-4	3	0	2.54902
-plain	1205	Bronze dagger	13599	Tormented Demon	2	Slash	slash	Aggressive	4	2	-4	3	0	2.54902
-plain	1205	Bronze dagger	13599	Tormented Demon	3	Block	stab	Defensive	4	2	-4	3	0	2.54902
+plain	1205	Bronze dagger	13599	Tormented Demon	0	Stab	stab	Accurate	4	2	-4	3	0	1.57252
+plain	1205	Bronze dagger	13599	Tormented Demon	1	Lunge	stab	Aggressive	4	2	-4	3	0	1.56664
+plain	1205	Bronze dagger	13599	Tormented Demon	2	Slash	slash	Aggressive	4	2	-4	3	0	1.43942
+plain	1205	Bronze dagger	13599	Tormented Demon	3	Block	stab	Defensive	4	2	-4	3	0	1.56664
 plain	1205	Bronze dagger	14176	Yama	0	Stab	stab	Accurate	4	2	-4	3	0	0.45218
 plain	1205	Bronze dagger	14176	Yama	1	Lunge	stab	Aggressive	4	2	-4	3	0	0.44326
 plain	1205	Bronze dagger	14176	Yama	2	Slash	slash	Aggressive	4	2	-4	3	0	0.48997
@@ -3988,10 +3988,10 @@ plain	1323	Iron scimitar	12078	Phantom Muspah	0	Chop	slash	Accurate	2	10	-2	9	0	
 plain	1323	Iron scimitar	12078	Phantom Muspah	1	Slash	slash	Aggressive	2	10	-2	9	0	0.50249
 plain	1323	Iron scimitar	12078	Phantom Muspah	2	Lunge	stab	Controlled	2	10	-2	9	0	0.35877
 plain	1323	Iron scimitar	12078	Phantom Muspah	3	Block	slash	Defensive	2	10	-2	9	0	0.47490
-plain	1323	Iron scimitar	13599	Tormented Demon	0	Chop	slash	Accurate	2	10	-2	9	0	2.70833
-plain	1323	Iron scimitar	13599	Tormented Demon	1	Slash	slash	Aggressive	2	10	-2	9	0	2.87281
-plain	1323	Iron scimitar	13599	Tormented Demon	2	Lunge	stab	Controlled	2	10	-2	9	0	2.87281
-plain	1323	Iron scimitar	13599	Tormented Demon	3	Block	slash	Defensive	2	10	-2	9	0	2.70833
+plain	1323	Iron scimitar	13599	Tormented Demon	0	Chop	slash	Accurate	2	10	-2	9	0	1.55457
+plain	1323	Iron scimitar	13599	Tormented Demon	1	Slash	slash	Aggressive	2	10	-2	9	0	1.64478
+plain	1323	Iron scimitar	13599	Tormented Demon	2	Lunge	stab	Controlled	2	10	-2	9	0	1.75810
+plain	1323	Iron scimitar	13599	Tormented Demon	3	Block	slash	Defensive	2	10	-2	9	0	1.55062
 plain	1323	Iron scimitar	14176	Yama	0	Chop	slash	Accurate	2	10	-2	9	0	0.59496
 plain	1323	Iron scimitar	14176	Yama	1	Slash	slash	Aggressive	2	10	-2	9	0	0.61711
 plain	1323	Iron scimitar	14176	Yama	2	Lunge	stab	Controlled	2	10	-2	9	0	0.48652
@@ -4280,10 +4280,10 @@ plain	1319	Rune 2h sword	12078	Phantom Muspah	0	Chop	slash	Accurate	-4	69	50	70	
 plain	1319	Rune 2h sword	12078	Phantom Muspah	1	Slash	slash	Aggressive	-4	69	50	70	0	0.94231
 plain	1319	Rune 2h sword	12078	Phantom Muspah	2	Smash	crush	Aggressive	-4	69	50	70	0	0.86915
 plain	1319	Rune 2h sword	12078	Phantom Muspah	3	Block	slash	Defensive	-4	69	50	70	0	0.91386
-plain	1319	Rune 2h sword	13599	Tormented Demon	0	Chop	slash	Accurate	-4	69	50	70	0	2.96537
-plain	1319	Rune 2h sword	13599	Tormented Demon	1	Slash	slash	Aggressive	-4	69	50	70	0	3.06022
-plain	1319	Rune 2h sword	13599	Tormented Demon	2	Smash	crush	Aggressive	-4	69	50	70	0	3.06022
-plain	1319	Rune 2h sword	13599	Tormented Demon	3	Block	slash	Defensive	-4	69	50	70	0	2.96537
+plain	1319	Rune 2h sword	13599	Tormented Demon	0	Chop	slash	Accurate	-4	69	50	70	0	1.87706
+plain	1319	Rune 2h sword	13599	Tormented Demon	1	Slash	slash	Aggressive	-4	69	50	70	0	1.92907
+plain	1319	Rune 2h sword	13599	Tormented Demon	2	Smash	crush	Aggressive	-4	69	50	70	0	2.14926
+plain	1319	Rune 2h sword	13599	Tormented Demon	3	Block	slash	Defensive	-4	69	50	70	0	1.86927
 plain	1319	Rune 2h sword	14176	Yama	0	Chop	slash	Accurate	-4	69	50	70	0	1.14490
 plain	1319	Rune 2h sword	14176	Yama	1	Slash	slash	Aggressive	-4	69	50	70	0	1.15724
 plain	1319	Rune 2h sword	14176	Yama	2	Smash	crush	Aggressive	-4	69	50	70	0	0.35980
@@ -4572,10 +4572,10 @@ plain	11920	Dragon pickaxe	12078	Phantom Muspah	0	Spike	stab	Accurate	38	-2	32	4
 plain	11920	Dragon pickaxe	12078	Phantom Muspah	1	Impale	stab	Aggressive	38	-2	32	42	0	0.63454
 plain	11920	Dragon pickaxe	12078	Phantom Muspah	2	Smash	crush	Aggressive	38	-2	32	42	0	0.80818
 plain	11920	Dragon pickaxe	12078	Phantom Muspah	3	Block	stab	Defensive	38	-2	32	42	0	0.61027
-plain	11920	Dragon pickaxe	13599	Tormented Demon	0	Spike	stab	Accurate	38	-2	32	42	0	3.23077
-plain	11920	Dragon pickaxe	13599	Tormented Demon	1	Impale	stab	Aggressive	38	-2	32	42	0	3.35802
-plain	11920	Dragon pickaxe	13599	Tormented Demon	2	Smash	crush	Aggressive	38	-2	32	42	0	3.35802
-plain	11920	Dragon pickaxe	13599	Tormented Demon	3	Block	stab	Defensive	38	-2	32	42	0	3.23077
+plain	11920	Dragon pickaxe	13599	Tormented Demon	0	Spike	stab	Accurate	38	-2	32	42	0	2.18196
+plain	11920	Dragon pickaxe	13599	Tormented Demon	1	Impale	stab	Aggressive	38	-2	32	42	0	2.25628
+plain	11920	Dragon pickaxe	13599	Tormented Demon	2	Smash	crush	Aggressive	38	-2	32	42	0	2.25114
+plain	11920	Dragon pickaxe	13599	Tormented Demon	3	Block	stab	Defensive	38	-2	32	42	0	2.17078
 plain	11920	Dragon pickaxe	14176	Yama	0	Spike	stab	Accurate	38	-2	32	42	0	0.84424
 plain	11920	Dragon pickaxe	14176	Yama	1	Impale	stab	Aggressive	38	-2	32	42	0	0.86048
 plain	11920	Dragon pickaxe	14176	Yama	2	Smash	crush	Aggressive	38	-2	32	42	0	0.33456
@@ -4864,10 +4864,10 @@ plain	20727	Leaf-bladed battleaxe	12078	Phantom Muspah	0	Chop	slash	Accurate	-2	
 plain	20727	Leaf-bladed battleaxe	12078	Phantom Muspah	1	Hack	slash	Aggressive	-2	72	72	92	0	1.55271
 plain	20727	Leaf-bladed battleaxe	12078	Phantom Muspah	2	Smash	crush	Aggressive	-2	72	72	92	0	1.67085
 plain	20727	Leaf-bladed battleaxe	12078	Phantom Muspah	3	Block	slash	Defensive	-2	72	72	92	0	1.51196
-plain	20727	Leaf-bladed battleaxe	13599	Tormented Demon	0	Chop	slash	Accurate	-2	72	72	92	0	4.81579
-plain	20727	Leaf-bladed battleaxe	13599	Tormented Demon	1	Hack	slash	Aggressive	-2	72	72	92	0	4.94872
-plain	20727	Leaf-bladed battleaxe	13599	Tormented Demon	2	Smash	crush	Aggressive	-2	72	72	92	0	4.94872
-plain	20727	Leaf-bladed battleaxe	13599	Tormented Demon	3	Block	slash	Defensive	-2	72	72	92	0	4.81579
+plain	20727	Leaf-bladed battleaxe	13599	Tormented Demon	0	Chop	slash	Accurate	-2	72	72	92	0	3.06281
+plain	20727	Leaf-bladed battleaxe	13599	Tormented Demon	1	Hack	slash	Aggressive	-2	72	72	92	0	3.13407
+plain	20727	Leaf-bladed battleaxe	13599	Tormented Demon	2	Smash	crush	Aggressive	-2	72	72	92	0	3.66880
+plain	20727	Leaf-bladed battleaxe	13599	Tormented Demon	3	Block	slash	Defensive	-2	72	72	92	0	3.04988
 plain	20727	Leaf-bladed battleaxe	14176	Yama	0	Chop	slash	Accurate	-2	72	72	92	0	1.89421
 plain	20727	Leaf-bladed battleaxe	14176	Yama	1	Hack	slash	Aggressive	-2	72	72	92	0	1.90687
 plain	20727	Leaf-bladed battleaxe	14176	Yama	2	Smash	crush	Aggressive	-2	72	72	92	0	0.69168
@@ -5126,9 +5126,9 @@ plain	21742	Granite hammer	13685	Amoxliatl	2	Block	crush	Defensive	0	0	57	56	0	5
 plain	21742	Granite hammer	12078	Phantom Muspah	0	Pound	crush	Accurate	0	0	57	56	0	1.44803
 plain	21742	Granite hammer	12078	Phantom Muspah	1	Pummel	crush	Aggressive	0	0	57	56	0	1.41945
 plain	21742	Granite hammer	12078	Phantom Muspah	2	Block	crush	Defensive	0	0	57	56	0	1.41945
-plain	21742	Granite hammer	13599	Tormented Demon	0	Pound	crush	Accurate	0	0	57	56	0	4.69444
-plain	21742	Granite hammer	13599	Tormented Demon	1	Pummel	crush	Aggressive	0	0	57	56	0	4.69444
-plain	21742	Granite hammer	13599	Tormented Demon	2	Block	crush	Defensive	0	0	57	56	0	4.69444
+plain	21742	Granite hammer	13599	Tormented Demon	0	Pound	crush	Accurate	0	0	57	56	0	3.37562
+plain	21742	Granite hammer	13599	Tormented Demon	1	Pummel	crush	Aggressive	0	0	57	56	0	3.35532
+plain	21742	Granite hammer	13599	Tormented Demon	2	Block	crush	Defensive	0	0	57	56	0	3.35532
 plain	21742	Granite hammer	14176	Yama	0	Pound	crush	Accurate	0	0	57	56	0	0.59943
 plain	21742	Granite hammer	14176	Yama	1	Pummel	crush	Aggressive	0	0	57	56	0	0.58760
 plain	21742	Granite hammer	14176	Yama	2	Block	crush	Defensive	0	0	57	56	0	0.58760
@@ -5375,10 +5375,10 @@ plain	10888	Barrelchest anchor	12078	Phantom Muspah	0	Pound	crush	Accurate	-2	10
 plain	10888	Barrelchest anchor	12078	Phantom Muspah	1	Pummel	crush	Aggressive	-2	10	92	100	0	1.68098
 plain	10888	Barrelchest anchor	12078	Phantom Muspah	2	Spike	stab	Controlled	-2	10	92	100	0	0.48460
 plain	10888	Barrelchest anchor	12078	Phantom Muspah	3	Block	crush	Defensive	-2	10	92	100	0	1.63906
-plain	10888	Barrelchest anchor	13599	Tormented Demon	0	Pound	crush	Accurate	-2	10	92	100	0	4.23611
-plain	10888	Barrelchest anchor	13599	Tormented Demon	1	Pummel	crush	Aggressive	-2	10	92	100	0	4.34959
-plain	10888	Barrelchest anchor	13599	Tormented Demon	2	Spike	stab	Controlled	-2	10	92	100	0	4.23611
-plain	10888	Barrelchest anchor	13599	Tormented Demon	3	Block	crush	Defensive	-2	10	92	100	0	4.23611
+plain	10888	Barrelchest anchor	13599	Tormented Demon	0	Pound	crush	Accurate	-2	10	92	100	0	3.29869
+plain	10888	Barrelchest anchor	13599	Tormented Demon	1	Pummel	crush	Aggressive	-2	10	92	100	0	3.36768
+plain	10888	Barrelchest anchor	13599	Tormented Demon	2	Spike	stab	Controlled	-2	10	92	100	0	2.56367
+plain	10888	Barrelchest anchor	13599	Tormented Demon	3	Block	crush	Defensive	-2	10	92	100	0	3.27982
 plain	10888	Barrelchest anchor	14176	Yama	0	Pound	crush	Accurate	-2	10	92	100	0	0.69217
 plain	10888	Barrelchest anchor	14176	Yama	1	Pummel	crush	Aggressive	-2	10	92	100	0	0.69587
 plain	10888	Barrelchest anchor	14176	Yama	2	Spike	stab	Controlled	-2	10	92	100	0	0.65716
@@ -5667,10 +5667,10 @@ plain	4755	Verac's flail	12078	Phantom Muspah	0	Pound	crush	Accurate	68	-2	82	72
 plain	4755	Verac's flail	12078	Phantom Muspah	1	Pummel	crush	Aggressive	68	-2	82	72	0	1.55837
 plain	4755	Verac's flail	12078	Phantom Muspah	2	Spike	stab	Controlled	68	-2	82	72	0	1.04814
 plain	4755	Verac's flail	12078	Phantom Muspah	3	Block	crush	Defensive	68	-2	82	72	0	1.55837
-plain	4755	Verac's flail	13599	Tormented Demon	0	Pound	crush	Accurate	68	-2	82	72	0	4.28431
-plain	4755	Verac's flail	13599	Tormented Demon	1	Pummel	crush	Aggressive	68	-2	82	72	0	4.28431
-plain	4755	Verac's flail	13599	Tormented Demon	2	Spike	stab	Controlled	68	-2	82	72	0	4.28431
-plain	4755	Verac's flail	13599	Tormented Demon	3	Block	crush	Defensive	68	-2	82	72	0	4.28431
+plain	4755	Verac's flail	13599	Tormented Demon	0	Pound	crush	Accurate	68	-2	82	72	0	3.27129
+plain	4755	Verac's flail	13599	Tormented Demon	1	Pummel	crush	Aggressive	68	-2	82	72	0	3.25090
+plain	4755	Verac's flail	13599	Tormented Demon	2	Spike	stab	Controlled	68	-2	82	72	0	3.10168
+plain	4755	Verac's flail	13599	Tormented Demon	3	Block	crush	Defensive	68	-2	82	72	0	3.25090
 plain	4755	Verac's flail	14176	Yama	0	Pound	crush	Accurate	68	-2	82	72	0	0.65810
 plain	4755	Verac's flail	14176	Yama	1	Pummel	crush	Aggressive	68	-2	82	72	0	0.64511
 plain	4755	Verac's flail	14176	Yama	2	Spike	stab	Controlled	68	-2	82	72	0	1.42135
@@ -5959,10 +5959,10 @@ plain	1434	Dragon mace	12078	Phantom Muspah	0	Pound	crush	Accurate	40	-2	60	55	0
 plain	1434	Dragon mace	12078	Phantom Muspah	1	Pummel	crush	Aggressive	40	-2	60	55	0	1.45464
 plain	1434	Dragon mace	12078	Phantom Muspah	2	Spike	stab	Controlled	40	-2	60	55	0	0.90760
 plain	1434	Dragon mace	12078	Phantom Muspah	3	Block	crush	Defensive	40	-2	60	55	0	1.40471
-plain	1434	Dragon mace	13599	Tormented Demon	0	Pound	crush	Accurate	40	-2	60	55	0	4.52586
-plain	1434	Dragon mace	13599	Tormented Demon	1	Pummel	crush	Aggressive	40	-2	60	55	0	4.69444
-plain	1434	Dragon mace	13599	Tormented Demon	2	Spike	stab	Controlled	40	-2	60	55	0	4.69444
-plain	1434	Dragon mace	13599	Tormented Demon	3	Block	crush	Defensive	40	-2	60	55	0	4.52586
+plain	1434	Dragon mace	13599	Tormented Demon	0	Pound	crush	Accurate	40	-2	60	55	0	3.27898
+plain	1434	Dragon mace	13599	Tormented Demon	1	Pummel	crush	Aggressive	40	-2	60	55	0	3.38032
+plain	1434	Dragon mace	13599	Tormented Demon	2	Spike	stab	Controlled	40	-2	60	55	0	3.17558
+plain	1434	Dragon mace	13599	Tormented Demon	3	Block	crush	Defensive	40	-2	60	55	0	3.25893
 plain	1434	Dragon mace	14176	Yama	0	Pound	crush	Accurate	40	-2	60	55	0	0.59321
 plain	1434	Dragon mace	14176	Yama	1	Pummel	crush	Aggressive	40	-2	60	55	0	0.60217
 plain	1434	Dragon mace	14176	Yama	2	Spike	stab	Controlled	40	-2	60	55	0	1.23077
@@ -6251,10 +6251,10 @@ plain	1239	Iron spear	12078	Phantom Muspah	0	Lunge	stab	Controlled	8	8	8	10	0	0.
 plain	1239	Iron spear	12078	Phantom Muspah	1	Swipe	slash	Controlled	8	8	8	10	0	0.49219
 plain	1239	Iron spear	12078	Phantom Muspah	2	Pound	crush	Controlled	8	8	8	10	0	0.52964
 plain	1239	Iron spear	12078	Phantom Muspah	3	Block	stab	Defensive	8	8	8	10	0	0.38878
-plain	1239	Iron spear	13599	Tormented Demon	0	Lunge	stab	Controlled	8	8	8	10	0	2.87281
-plain	1239	Iron spear	13599	Tormented Demon	1	Swipe	slash	Controlled	8	8	8	10	0	2.87281
-plain	1239	Iron spear	13599	Tormented Demon	2	Pound	crush	Controlled	8	8	8	10	0	2.87281
-plain	1239	Iron spear	13599	Tormented Demon	3	Block	stab	Defensive	8	8	8	10	0	2.87281
+plain	1239	Iron spear	13599	Tormented Demon	0	Lunge	stab	Controlled	8	8	8	10	0	1.78735
+plain	1239	Iron spear	13599	Tormented Demon	1	Swipe	slash	Controlled	8	8	8	10	0	1.64051
+plain	1239	Iron spear	13599	Tormented Demon	2	Pound	crush	Controlled	8	8	8	10	0	1.80596
+plain	1239	Iron spear	13599	Tormented Demon	3	Block	stab	Defensive	8	8	8	10	0	1.78501
 plain	1239	Iron spear	14176	Yama	0	Lunge	stab	Controlled	8	8	8	10	0	0.53075
 plain	1239	Iron spear	14176	Yama	1	Swipe	slash	Controlled	8	8	8	10	0	0.60446
 plain	1239	Iron spear	14176	Yama	2	Pound	crush	Controlled	8	8	8	10	0	0.21925
@@ -6513,9 +6513,9 @@ plain	3194	Steel halberd	13685	Amoxliatl	2	Fend	stab	Defensive	14	19	0	20	0	1.14
 plain	3194	Steel halberd	12078	Phantom Muspah	0	Jab	stab	Controlled	14	19	0	20	0	0.26892
 plain	3194	Steel halberd	12078	Phantom Muspah	1	Swipe	slash	Aggressive	14	19	0	20	0	0.35746
 plain	3194	Steel halberd	12078	Phantom Muspah	2	Fend	stab	Defensive	14	19	0	20	0	0.26712
-plain	3194	Steel halberd	13599	Tormented Demon	0	Jab	stab	Controlled	14	19	0	20	0	1.83673
-plain	3194	Steel halberd	13599	Tormented Demon	1	Swipe	slash	Aggressive	14	19	0	20	0	1.83673
-plain	3194	Steel halberd	13599	Tormented Demon	2	Fend	stab	Defensive	14	19	0	20	0	1.83673
+plain	3194	Steel halberd	13599	Tormented Demon	0	Jab	stab	Controlled	14	19	0	20	0	1.16144
+plain	3194	Steel halberd	13599	Tormented Demon	1	Swipe	slash	Aggressive	14	19	0	20	0	1.06780
+plain	3194	Steel halberd	13599	Tormented Demon	2	Fend	stab	Defensive	14	19	0	20	0	1.15982
 plain	3194	Steel halberd	14176	Yama	0	Jab	stab	Controlled	14	19	0	20	0	0.36467
 plain	3194	Steel halberd	14176	Yama	1	Swipe	slash	Aggressive	14	19	0	20	0	0.43899
 plain	3194	Steel halberd	14176	Yama	2	Fend	stab	Defensive	14	19	0	20	0	0.36224
@@ -6732,9 +6732,9 @@ plain	1347	Rune warhammer	13685	Amoxliatl	2	Block	crush	Defensive	-4	-4	53	62	0	
 plain	1347	Rune warhammer	12078	Phantom Muspah	0	Pound	crush	Accurate	-4	-4	53	62	0	0.96549
 plain	1347	Rune warhammer	12078	Phantom Muspah	1	Pummel	crush	Aggressive	-4	-4	53	62	0	0.97785
 plain	1347	Rune warhammer	12078	Phantom Muspah	2	Block	crush	Defensive	-4	-4	53	62	0	0.94643
-plain	1347	Rune warhammer	13599	Tormented Demon	0	Pound	crush	Accurate	-4	-4	53	62	0	3.24373
-plain	1347	Rune warhammer	13599	Tormented Demon	1	Pummel	crush	Aggressive	-4	-4	53	62	0	3.35069
-plain	1347	Rune warhammer	13599	Tormented Demon	2	Block	crush	Defensive	-4	-4	53	62	0	3.24373
+plain	1347	Rune warhammer	13599	Tormented Demon	0	Pound	crush	Accurate	-4	-4	53	62	0	2.30897
+plain	1347	Rune warhammer	13599	Tormented Demon	1	Pummel	crush	Aggressive	-4	-4	53	62	0	2.37110
+plain	1347	Rune warhammer	13599	Tormented Demon	2	Block	crush	Defensive	-4	-4	53	62	0	2.29541
 plain	1347	Rune warhammer	14176	Yama	0	Pound	crush	Accurate	-4	-4	53	62	0	0.39968
 plain	1347	Rune warhammer	14176	Yama	1	Pummel	crush	Aggressive	-4	-4	53	62	0	0.40479
 plain	1347	Rune warhammer	14176	Yama	2	Block	crush	Defensive	-4	-4	53	62	0	0.39179
@@ -6981,10 +6981,10 @@ plain	21009	Dragon sword	12078	Phantom Muspah	0	Stab	stab	Accurate	65	55	-2	63	0
 plain	21009	Dragon sword	12078	Phantom Muspah	1	Lunge	stab	Aggressive	65	55	-2	63	0	1.19505
 plain	21009	Dragon sword	12078	Phantom Muspah	2	Slash	slash	Aggressive	65	55	-2	63	0	1.38636
 plain	21009	Dragon sword	12078	Phantom Muspah	3	Block	stab	Defensive	65	55	-2	63	0	1.15666
-plain	21009	Dragon sword	13599	Tormented Demon	0	Stab	stab	Accurate	65	55	-2	63	0	4.86559
-plain	21009	Dragon sword	13599	Tormented Demon	1	Lunge	stab	Aggressive	65	55	-2	63	0	5.02604
-plain	21009	Dragon sword	13599	Tormented Demon	2	Slash	slash	Aggressive	65	55	-2	63	0	5.02604
-plain	21009	Dragon sword	13599	Tormented Demon	3	Block	stab	Defensive	65	55	-2	63	0	4.86559
+plain	21009	Dragon sword	13599	Tormented Demon	0	Stab	stab	Accurate	65	55	-2	63	0	3.51193
+plain	21009	Dragon sword	13599	Tormented Demon	1	Lunge	stab	Aggressive	65	55	-2	63	0	3.60574
+plain	21009	Dragon sword	13599	Tormented Demon	2	Slash	slash	Aggressive	65	55	-2	63	0	3.09928
+plain	21009	Dragon sword	13599	Tormented Demon	3	Block	stab	Defensive	65	55	-2	63	0	3.49064
 plain	21009	Dragon sword	14176	Yama	0	Stab	stab	Accurate	65	55	-2	63	0	1.60009
 plain	21009	Dragon sword	14176	Yama	1	Lunge	stab	Aggressive	65	55	-2	63	0	1.62058
 plain	21009	Dragon sword	14176	Yama	2	Slash	slash	Aggressive	65	55	-2	63	0	1.70258
@@ -7273,10 +7273,10 @@ plain	19675	Arclight	12078	Phantom Muspah	0	Chop	slash	Accurate	10	38	0	8	0	0.66
 plain	19675	Arclight	12078	Phantom Muspah	1	Slash	slash	Aggressive	10	38	0	8	0	0.69262
 plain	19675	Arclight	12078	Phantom Muspah	2	Lunge	stab	Controlled	10	38	0	8	0	0.38017
 plain	19675	Arclight	12078	Phantom Muspah	3	Block	slash	Defensive	10	38	0	8	0	0.65459
-plain	19675	Arclight	13599	Tormented Demon	0	Chop	slash	Accurate	10	38	0	8	0	5.84770
-plain	19675	Arclight	13599	Tormented Demon	1	Slash	slash	Aggressive	10	38	0	8	0	6.26344
-plain	19675	Arclight	13599	Tormented Demon	2	Lunge	stab	Controlled	10	38	0	8	0	5.84770
-plain	19675	Arclight	13599	Tormented Demon	3	Block	slash	Defensive	10	38	0	8	0	5.84770
+plain	19675	Arclight	13599	Tormented Demon	0	Chop	slash	Accurate	10	38	0	8	0	3.93776
+plain	19675	Arclight	13599	Tormented Demon	1	Slash	slash	Aggressive	10	38	0	8	0	4.19628
+plain	19675	Arclight	13599	Tormented Demon	2	Lunge	stab	Controlled	10	38	0	8	0	4.17200
+plain	19675	Arclight	13599	Tormented Demon	3	Block	slash	Defensive	10	38	0	8	0	3.91775
 plain	19675	Arclight	14176	Yama	0	Chop	slash	Accurate	10	38	0	8	0	2.73924
 plain	19675	Arclight	14176	Yama	1	Slash	slash	Aggressive	10	38	0	8	0	2.85775
 plain	19675	Arclight	14176	Yama	2	Lunge	stab	Controlled	10	38	0	8	0	1.72201
@@ -7565,10 +7565,10 @@ plain	27690	Voidwaker	12078	Phantom Muspah	0	Chop	slash	Accurate	70	80	-2	80	0	1
 plain	27690	Voidwaker	12078	Phantom Muspah	1	Slash	slash	Aggressive	70	80	-2	80	0	1.89327
 plain	27690	Voidwaker	12078	Phantom Muspah	2	Lunge	stab	Controlled	70	80	-2	80	0	1.41035
 plain	27690	Voidwaker	12078	Phantom Muspah	3	Block	slash	Defensive	70	80	-2	80	0	1.83935
-plain	27690	Voidwaker	13599	Tormented Demon	0	Chop	slash	Accurate	70	80	-2	80	0	5.52381
-plain	27690	Voidwaker	13599	Tormented Demon	1	Slash	slash	Aggressive	70	80	-2	80	0	5.69444
-plain	27690	Voidwaker	13599	Tormented Demon	2	Lunge	stab	Controlled	70	80	-2	80	0	5.69444
-plain	27690	Voidwaker	13599	Tormented Demon	3	Block	slash	Defensive	70	80	-2	80	0	5.52381
+plain	27690	Voidwaker	13599	Tormented Demon	0	Chop	slash	Accurate	70	80	-2	80	0	3.55729
+plain	27690	Voidwaker	13599	Tormented Demon	1	Slash	slash	Aggressive	70	80	-2	80	0	3.65100
+plain	27690	Voidwaker	13599	Tormented Demon	2	Lunge	stab	Controlled	70	80	-2	80	0	4.14188
+plain	27690	Voidwaker	13599	Tormented Demon	3	Block	slash	Defensive	70	80	-2	80	0	3.54159
 plain	27690	Voidwaker	14176	Yama	0	Chop	slash	Accurate	70	80	-2	80	0	2.30437
 plain	27690	Voidwaker	14176	Yama	1	Slash	slash	Aggressive	70	80	-2	80	0	2.32511
 plain	27690	Voidwaker	14176	Yama	2	Lunge	stab	Controlled	70	80	-2	80	0	1.91254
@@ -7857,10 +7857,10 @@ plain	29589	Emberlight	12078	Phantom Muspah	0	Chop	slash	Accurate	63	70	0	13	0	0
 plain	29589	Emberlight	12078	Phantom Muspah	1	Slash	slash	Aggressive	63	70	0	13	0	0.95991
 plain	29589	Emberlight	12078	Phantom Muspah	2	Lunge	stab	Controlled	63	70	0	13	0	0.72829
 plain	29589	Emberlight	12078	Phantom Muspah	3	Block	slash	Defensive	63	70	0	13	0	0.90992
-plain	29589	Emberlight	13599	Tormented Demon	0	Chop	slash	Accurate	63	70	0	13	0	6.26344
-plain	29589	Emberlight	13599	Tormented Demon	1	Slash	slash	Aggressive	63	70	0	13	0	6.67929
-plain	29589	Emberlight	13599	Tormented Demon	2	Lunge	stab	Controlled	63	70	0	13	0	6.67929
-plain	29589	Emberlight	13599	Tormented Demon	3	Block	slash	Defensive	63	70	0	13	0	6.26344
+plain	29589	Emberlight	13599	Tormented Demon	0	Chop	slash	Accurate	63	70	0	13	0	4.55843
+plain	29589	Emberlight	13599	Tormented Demon	1	Slash	slash	Aggressive	63	70	0	13	0	4.83107
+plain	29589	Emberlight	13599	Tormented Demon	2	Lunge	stab	Controlled	63	70	0	13	0	5.53966
+plain	29589	Emberlight	13599	Tormented Demon	3	Block	slash	Defensive	63	70	0	13	0	4.53029
 plain	29589	Emberlight	14176	Yama	0	Chop	slash	Accurate	63	70	0	13	0	3.79095
 plain	29589	Emberlight	14176	Yama	1	Slash	slash	Aggressive	63	70	0	13	0	3.84118
 plain	29589	Emberlight	14176	Yama	2	Lunge	stab	Controlled	63	70	0	13	0	3.24025
@@ -8149,10 +8149,10 @@ plain	1305	Dragon longsword	12078	Phantom Muspah	0	Chop	slash	Accurate	58	69	-2	
 plain	1305	Dragon longsword	12078	Phantom Muspah	1	Slash	slash	Aggressive	58	69	-2	71	0	1.31923
 plain	1305	Dragon longsword	12078	Phantom Muspah	2	Lunge	stab	Controlled	58	69	-2	71	0	0.93948
 plain	1305	Dragon longsword	12078	Phantom Muspah	3	Block	slash	Defensive	58	69	-2	71	0	1.27940
-plain	1305	Dragon longsword	13599	Tormented Demon	0	Chop	slash	Accurate	58	69	-2	71	0	4.15152
-plain	1305	Dragon longsword	13599	Tormented Demon	1	Slash	slash	Aggressive	58	69	-2	71	0	4.28431
-plain	1305	Dragon longsword	13599	Tormented Demon	2	Lunge	stab	Controlled	58	69	-2	71	0	4.15152
-plain	1305	Dragon longsword	13599	Tormented Demon	3	Block	slash	Defensive	58	69	-2	71	0	4.15152
+plain	1305	Dragon longsword	13599	Tormented Demon	0	Chop	slash	Accurate	58	69	-2	71	0	2.62788
+plain	1305	Dragon longsword	13599	Tormented Demon	1	Slash	slash	Aggressive	58	69	-2	71	0	2.70069
+plain	1305	Dragon longsword	13599	Tormented Demon	2	Lunge	stab	Controlled	58	69	-2	71	0	2.93510
+plain	1305	Dragon longsword	13599	Tormented Demon	3	Block	slash	Defensive	58	69	-2	71	0	2.61698
 plain	1305	Dragon longsword	14176	Yama	0	Chop	slash	Accurate	58	69	-2	71	0	1.60286
 plain	1305	Dragon longsword	14176	Yama	1	Slash	slash	Aggressive	58	69	-2	71	0	1.62014
 plain	1305	Dragon longsword	14176	Yama	2	Lunge	stab	Controlled	58	69	-2	71	0	1.27400
@@ -8441,10 +8441,10 @@ inq	4587	Dragon scimitar	12078	Phantom Muspah	0	Chop	slash	Accurate	8	67	36	78	5
 inq	4587	Dragon scimitar	12078	Phantom Muspah	1	Slash	slash	Aggressive	8	67	36	78	5	1.72235
 inq	4587	Dragon scimitar	12078	Phantom Muspah	2	Lunge	stab	Controlled	8	67	36	78	5	0.73622
 inq	4587	Dragon scimitar	12078	Phantom Muspah	3	Block	slash	Defensive	8	67	36	78	5	1.67330
-inq	4587	Dragon scimitar	13599	Tormented Demon	0	Chop	slash	Accurate	8	67	36	78	5	5.52381
-inq	4587	Dragon scimitar	13599	Tormented Demon	1	Slash	slash	Aggressive	8	67	36	78	5	5.69444
-inq	4587	Dragon scimitar	13599	Tormented Demon	2	Lunge	stab	Controlled	8	67	36	78	5	5.52381
-inq	4587	Dragon scimitar	13599	Tormented Demon	3	Block	slash	Defensive	8	67	36	78	5	5.52381
+inq	4587	Dragon scimitar	13599	Tormented Demon	0	Chop	slash	Accurate	8	67	36	78	5	3.48549
+inq	4587	Dragon scimitar	13599	Tormented Demon	1	Slash	slash	Aggressive	8	67	36	78	5	3.57843
+inq	4587	Dragon scimitar	13599	Tormented Demon	2	Lunge	stab	Controlled	8	67	36	78	5	3.43670
+inq	4587	Dragon scimitar	13599	Tormented Demon	3	Block	slash	Defensive	8	67	36	78	5	3.47120
 inq	4587	Dragon scimitar	14176	Yama	0	Chop	slash	Accurate	8	67	36	78	5	2.09633
 inq	4587	Dragon scimitar	14176	Yama	1	Slash	slash	Aggressive	8	67	36	78	5	2.11520
 inq	4587	Dragon scimitar	14176	Yama	2	Lunge	stab	Controlled	8	67	36	78	5	0.99837
@@ -8733,10 +8733,10 @@ inq	24417	Inquisitor's mace	12078	Phantom Muspah	0	Pound	crush	Accurate	52	-4	14
 inq	24417	Inquisitor's mace	12078	Phantom Muspah	1	Pummel	crush	Aggressive	52	-4	140	108	5	3.63252
 inq	24417	Inquisitor's mace	12078	Phantom Muspah	2	Spike	stab	Controlled	52	-4	140	108	5	1.42959
 inq	24417	Inquisitor's mace	12078	Phantom Muspah	3	Block	crush	Defensive	52	-4	140	108	5	3.54822
-inq	24417	Inquisitor's mace	13599	Tormented Demon	0	Pound	crush	Accurate	52	-4	140	108	5	6.85078
-inq	24417	Inquisitor's mace	13599	Tormented Demon	1	Pummel	crush	Aggressive	52	-4	140	108	5	7.01705
-inq	24417	Inquisitor's mace	13599	Tormented Demon	2	Spike	stab	Controlled	52	-4	140	108	5	6.68651
-inq	24417	Inquisitor's mace	13599	Tormented Demon	3	Block	crush	Defensive	52	-4	140	108	5	6.85078
+inq	24417	Inquisitor's mace	13599	Tormented Demon	0	Pound	crush	Accurate	52	-4	140	108	5	5.71972
+inq	24417	Inquisitor's mace	13599	Tormented Demon	1	Pummel	crush	Aggressive	52	-4	140	108	5	5.83519
+inq	24417	Inquisitor's mace	13599	Tormented Demon	2	Spike	stab	Controlled	52	-4	140	108	5	4.65926
+inq	24417	Inquisitor's mace	13599	Tormented Demon	3	Block	crush	Defensive	52	-4	140	108	5	5.69692
 inq	24417	Inquisitor's mace	14176	Yama	0	Pound	crush	Accurate	52	-4	140	108	5	1.49845
 inq	24417	Inquisitor's mace	14176	Yama	1	Pummel	crush	Aggressive	52	-4	140	108	5	1.50374
 inq	24417	Inquisitor's mace	14176	Yama	2	Spike	stab	Controlled	52	-4	140	108	5	1.93863
@@ -9025,10 +9025,10 @@ inq	11889	Zamorakian hasta	12078	Phantom Muspah	0	Lunge	stab	Controlled	85	65	10
 inq	11889	Zamorakian hasta	12078	Phantom Muspah	1	Swipe	slash	Controlled	85	65	103	87	5	1.75607
 inq	11889	Zamorakian hasta	12078	Phantom Muspah	2	Pound	crush	Controlled	85	65	103	87	5	2.50746
 inq	11889	Zamorakian hasta	12078	Phantom Muspah	3	Block	stab	Defensive	85	65	103	87	5	1.60214
-inq	11889	Zamorakian hasta	13599	Tormented Demon	0	Lunge	stab	Controlled	85	65	103	87	5	5.85586
-inq	11889	Zamorakian hasta	13599	Tormented Demon	1	Swipe	slash	Controlled	85	65	103	87	5	5.85586
-inq	11889	Zamorakian hasta	13599	Tormented Demon	2	Pound	crush	Controlled	85	65	103	87	5	5.85586
-inq	11889	Zamorakian hasta	13599	Tormented Demon	3	Block	stab	Defensive	85	65	103	87	5	5.85586
+inq	11889	Zamorakian hasta	13599	Tormented Demon	0	Lunge	stab	Controlled	85	65	103	87	5	4.40814
+inq	11889	Zamorakian hasta	13599	Tormented Demon	1	Swipe	slash	Controlled	85	65	103	87	5	3.67335
+inq	11889	Zamorakian hasta	13599	Tormented Demon	2	Pound	crush	Controlled	85	65	103	87	5	4.65912
+inq	11889	Zamorakian hasta	13599	Tormented Demon	3	Block	stab	Defensive	85	65	103	87	5	4.39842
 inq	11889	Zamorakian hasta	14176	Yama	0	Lunge	stab	Controlled	85	65	103	87	5	2.18720
 inq	11889	Zamorakian hasta	14176	Yama	1	Swipe	slash	Controlled	85	65	103	87	5	2.15661
 inq	11889	Zamorakian hasta	14176	Yama	2	Pound	crush	Controlled	85	65	103	87	5	1.03800
@@ -9287,9 +9287,9 @@ inq	21003	Elder maul	13685	Amoxliatl	2	Block	crush	Defensive	0	0	173	159	5	7.029
 inq	21003	Elder maul	12078	Phantom Muspah	0	Pound	crush	Accurate	0	0	173	159	5	3.60294
 inq	21003	Elder maul	12078	Phantom Muspah	1	Pummel	crush	Aggressive	0	0	173	159	5	3.59712
 inq	21003	Elder maul	12078	Phantom Muspah	2	Block	crush	Defensive	0	0	173	159	5	3.53181
-inq	21003	Elder maul	13599	Tormented Demon	0	Pound	crush	Accurate	0	0	173	159	5	5.89899
-inq	21003	Elder maul	13599	Tormented Demon	1	Pummel	crush	Aggressive	0	0	173	159	5	6.01190
-inq	21003	Elder maul	13599	Tormented Demon	2	Block	crush	Defensive	0	0	173	159	5	5.89899
+inq	21003	Elder maul	13599	Tormented Demon	0	Pound	crush	Accurate	0	0	173	159	5	5.06067
+inq	21003	Elder maul	13599	Tormented Demon	1	Pummel	crush	Aggressive	0	0	173	159	5	5.14033
+inq	21003	Elder maul	13599	Tormented Demon	2	Block	crush	Defensive	0	0	173	159	5	5.04379
 inq	21003	Elder maul	14176	Yama	0	Pound	crush	Accurate	0	0	173	159	5	1.49149
 inq	21003	Elder maul	14176	Yama	1	Pummel	crush	Aggressive	0	0	173	159	5	1.48909
 inq	21003	Elder maul	14176	Yama	2	Block	crush	Defensive	0	0	173	159	5	1.46205

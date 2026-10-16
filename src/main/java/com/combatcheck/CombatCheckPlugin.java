@@ -27,7 +27,12 @@ import net.runelite.api.Prayer;
 import net.runelite.api.Skill;
 import net.runelite.api.StructComposition;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.HitsplatApplied;
+import net.runelite.api.events.NpcChanged;
+import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.DBTableID;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.VarPlayerID;
@@ -36,8 +41,11 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.party.PartyService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.specialcounter.SpecialCounterUpdate;
+import net.runelite.client.plugins.specialcounter.SpecialWeapon;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 /**
@@ -134,6 +142,7 @@ public class CombatCheckPlugin extends Plugin
 	private StyleData.Monster fought;
 	/** The Slayer task id the name below was read for. */
 	private int taskId = -1;
+	private int taskBossId = -1;
 	private String taskName;
 	private volatile Advice advice;
 	private volatile List<Integer> missing = Collections.emptyList();
@@ -170,6 +179,8 @@ public class CombatCheckPlugin extends Plugin
 	/** The bolts reminder stays this long after the last attack: 25 ticks are 15 seconds, enough to step aside or wait out a phase. */
 	static final int BOLTS_AFTER_FIGHT_TICKS = 25;
 	private int targetId = -1;
+	/** The table's row of the monster fought ({@link #tableMonster}), while {@link #targetId} is not -1. */
+	private StyleData.Monster targetRow;
 	private int targetTicks;
 	private final AttentionTimer switchTimer = new AttentionTimer();
 	/** The pieces are shown for a while and then not again until a piece of armour is changed. */
@@ -189,6 +200,8 @@ public class CombatCheckPlugin extends Plugin
 	/** Where the darts last seen in the blowpipe are kept, for each account. */
 	private static final String CONFIG_GROUP = "combatcheck";
 	private static final String BLOWPIPE_DART_KEY = "blowpipeDart";
+	/** Whether the last Chambers of Xeric raid begun was a Challenge Mode one, for each account. */
+	private static final String COX_CHALLENGE_KEY = "coxChallengeMode";
 	/** The darts a blowpipe takes, by the name its Check message gives them, and their item. */
 	private static final String[] DART_NAMES = {"bronze dart", "iron dart", "steel dart", "black dart", "mithril dart",
 		"adamant dart", "rune dart", "amethyst dart", "dragon dart"};
@@ -241,6 +254,13 @@ public class CombatCheckPlugin extends Plugin
 	@Subscribe
 	public void onChatMessage(ChatMessage event)
 	{
+		Boolean challenge = CoxChallengeMode.read(event.getType(), event.getMessage());
+		if (challenge != null)
+		{
+			coxChallengeSeen = challenge;
+			configManager.setRSProfileConfiguration(CONFIG_GROUP, COX_CHALLENGE_KEY, challenge);
+			return;
+		}
 		if (event.getType() != net.runelite.api.ChatMessageType.GAMEMESSAGE && event.getType() != net.runelite.api.ChatMessageType.SPAM)
 		{
 			return;
@@ -315,6 +335,12 @@ public class CombatCheckPlugin extends Plugin
 	WeaponAdvice boltAdvice()
 	{
 		return boltAdvice;
+	}
+
+	/** True while the Defence the figures use counts a special attack estimated from what the client shows. */
+	boolean drainsEstimated()
+	{
+		return drainsEstimated;
 	}
 
 	/** The attack prayer reminder to draw now, or null. */
@@ -455,8 +481,32 @@ public class CombatCheckPlugin extends Plugin
 	private String bestPrayer(String combatClass)
 	{
 		return bestPrayer(combatClass, client.getRealSkillLevel(Skill.PRAYER), hasPiety(), hasChivalry(),
-			client.getVarbitValue(VarbitID.PRAYER_RIGOUR_UNLOCKED) == 1, client.getVarbitValue(VarbitID.PRAYER_DEADEYE_UNLOCKED) == 1,
-			client.getVarbitValue(VarbitID.PRAYER_AUGURY_UNLOCKED) == 1, client.getVarbitValue(VarbitID.PRAYER_MYSTIC_VIGOUR_UNLOCKED) == 1);
+			hasRigour(), client.getVarbitValue(VarbitID.PRAYER_DEADEYE_UNLOCKED) == 1,
+			hasAugury(), client.getVarbitValue(VarbitID.PRAYER_MYSTIC_VIGOUR_UNLOCKED) == 1);
+	}
+
+	/** Rigour: its scroll read and Defence 70 (OSRS Wiki, Rigour: "requiring 74 Prayer and 70 Defence to use"). */
+	private boolean hasRigour()
+	{
+		return unlockedByScroll(client.getVarbitValue(VarbitID.PRAYER_RIGOUR_UNLOCKED) == 1, client.getRealSkillLevel(Skill.DEFENCE));
+	}
+
+	/** Augury: its scroll read and Defence 70 (OSRS Wiki, Augury: "a Prayer level of 77 and a Defence level of 70"). */
+	private boolean hasAugury()
+	{
+		return unlockedByScroll(client.getVarbitValue(VarbitID.PRAYER_AUGURY_UNLOCKED) == 1, client.getRealSkillLevel(Skill.DEFENCE));
+	}
+
+	/** The Defence Rigour and Augury need besides their Prayer level. */
+	static final int RIGOUR_AUGURY_DEFENCE = 70;
+
+	/**
+	 * Whether Rigour or Augury can be used: the scroll is read with no requirement at all (OSRS Wiki, Dexterous and Arcane
+	 * prayer scroll: "There are no skill requirements to read the scroll"), the prayer needs Defence 70, like Piety's.
+	 */
+	static boolean unlockedByScroll(boolean scrollRead, int defence)
+	{
+		return scrollRead && defence >= RIGOUR_AUGURY_DEFENCE;
 	}
 
 	/** The Knight Waves training ground is finished at this value of its varbit. */
@@ -511,11 +561,67 @@ public class CombatCheckPlugin extends Plugin
 	@Override
 	protected void startUp() throws IOException
 	{
-		data = new StyleData();
+		final StyleData bundled = new StyleData();
+		data = bundled;
 		reset();
+		drains.clear();
+		estimate.clear();
+		drainsEstimated = false;
+		hydra.clear();
+		specWeapon = null;
+		specTarget = null;
+		specEnergy = -1;
+		hitpointsXp = -1;
+		running = true;
+		migrateConfig();
+		if (config.updateData())
+		{
+			// a newer copy of the same tables, when the plugin's repository has one: asked for once, off the client thread
+			RemoteData.fetch(okHttpClient, RemoteData.bundled(), bundled,
+				newer -> clientThread.invokeLater(() ->
+				{
+					if (running && data == bundled)
+					{
+						data = newer;
+					}
+				}));
+		}
 		overlayManager.add(overlay);
 		overlayManager.add(buttonOverlay);
 		overlayManager.add(missingOverlay);
+	}
+
+	/**
+	 * The settings of earlier versions: "Estimate specs outside the party" and "Estimate BGS outside the party" are one
+	 * option now, "Estimate specs" (key {@code estimateSpecs}), on when either was on; "Count defence drains" is gone (the
+	 * drains are always counted). The old keys are removed.
+	 */
+	private void migrateConfig()
+	{
+		String specs = configManager.getConfiguration(CONFIG_GROUP, "estimateSpecs");
+		String bgs = configManager.getConfiguration(CONFIG_GROUP, "estimateBgs");
+		Boolean merged = mergedEstimate(specs, bgs);
+		if (merged != null)
+		{
+			configManager.setConfiguration(CONFIG_GROUP, "estimateSpecs", merged);
+		}
+		if (bgs != null)
+		{
+			configManager.unsetConfiguration(CONFIG_GROUP, "estimateBgs");
+		}
+		if (configManager.getConfiguration(CONFIG_GROUP, "countDrains") != null)
+		{
+			configManager.unsetConfiguration(CONFIG_GROUP, "countDrains");
+		}
+	}
+
+	/**
+	 * The value "Estimate specs" takes from the two old options' saved values (null where never saved: the default, on
+	 * for the specs and off for the godsword), or null when what is saved for it already holds: on when either was on.
+	 */
+	static Boolean mergedEstimate(String specs, String bgs)
+	{
+		return "false".equals(specs) && "true".equals(bgs) ? Boolean.TRUE : null;
 	}
 
 	@Override
@@ -525,6 +631,7 @@ public class CombatCheckPlugin extends Plugin
 		overlayManager.remove(buttonOverlay);
 		overlayManager.remove(missingOverlay);
 		reset();
+		running = false;
 		data = null;
 	}
 
@@ -534,8 +641,8 @@ public class CombatCheckPlugin extends Plugin
 	private net.runelite.api.coords.WorldPoint targetAt;
 	/** The monster itself, to know when it dies or goes away. */
 	private NPC targetNpc;
-	/** After the monster dies it stays remembered this long on a Slayer task of it: 50 ticks are 30 seconds, for the next one. */
-	static final int AFTER_DEATH_TASK_TICKS = 50;
+	/** After the monster dies it stays remembered this long on a Slayer task of it, for the next one: 17 ticks are about 10 seconds. */
+	static final int AFTER_DEATH_TASK_TICKS = 17;
 	/** And this long otherwise: 2 ticks are about a second, so it is gone almost at once. */
 	static final int AFTER_DEATH_TICKS = 2;
 	private int deadTicks;
@@ -566,7 +673,532 @@ public class CombatCheckPlugin extends Plugin
 			// as a dead one, so it is forgotten after the same short time
 			targetNpc = null;
 		}
+		// whatever lowered its Defence is gone with it: a monster seen again is a new one to the game's index
+		drains.forget(event.getNpc().getIndex(), event.getNpc());
+		hydra.forget(event.getNpc());
 	}
+
+	/** An Alchemical Hydra that comes into the scene starts its phase with its damage reduction up. */
+	@Subscribe
+	public void onNpcSpawned(net.runelite.api.events.NpcSpawned event)
+	{
+		NPC npc = event.getNpc();
+		hydra.form(npc, npc.getId(), client.getTickCount());
+	}
+
+	/** The Alchemical Hydra's roar when the right vent sprays it: its damage reduction is off ({@link HydraShield}). */
+	@Subscribe
+	public void onOverheadTextChanged(net.runelite.api.events.OverheadTextChanged event)
+	{
+		if (event.getActor() instanceof NPC)
+		{
+			NPC npc = (NPC) event.getActor();
+			hydra.says(npc, npc.getId(), event.getOverheadText(), client.getTickCount());
+		}
+	}
+
+	/** The Defence drains counted on each monster around: the player's own special attacks and the party's. */
+	private final DrainTracker drains = new DrainTracker();
+	/**
+	 * The Elder maul and Dragon warhammer special attacks of players whose specs do not come through the party, and their
+	 * Bandos godsword's with its own option.
+	 */
+	private final SpecEstimate estimate = new SpecEstimate();
+	/** True while the Defence used for the monster fought counts one of those ({@link #drainsEstimated}). */
+	private volatile boolean drainsEstimated;
+	/** An estimate is taken out when the player's own message of it comes this many ticks after it, or fewer. */
+	static final int ESTIMATE_REPLACED_TICKS = 10;
+	/** Whether each Alchemical Hydra around has its damage reduction up: its hitsplats are a quarter of the damage. */
+	private final HydraShield hydra = new HydraShield();
+	/** The Chambers of Xeric raid the player is in, read each game tick; null outside it. */
+	private volatile CoxScaling.Raid raid;
+	/**
+	 * Whether the last raid begun was a Challenge Mode one, by the game's message ({@link CoxChallengeMode}); kept for
+	 * each account, so a relog or a restart inside the raid keeps it. Null until read from the account's profile.
+	 */
+	private Boolean coxChallengeSeen;
+	/** The Theatre of Blood's party, read each game tick; null when it is not known or the option is off. */
+	private volatile TobScaling.Raid tobRaid;
+	/** The Tombs of Amascut's raid level, party and path levels, read each game tick; null with the option off. */
+	private volatile ToaScaling.Raid toaRaid;
+	/** The special attack energy last seen, -1 before the first. */
+	private int specEnergy = -1;
+	/** The Hitpoints experience last seen, and the client cycle it last grew on (an Elder maul hit deals damage). */
+	private int hitpointsXp = -1;
+	private int hitpointsXpCycle;
+	/**
+	 * The player's own special attack waiting for its hitsplat: the weapon, the monster, the tick it lands on and how many
+	 * hitsplats it deals.
+	 */
+	private SpecialWeapon specWeapon;
+	private NPC specTarget;
+	private int specTick;
+	private int specSplats;
+	private boolean specDealtDamage;
+	private final List<Integer> specHits = new ArrayList<>();
+
+	/**
+	 * The player's own special attacks are found the way RuneLite's Special Attack Counter finds them: the energy
+	 * drops while one of its weapons is held, and the player's hitsplat lands on the monster attacked on the tick the
+	 * attack hits. They are counted here, in a party too: the party's message about them is not counted again.
+	 */
+	@Subscribe
+	public void onVarbitChanged(VarbitChanged event)
+	{
+		if (event.getVarpId() != VarPlayerID.SA_ENERGY)
+		{
+			return;
+		}
+		int energy = event.getValue();
+		boolean used = specEnergy != -1 && energy < specEnergy;
+		specEnergy = energy;
+		if (!used)
+		{
+			return;
+		}
+		// the player and the monsters are not updated yet: what is attacked is read once they are
+		final int serverTick = client.getTickCount();
+		clientThread.invokeLater(() ->
+		{
+			int item = weaponInHand();
+			specWeapon = specialWeapon(item);
+			specSplats = specialHits(item);
+			specHits.clear();
+			Actor target = client.getLocalPlayer() == null ? null : client.getLocalPlayer().getInteracting();
+			specTarget = specWeapon != null && target instanceof NPC ? (NPC) target : null;
+			if (specTarget == null)
+			{
+				specWeapon = null;
+				return;
+			}
+			specDealtDamage = hitpointsXpCycle == client.getGameCycle();
+			int distance = 1;
+			net.runelite.api.coords.WorldPoint at = client.getLocalPlayer().getWorldLocation();
+			net.runelite.api.coords.WorldArea area = specTarget.getWorldArea();
+			if (at != null && area != null)
+			{
+				distance = area.distanceTo(at);
+			}
+			specTick = serverTick + specWeapon.getHitDelay(distance);
+		});
+	}
+
+	/** The item id of the weapon in the player's hand, -1 for none. */
+	private int weaponInHand()
+	{
+		ItemContainer worn = client.getItemContainer(InventoryID.WORN);
+		Item weapon = worn == null ? null : worn.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
+		return weapon == null ? -1 : weapon.getId();
+	}
+
+	/**
+	 * The Special Attack Counter's weapon of an item, or null. Two that it does not list are read as the weapon whose special
+	 * attack they have (OSRS Wiki): the Arclight without charges, which "functions identically to Darklight" (Arclight,
+	 * Charging), and the Tonalztics of Ralos without charges, whose special attack hits once ({@link #specialHits}).
+	 * No party message comes for these two: that plugin does not see them.
+	 */
+	static SpecialWeapon specialWeapon(int itemId)
+	{
+		for (SpecialWeapon w : SpecialWeapon.values())
+		{
+			for (int id : w.getItemID())
+			{
+				if (id == itemId)
+				{
+					return w;
+				}
+			}
+		}
+		if (itemId == net.runelite.api.gameval.ItemID.ARCLIGHT_INACTIVE)
+		{
+			return SpecialWeapon.DARKLIGHT;
+		}
+		return itemId == net.runelite.api.gameval.ItemID.TONALZTICS_OF_RALOS_UNCHARGED ? SpecialWeapon.TONALZTICS_OF_RALOS
+			: null;
+	}
+
+	/**
+	 * How many hitsplats an item's special attack deals: two for the charged Tonalztics of Ralos, one for anything else,
+	 * the uncharged Tonalztics among them (OSRS Wiki, Tonalztics of Ralos: "Uncharged, it will only hit once").
+	 */
+	static int specialHits(int itemId)
+	{
+		return itemId == net.runelite.api.gameval.ItemID.TONALZTICS_OF_RALOS_CHARGED ? 2 : 1;
+	}
+
+	/**
+	 * The hits of a Tonalztics of Ralos' special attack that landed, of the last {@code splats} hitsplats on the tick it
+	 * hits (the weapon's come last, as the Special Attack Counter reads them); null while they have not all come.
+	 */
+	static Integer landedHits(List<Integer> hitsplats, int splats)
+	{
+		int n = hitsplats.size();
+		if (n < splats)
+		{
+			return null;
+		}
+		int landed = 0;
+		for (int i = n - splats; i < n; i++)
+		{
+			landed += Math.min(hitsplats.get(i), 1);
+		}
+		return landed;
+	}
+
+	@Subscribe
+	public void onStatChanged(StatChanged event)
+	{
+		if (event.getSkill() == Skill.HITPOINTS)
+		{
+			if (event.getXp() > hitpointsXp)
+			{
+				hitpointsXpCycle = client.getGameCycle();
+			}
+			hitpointsXp = event.getXp();
+		}
+	}
+
+	@Subscribe
+	public void onFakeXpDrop(FakeXpDrop event)
+	{
+		if (event.getSkill() == Skill.HITPOINTS)
+		{
+			hitpointsXpCycle = client.getGameCycle();
+		}
+	}
+
+	@Subscribe
+	public void onHitsplatApplied(HitsplatApplied event)
+	{
+		if (estimating() && targetNpc != null && event.getActor() == targetNpc)
+		{
+			net.runelite.api.Hitsplat h = event.getHitsplat();
+			estimate.hitsplat(client.getTickCount(), targetNpc, h.getAmount(), h.getHitsplatType(), h.isMine());
+		}
+		if (specTarget != null && event.getActor() == specTarget && event.getHitsplat().isMine()
+			&& client.getTickCount() == specTick)
+		{
+			specHits.add(event.getHitsplat().getAmount());
+		}
+	}
+
+	/** Counts the player's own special attack once it has landed, as the Special Attack Counter reads its hit. */
+	private void landSpecialAttack()
+	{
+		if (specWeapon == null || specTarget == null)
+		{
+			return;
+		}
+		int tick = client.getTickCount();
+		Integer hit = null;
+		if (specWeapon == SpecialWeapon.ELDER_MAUL)
+		{
+			// read from the Hitpoints experience on the tick of the attack, without waiting for the hitsplat
+			hit = specDealtDamage ? 1 : 0;
+		}
+		else if (tick == specTick)
+		{
+			int n = specHits.size();
+			if (specWeapon == SpecialWeapon.TONALZTICS_OF_RALOS)
+			{
+				// the hits that landed: two hitsplats for the charged weapon, one for the uncharged
+				hit = landedHits(specHits, specSplats);
+			}
+			else
+			{
+				// the weapon's hitsplat comes last, after a thrall's or vengeance's on the same tick
+				hit = n == 0 ? null : specHits.get(n - 1);
+			}
+			if (hit == null)
+			{
+				return; // the hitsplat may still come this tick
+			}
+		}
+		else if (tick < specTick)
+		{
+			return;
+		}
+		if (hit != null)
+		{
+			// the damage rolled, where the Alchemical Hydra's reduction cut the hitsplat
+			int rolled = HydraShield.rolled(specWeapon, hit, hydra.shielded(specTarget));
+			drains.add(specTarget.getIndex(), specTarget, specWeapon, rolled, DefenceDrains.tekton(specTarget.getId()),
+				client.getTickCount());
+		}
+		specWeapon = null;
+		specTarget = null;
+		specHits.clear();
+	}
+
+	@Inject
+	private PartyService party;
+
+	/**
+	 * A party member's special attack, sent by their Special Attack Counter (it is read only while this player has
+	 * that plugin on). The player's own comes back the same way and is skipped: it was counted when it landed.
+	 */
+	@Subscribe
+	public void onSpecialCounterUpdate(SpecialCounterUpdate event)
+	{
+		if (party.getLocalMember() == null || party.getLocalMember().getMemberId() == event.getMemberId())
+		{
+			return;
+		}
+		clientThread.invoke(() ->
+		{
+			if (event.getWorld() != client.getWorld())
+			{
+				return;
+			}
+			// this player's special attacks come exactly from now on: never estimated, and an estimate of this one is
+			// replaced by it (the party's members are counted once)
+			estimate.partySpec(event.getPlayerId());
+			NPC npc = client.getTopLevelWorldView().npcs().byIndex(event.getNpcIndex());
+			if (npc != null)
+			{
+				drains.dropEstimated(npc.getIndex(), npc, event.getPlayerId(), event.getWeapon(),
+					client.getTickCount() - ESTIMATE_REPLACED_TICKS);
+				int rolled = HydraShield.rolled(event.getWeapon(), event.getHit(), hydra.shielded(npc));
+				drains.add(npc.getIndex(), npc, event.getWeapon(), rolled, DefenceDrains.tekton(npc.getId()),
+					client.getTickCount());
+			}
+		});
+	}
+
+	/**
+	 * A monster that changes into one with another Defence (a new phase) keeps nothing of the drains, nor one whose Defence
+	 * the game gives back on the change (the Phantom Muspah's shield, Galvek's phases: {@link DefenceDrains#resets}).
+	 */
+	@Subscribe
+	public void onNpcChanged(NpcChanged event)
+	{
+		NPC npc = event.getNpc();
+		hydra.form(npc, npc.getId(), client.getTickCount());
+		StyleData d = data;
+		if (d == null || event.getOld() == null)
+		{
+			return;
+		}
+		StyleData.Monster before = d.monster(event.getOld().getId(), event.getOld().getName());
+		StyleData.Monster now = tableMonster(npc);
+		if (before == null || now == null || before.level != now.level
+			|| DefenceDrains.resets(event.getOld().getId(), npc.getId()))
+		{
+			drains.forget(npc.getIndex(), npc);
+		}
+	}
+
+	/**
+	 * The monster's levels in this fight: scaled for the raid it is in (the Chambers of Xeric for the party and mode,
+	 * the Theatre of Blood for the party, the Tombs of Amascut for the raid level, path and party), then Araxxor's
+	 * enrage; then, for the monster fought, lowered by the special attacks counted on it, in the order they landed
+	 * ({@link DefenceDrains#left}: none for a fight immune to drains, the floors, what the Nightmares win back).
+	 */
+	private DefenceDrains.Levels levels(StyleData.Monster monster)
+	{
+		DefenceDrains.Levels full = MonsterLevels.scaled(monster, raid, tobRaid, toaRaid);
+		full = MonsterLevels.enraged(monster, full, healthNow(monster, full.hitpoints));
+		full = MonsterLevels.wardenEnraged(monster, full, wardenEnraged);
+		NPC npc = targetNpc;
+		if (npc == null || tableMonster(npc) != monster)
+		{
+			return full;
+		}
+		return DefenceDrains.left(monster, npc.getId(), full, drains.of(npc.getIndex(), npc),
+			drains.ticksSince(npc.getIndex(), npc, client.getTickCount()));
+	}
+
+	/**
+	 * The Chambers of Xeric's scaling while the player is inside the raid, read from the game: the party size the
+	 * raid was scaled for, Challenge Mode (its varbit, or the game's message at the raid's start: the varbit reads 0
+	 * for a member who is not the leader) and the party's highest combat level. The highest Hitpoints level has no
+	 * varbit: 99 is taken, and 99 Mining for each member (the Guardians' hitpoints). Null outside the raid or with
+	 * the option off.
+	 */
+	private CoxScaling.Raid raidNow()
+	{
+		if (!config.coxScaling() || client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON) != 1)
+		{
+			return null;
+		}
+		int size = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE_SCALED);
+		if (size <= 0)
+		{
+			size = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSIZE);
+		}
+		size = Math.max(1, size);
+		int combat = client.getVarbitValue(VarbitID.RAIDS_CLIENT_HIGHESTCOMBAT);
+		boolean challenge = client.getVarbitValue(VarbitID.RAIDS_CHALLENGE_MODE) != 0 || challengeSeen();
+		CoxScaling.Raid now = new CoxScaling.Raid(size, challenge, combat > 0 ? combat : 126, 99, 99 * size);
+		return now.equals(raid) ? raid : now;
+	}
+
+	/** {@link #coxChallengeSeen}, read from the account's profile the first time. */
+	private boolean challengeSeen()
+	{
+		if (coxChallengeSeen == null)
+		{
+			coxChallengeSeen = "true".equals(configManager.getRSProfileConfiguration(CONFIG_GROUP, COX_CHALLENGE_KEY));
+		}
+		return coxChallengeSeen;
+	}
+
+	/**
+	 * Whether the Warden of the Tombs of Amascut's third phase is enraged: the phantom of Amascut behind it opens her mouth
+	 * when it does (OSRS Wiki, Phantom (Tombs of Amascut): "once the Warden reaches critical health, she will open her
+	 * mouth"; the open form is the NPC RuneLite names TOA_AMASCUT_P3_ENRAGE, 11768). Read each game tick.
+	 */
+	private boolean wardenEnraged;
+
+	/**
+	 * Reads the phantom's form. On entering the enrage the Warden's Defence is set to 180 (OSRS Wiki, Tumeken's Warden):
+	 * the drains counted on it before are dropped.
+	 */
+	private void readWardenEnrage()
+	{
+		boolean now = false;
+		if (client.getGameState() == GameState.LOGGED_IN)
+		{
+			for (NPC npc : client.getTopLevelWorldView().npcs())
+			{
+				if (npc != null && npc.getId() == net.runelite.api.gameval.NpcID.TOA_AMASCUT_P3_ENRAGE)
+				{
+					now = true;
+					break;
+				}
+			}
+		}
+		if (now && !wardenEnraged && data != null)
+		{
+			for (NPC npc : client.getTopLevelWorldView().npcs())
+			{
+				StyleData.Monster m = npc == null ? null : tableMonster(npc);
+				if (m != null && m.enragedDefence > 0)
+				{
+					drains.forget(npc.getIndex(), npc);
+				}
+			}
+		}
+		wardenEnraged = now;
+	}
+
+	/** The varbits of the Theatre of Blood's party: one for each of the five places, 0 where nobody is. */
+	private static final int[] TOB_PARTY = {VarbitID.TOB_CLIENT_P0, VarbitID.TOB_CLIENT_P1, VarbitID.TOB_CLIENT_P2,
+		VarbitID.TOB_CLIENT_P3, VarbitID.TOB_CLIENT_P4};
+	/** The varbits of the Tombs of Amascut's party: one for each of the eight places, 0 where nobody is. */
+	private static final int[] TOA_PARTY = {VarbitID.TOA_CLIENT_P0, VarbitID.TOA_CLIENT_P1, VarbitID.TOA_CLIENT_P2,
+		VarbitID.TOA_CLIENT_P3, VarbitID.TOA_CLIENT_P4, VarbitID.TOA_CLIENT_P5, VarbitID.TOA_CLIENT_P6, VarbitID.TOA_CLIENT_P7};
+
+	/** How many of these varbits are not 0: the members of a raid's party, by the health orbs the raid shows. */
+	private int members(int[] varbits)
+	{
+		int n = 0;
+		for (int varbit : varbits)
+		{
+			n += client.getVarbitValue(varbit) != 0 ? 1 : 0;
+		}
+		return n;
+	}
+
+	/**
+	 * The Theatre of Blood's party, read from the game: the places of its party that hold someone (RuneLite's
+	 * THEATRE_OF_BLOOD_ORB varbits, alive or dead). Null with the option off or when no place holds anyone: then the
+	 * hitpoints stay as the table has them. Only the Theatre's own monsters are scaled with it.
+	 */
+	private TobScaling.Raid tobNow()
+	{
+		if (!config.tobScaling())
+		{
+			return null;
+		}
+		int size = members(TOB_PARTY);
+		TobScaling.Raid now = size == 0 ? null : new TobScaling.Raid(size);
+		return now != null && now.equals(tobRaid) ? tobRaid : now;
+	}
+
+	/**
+	 * The Tombs of Amascut's raid level, party and path levels, read from the game (TOA_CLIENT_RAID_LEVEL, the places of
+	 * the party that hold someone, and each path's level). Null with the option off. A party that cannot be read is
+	 * left out of the hitpoints (0 members). Only the raid's own monsters are scaled with it.
+	 */
+	private ToaScaling.Raid toaNow()
+	{
+		if (!config.toaScaling())
+		{
+			return null;
+		}
+		ToaScaling.Raid now = new ToaScaling.Raid(client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL), members(TOA_PARTY),
+			client.getVarbitValue(VarbitID.TOA_CLIENT_CRONDIS_LEVEL), client.getVarbitValue(VarbitID.TOA_CLIENT_SCABARAS_LEVEL),
+			client.getVarbitValue(VarbitID.TOA_CLIENT_HET_LEVEL), client.getVarbitValue(VarbitID.TOA_CLIENT_APMEKEN_LEVEL));
+		return now.equals(toaRaid) ? toaRaid : now;
+	}
+
+	/** True with "Estimate specs" on. */
+	private boolean estimating()
+	{
+		return config.estimateSpecs();
+	}
+
+	/**
+	 * The estimated special attacks whose hit has landed by this tick, counted in the drains by the tick a party message of
+	 * them would come; and whether the Defence of the monster fought now counts one. With the option off nothing is kept.
+	 */
+	private void countEstimates()
+	{
+		if (!estimating())
+		{
+			estimate.clear();
+			drains.dropEstimated();
+			drainsEstimated = false;
+			return;
+		}
+		estimate.bgs(true);
+		for (SpecEstimate.Landed l : estimate.resolve(client.getTickCount()))
+		{
+			// a Bandos godsword's drain is the damage rolled, where the Alchemical Hydra's reduction cut the hitsplat
+			int hit = HydraShield.rolled(l.weapon, l.hit, hydra.shielded(l.npc));
+			drains.addEstimated(l.npcIndex, l.npc, l.weapon, hit, l.tekton, l.tick, l.playerId);
+		}
+		NPC npc = targetNpc;
+		StyleData.Monster monster = npc == null || data == null ? null : tableMonster(npc);
+		drainsEstimated = npc != null && monster != null && drains.estimated(npc.getIndex(), npc)
+			&& drains.of(npc.getIndex(), npc) != null && !DefenceDrains.immune(monster) && !DefenceDrains.immune(npc.getId());
+	}
+
+	/**
+	 * The players whose target is the monster fought, looked at once a tick for the start of an Elder maul or Dragon
+	 * warhammer special attack, or a Bandos godsword's ({@link SpecEstimate}). Not
+	 * with the game's hitsplat tinting turned off: the hitsplats of the others were measured with it on only.
+	 */
+	private void lookForSpecs()
+	{
+		NPC npc = targetNpc;
+		Player me = client.getLocalPlayer();
+		java.util.Set<Integer> aimingNow = new java.util.HashSet<>();
+		if (estimating() && npc != null && me != null && client.getVarbitValue(VarbitID.HITSPLAT_TINT_DISABLED) == 0)
+		{
+			boolean tekton = DefenceDrains.tekton(npc.getId());
+			for (Player p : SpecEstimate.aiming(client.getTopLevelWorldView().players(), Player::getInteracting, npc))
+			{
+				aimingNow.add(p.getId());
+				net.runelite.api.PlayerComposition composition = p.getPlayerComposition();
+				int weapon = composition == null ? -1 : composition.getEquipmentId(net.runelite.api.kit.KitType.WEAPON);
+				estimate.seen(client.getTickCount(), p.getId(), p == me, p.getAnimation(), p.getAnimationFrame(), weapon,
+					npc.getIndex(), npc, tekton);
+			}
+		}
+		estimate.endTick(aimingNow);
+	}
+
+	@Subscribe
+	public void onAnimationChanged(net.runelite.api.events.AnimationChanged event)
+	{
+		if (estimating() && targetNpc != null && event.getActor() instanceof Player)
+		{
+			estimate.animationSet(((Player) event.getActor()).getId());
+		}
+	}
+
 
 	/** True when what the player faces is a monster to fight that is not the remembered one. */
 	static boolean attacksAnother(Object facing, Object remembered, boolean canBeFought)
@@ -609,6 +1241,15 @@ public class CombatCheckPlugin extends Plugin
 			piecesShown.arm();
 			noPrayerShown.arm();
 			wornBefore = null;
+			drains.clear();
+			estimate.clear();
+			drainsEstimated = false;
+			hydra.clear();
+			specWeapon = null;
+			specTarget = null;
+			specEnergy = -1;
+			// read again from the profile of the account logged in next
+			coxChallengeSeen = null;
 		}
 	}
 
@@ -632,6 +1273,17 @@ public class CombatCheckPlugin extends Plugin
 	{
 		try
 		{
+			landSpecialAttack();
+			countEstimates();
+			readWardenEnrage();
+			CoxScaling.Raid before = raid;
+			raid = client.getGameState() == GameState.LOGGED_IN ? raidNow() : null;
+			tobRaid = client.getGameState() == GameState.LOGGED_IN ? tobNow() : null;
+			toaRaid = client.getGameState() == GameState.LOGGED_IN ? toaNow() : null;
+			if (raid != before)
+			{
+				log.debug("Chambers of Xeric raid: {}", raid);
+			}
 			if (client.getGameState() != GameState.LOGGED_IN || client.getLocalPlayer() == null || data == null)
 			{
 				advice = null;
@@ -657,6 +1309,7 @@ public class CombatCheckPlugin extends Plugin
 			}
 			readBlowpipe();
 			update(client.getTickCount());
+			lookForSpecs();
 		}
 		catch (RuntimeException e)
 		{
@@ -675,29 +1328,41 @@ public class CombatCheckPlugin extends Plugin
 	}
 
 	/**
-	 * True while the player is fighting another player: they are targeting one, or one is targeting them,
-	 * now or within the last {@link #PLAYER_FIGHT_TICKS} ticks.
+	 * True while the player is fighting another player: where players can attack each other, they are targeting one, or
+	 * one is targeting them, now or within the last {@link #PLAYER_FIGHT_TICKS} ticks.
 	 */
 	private boolean fightingPlayer(int tick)
 	{
 		Player me = client.getLocalPlayer();
-		boolean now = me.getInteracting() instanceof Player;
-		if (!now)
+		boolean targeting = me.getInteracting() instanceof Player;
+		boolean targeted = false;
+		for (Player other : client.getTopLevelWorldView().players())
 		{
-			for (Player other : client.getTopLevelWorldView().players())
+			if (other != null && other != me && other.getInteracting() == me)
 			{
-				if (other != null && other != me && other.getInteracting() == me)
-				{
-					now = true;
-					break;
-				}
+				targeted = true;
+				break;
 			}
 		}
-		if (now)
+		// the Wilderness, or wherever the game sets its PvP area varbit (a PvP world): as RuneLite's Player Indicators
+		// decides its "PvP" setting (PlayerIndicatorsService: Varbits.IN_WILDERNESS or VarbitID.PVP_AREA_CLIENT is 1)
+		boolean pvp = client.getVarbitValue(net.runelite.api.Varbits.IN_WILDERNESS) == 1
+			|| client.getVarbitValue(VarbitID.PVP_AREA_CLIENT) == 1;
+		if (playerFightNow(pvp, targeting, targeted))
 		{
 			lastPlayerFight = tick;
 		}
 		return stillFightingPlayer(tick, lastPlayerFight);
+	}
+
+	/**
+	 * Whether this tick is one of a fight with a player. The game's "interacting" is also following and trading
+	 * (RuneLite API, Actor.getInteracting: "Targetting a player to trade; Following a player"), so outside the places
+	 * where players can attack each other a player targeting the player, or targeted, is an alt or a friend following.
+	 */
+	static boolean playerFightNow(boolean pvpArea, boolean targetingPlayer, boolean targetedByPlayer)
+	{
+		return pvpArea && (targetingPlayer || targetedByPlayer);
 	}
 
 	/** Whether a fight with a player seen at {@code last} (-1 for never) still silences the plugin at {@code tick}. */
@@ -715,10 +1380,21 @@ public class CombatCheckPlugin extends Plugin
 		return bossOnly && combatLevel < bossLevel ? 0 : delay;
 	}
 
-	/** The table's row for an NPC, by its id or else by its name; null when the table has neither. */
+	/**
+	 * The table's row for an NPC, by its id or else by its name, and for the fight the game is in (an awakened boss of
+	 * Desert Treasure II, by the most hitpoints the game's boss health display shows for it); null when the table has
+	 * neither.
+	 */
 	private StyleData.Monster tableMonster(NPC npc)
 	{
-		return npc == null ? null : data.monster(npc.getId(), npc.getName());
+		return npc == null ? null : data.inFight(data.monster(npc.getId(), npc.getName()), displayedHitpoints(npc));
+	}
+
+	/** The most hitpoints the game's boss health display shows for this NPC; 0 when it shows another one or none. */
+	private int displayedHitpoints(NPC npc)
+	{
+		return client.getVarpValue(VarPlayerID.HPBAR_HUD_NPC) == npc.getId()
+			? client.getVarbitValue(net.runelite.api.gameval.VarbitID.HPBAR_HUD_BASEHP) : 0;
 	}
 
 	private void update(int tick)
@@ -729,8 +1405,10 @@ public class CombatCheckPlugin extends Plugin
 		if (interacting instanceof NPC && !((NPC) interacting).isDead() && !isFollower((NPC) interacting)
 			&& tableMonster((NPC) interacting) != null)
 		{
-			// the id of the table's row: an id the table does not list is found by the monster's name
-			targetId = tableMonster((NPC) interacting).id;
+			// the id of the table's row: an id the table does not list is found by the monster's name; the row itself,
+			// which is the awakened fight's when the game is in one
+			targetRow = tableMonster((NPC) interacting);
+			targetId = targetRow.id;
 			targetNpc = (NPC) interacting;
 			targetTicks = 0;
 			deadTicks = 0;
@@ -747,7 +1425,7 @@ public class CombatCheckPlugin extends Plugin
 			targetId = -1;
 			targetNpc = null;
 		}
-		StyleData.Monster monster = targetId == -1 ? null : data.monster(targetId);
+		StyleData.Monster monster = targetId == -1 ? null : targetRow;
 
 		ItemContainer worn = client.getItemContainer(InventoryID.WORN);
 		int weaponId = -1;
@@ -964,32 +1642,55 @@ public class CombatCheckPlugin extends Plugin
 	/** The monster as the damage formulas need it, with whether the player is on a task of it. */
 	private SetCalc.Target target(StyleData.Monster monster)
 	{
-		SetCalc.Target t = monster.target();
+		// its levels in this fight: the raid's scaling, then the special attacks counted on it
+		DefenceDrains.Levels levels = levels(monster);
+		SetCalc.Target t = monster.target(levels);
 		t.onTask = Boolean.TRUE.equals(onTask(monster));
 		t.inWilderness = client.getVarbitValue(net.runelite.api.Varbits.IN_WILDERNESS) == 1;
 		t.undead = monster.undead;
-		// how much health it has now: the ruby bolts' effect depends on it. A boss with the game's own health display
-		// gives it exactly; otherwise the bar's fraction of the table's; and while neither shows (walking away from an
-		// attack, the bar hidden), the last health seen on this monster, never its full health
-		Actor fighting = client.getLocalPlayer().getInteracting();
+		// the Tombs of Amascut's raid level, which multiplies the defence roll (not for Kephri's overlords)
+		t.toaInvocation = ToaScaling.invocation(monster, toaRaid);
+		t.hitpointsNow = healthNow(monster, levels.hitpoints);
+		t.defencelessShare = defencelessShare(monster);
+		return t;
+	}
+
+	/**
+	 * The share of the attacks that meet the monster without defence, every one of them landing: the Tormented Demon's,
+	 * half until its flames are read from the game (Weapons.TORMENTED_DEMON_DEFENCELESS), for the figures and for the
+	 * attack style alike. The one place to give it the game's reading.
+	 */
+	private static double defencelessShare(StyleData.Monster monster)
+	{
+		return Weapons.defencelessShare(monster.name);
+	}
+
+	/**
+	 * How much health the monster has now, 0 when that is not known: the ruby bolts' effect, the Keris partisan of the
+	 * sun's and Araxxor's enrage depend on it. A boss with the game's own health display gives it exactly; otherwise the
+	 * bar's fraction of {@code hitpoints} (its full hitpoints, scaled for the raid); and while neither shows (walking
+	 * away from an attack, the bar hidden), the last health seen on this monster, never its full health.
+	 */
+	private int healthNow(StyleData.Monster monster, int hitpoints)
+	{
+		Actor fighting = client.getLocalPlayer() == null ? null : client.getLocalPlayer().getInteracting();
 		int hud = client.getVarpValue(VarPlayerID.HPBAR_HUD_NPC);
 		int seen = 0;
-		if (hud > 0 && data.monster(hud) == monster && client.getVarbitValue(net.runelite.api.gameval.VarbitID.HPBAR_HUD_BASEHP) > 0)
+		if (hud > 0 && hud == monster.id && client.getVarbitValue(net.runelite.api.gameval.VarbitID.HPBAR_HUD_BASEHP) > 0)
 		{
 			seen = client.getVarbitValue(net.runelite.api.gameval.VarbitID.HPBAR_HUD_HP);
 		}
 		if (seen <= 0 && fighting instanceof NPC && tableMonster((NPC) fighting) == monster
 			&& fighting.getHealthRatio() > 0 && fighting.getHealthScale() > 0)
 		{
-			seen = Math.max(1, (int) ((long) monster.hitpoints * fighting.getHealthRatio() / fighting.getHealthScale()));
+			seen = Math.max(1, (int) ((long) hitpoints * fighting.getHealthRatio() / fighting.getHealthScale()));
 		}
 		if (seen > 0)
 		{
 			healthOf = monster;
 			healthSeen = seen;
 		}
-		t.hitpointsNow = healthOf == monster ? healthSeen : 0;
-		return t;
+		return healthOf == monster ? healthSeen : 0;
 	}
 
 	/**
@@ -1001,7 +1702,7 @@ public class CombatCheckPlugin extends Plugin
 		SwitchSet.Piece ammo = shotAmmo(on, weaponId);
 		int worn = ammo == null ? 0 : SetCalc.boltKind(ammo.name);
 		SwitchSet.Piece inHand = on.length > SwitchSet.WEAPON ? on[SwitchSet.WEAPON] : null;
-		if (target.hitpointsNow <= 0 || !"bolts".equals(ammoKind(data.category(weaponId), inHand == null ? null : inHand.name)))
+		if (target.hitpointsNow <= 0 || !"bolts".equals(Weapons.ammoKind(data.category(weaponId), inHand == null ? null : inHand.name)))
 		{
 			return null;
 		}
@@ -1048,7 +1749,7 @@ public class CombatCheckPlugin extends Plugin
 		// the other kind may also sit in Dizana's quiver, under the slot's bolts: taking those off switches to it
 		List<SwitchSet.Piece> others = new ArrayList<>();
 		SwitchSet.Piece slot = on.length > SwitchSet.AMMO ? on[SwitchSet.AMMO] : null;
-		SwitchSet.Piece quiver = ammo == slot && client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO_AMOUNT) > 0
+		SwitchSet.Piece quiver = ammo == slot && quiverInUse(wearsQuiver(on), client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO_AMOUNT))
 			? piece(client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO)) : null;
 		if (quiver != null)
 		{
@@ -1087,32 +1788,86 @@ public class CombatCheckPlugin extends Plugin
 	 */
 	private Boolean onTask(StyleData.Monster monster)
 	{
-		if (client.getVarpValue(VarPlayerID.SLAYER_COUNT) <= 0)
+		int target = client.getVarpValue(VarPlayerID.SLAYER_TARGET);
+		return onTask(client.getVarpValue(VarPlayerID.SLAYER_COUNT), target == BOSS_TASK,
+			client.getVarbitValue(VarbitID.SLAYER_MASTER), client.getVarbitValue(net.runelite.api.Varbits.IN_WILDERNESS) == 1,
+			monster == null ? null : taskName(), monster == null ? null : monster.name,
+			monster == null ? null : monster.slayer, monster != null && monster.awakened, data.slayerCategories());
+	}
+
+	/** The game's Slayer task id of the boss tasks (OSRS Wiki, RuneScape:Varplayer/395: "A value of 98 corresponds to boss tasks"). */
+	static final int BOSS_TASK = 98;
+	/** The Slayer masters by the game's SLAYER_MASTER varbit (OSRS Wiki, RuneScape:Varbit/4067): Krystilia 7, Konar 8. */
+	static final int KRYSTILIA = 7;
+	static final int KONAR = 8;
+
+	/**
+	 * Whether the monster is of the player's Slayer task, from what the game says: TRUE, FALSE, or null when that is not
+	 * known. No task left is FALSE; a task of Krystilia's counts only inside the Wilderness (OSRS Wiki, Slayer helmet: the
+	 * bonuses "do not apply to monsters outside of the designated assigned area (applicable when receiving tasks from
+	 * Krystilia or Konar quo Maten)"); a boss task by the boss the game names ({@link SetEffects#onBossTask}), any other
+	 * by the task's category ({@link SetEffects#onTask}). Konar's location is not checked: nothing tells where its area is.
+	 *
+	 * @param remaining  the game's SLAYER_COUNT
+	 * @param bossTask   whether the game's SLAYER_TARGET is the boss task
+	 * @param master     the game's SLAYER_MASTER
+	 * @param taskName   the task's name in the game's table; for a boss task, the boss's
+	 */
+	static Boolean onTask(int remaining, boolean bossTask, int master, boolean inWilderness, String taskName,
+		String monsterName, java.util.Set<String> monsterCategories, boolean awakened, java.util.Set<String> knownCategories)
+	{
+		if (remaining <= 0)
 		{
 			return Boolean.FALSE;
 		}
-		if (monster == null)
+		if (monsterName == null)
 		{
 			return null;
 		}
-		return SetEffects.onTask(taskName(), monster.slayer, data.slayerCategories());
+		if (master == KRYSTILIA && !inWilderness)
+		{
+			return Boolean.FALSE;
+		}
+		return bossTask ? SetEffects.onBossTask(taskName, monsterName, awakened, master == KONAR)
+			: SetEffects.onTask(taskName, monsterCategories, knownCategories);
 	}
 
-	/** The name of the current Slayer task, from the game's table of tasks; null when it cannot be read. */
+	/**
+	 * The name of the current Slayer task, from the game's table of tasks; null when it cannot be read. For a boss task,
+	 * the boss's: the game's SLAYER_TARGET_BOSSID varbit indexes the boss in its table of boss tasks, whose row points at
+	 * the task named (OSRS Wiki, RuneScape:Varplayer/395; read the way RuneLite's Slayer plugin reads it, SlayerPlugin
+	 * .updateTask: DBTableID.SlayerTaskSublist by COL_TASK_SUBTABLE_ID, then COL_TASK, then COL_NAME_UPPERCASE).
+	 */
 	private String taskName()
 	{
 		int id = client.getVarpValue(VarPlayerID.SLAYER_TARGET);
-		if (id == taskId)
+		int boss = id == BOSS_TASK ? client.getVarbitValue(VarbitID.SLAYER_TARGET_BOSSID) : -1;
+		if (id == taskId && boss == taskBossId)
 		{
 			return taskName;
 		}
 		String name = null;
 		try
 		{
-			List<Integer> rows = client.getDBRowsByValue(DBTableID.SlayerTask.ID, DBTableID.SlayerTask.COL_ID, 0, id);
-			if (rows != null && !rows.isEmpty())
+			Integer row = null;
+			if (id == BOSS_TASK)
 			{
-				Object[] field = client.getDBTableField(rows.get(0), DBTableID.SlayerTask.COL_NAME_UPPERCASE, 0);
+				List<Integer> rows = client.getDBRowsByValue(DBTableID.SlayerTaskSublist.ID,
+					DBTableID.SlayerTaskSublist.COL_TASK_SUBTABLE_ID, 0, boss);
+				if (rows != null && !rows.isEmpty())
+				{
+					Object[] task = client.getDBTableField(rows.get(0), DBTableID.SlayerTaskSublist.COL_TASK, 0);
+					row = task != null && task.length > 0 && task[0] instanceof Integer ? (Integer) task[0] : null;
+				}
+			}
+			else
+			{
+				List<Integer> rows = client.getDBRowsByValue(DBTableID.SlayerTask.ID, DBTableID.SlayerTask.COL_ID, 0, id);
+				row = rows != null && !rows.isEmpty() ? rows.get(0) : null;
+			}
+			if (row != null)
+			{
+				Object[] field = client.getDBTableField(row, DBTableID.SlayerTask.COL_NAME_UPPERCASE, 0);
 				name = field != null && field.length > 0 && field[0] != null ? field[0].toString() : null;
 			}
 		}
@@ -1121,6 +1876,7 @@ public class CombatCheckPlugin extends Plugin
 			log.debug("could not read the slayer task", e);
 		}
 		taskId = id;
+		taskBossId = boss;
 		taskName = name;
 		return name;
 	}
@@ -1138,9 +1894,10 @@ public class CombatCheckPlugin extends Plugin
 		{
 			return null;
 		}
-		if (SetEffects.isSpecialAttackWeapon(now.weaponName))
+		if (SetEffects.pointsAtNoOtherWeapon(now.weaponName, now.spell))
 		{
-			// a weapon taken out for its special attack: going back to the other one is the player's own timing
+			// a weapon taken out for its special attack: going back to the other one is the player's own timing; a weapon
+			// or a spell that hits several monsters at once (the Venator bow, a burst or a barrage): the figures are for one
 			return null;
 		}
 		SetCalc.Player stats = stats();
@@ -1164,9 +1921,19 @@ public class CombatCheckPlugin extends Plugin
 		{
 			current = Math.max(current, SetCalc.perTick(finished, statsNow, target, false));
 		}
+		if (target.verzikP1)
+		{
+			current = verzikP1Rate(current, classNow, now.speed);
+			if (current < 0)
+			{
+				return null;
+			}
+		}
 		SetEffects.Context mine = context;
 		WeaponAdvice best = null;
 		List<Integer> seen = new ArrayList<>();
+		// the NPC itself, for the forms that pray against a class (Akkha): the table's row may be another id of it
+		int npcId = targetNpc != null ? targetNpc.getId() : monster.id;
 		try
 		{
 			for (Item item : inventory.getItems())
@@ -1186,7 +1953,7 @@ public class CombatCheckPlugin extends Plugin
 				SetCalc.Loadout bare = new SetCalc.Loadout();
 				bare.category = data.category(id);
 				String cls = SetCalc.combatClass(bare);
-				if (cls == null || (sameClassOnly && !cls.equals(SetCalc.combatClass(now))))
+				if (cls == null || (sameClassOnly && !cls.equals(SetCalc.combatClass(now))) || !classAllowed(npcId, cls))
 				{
 					continue;
 				}
@@ -1220,8 +1987,9 @@ public class CombatCheckPlugin extends Plugin
 					ammo.addAll(carried);
 					for (SwitchSet.Piece b : ammo)
 					{
+						// bolts the crossbow does not fire (dragon bolts in a Rune crossbow) are no option
 						if (b == null || b.slot != SwitchSet.AMMO
-							|| !has(b.name, ammoKind(bare.category, weapon == null ? null : weapon.name)))
+							|| !Weapons.canFire(id, bare.category, weapon == null ? null : weapon.name, b.itemId, b.name))
 						{
 							continue;
 						}
@@ -1242,10 +2010,12 @@ public class CombatCheckPlugin extends Plugin
 				}
 				else
 				{
-					// a bow with no arrows to shoot is no option
-					String kind = ammoKind(bare.category, weapon == null ? null : weapon.name);
+					// a bow with no arrows to shoot is no option, nor with arrows it does not fire (dragon arrows in a Magic
+					// shortbow (i)); the Comp ogre bow fires brutal arrows
+					String kind = Weapons.ammoKind(bare.category, weapon == null ? null : weapon.name);
 					SwitchSet.Piece arrows = shotAmmo(after, id);
-					if (kind != null && (arrows == null || !has(arrows.name, kind)))
+					if (kind != null && (arrows == null
+						|| !Weapons.canFire(id, bare.category, weapon == null ? null : weapon.name, arrows.itemId, arrows.name)))
 					{
 						continue;
 					}
@@ -1255,6 +2025,15 @@ public class CombatCheckPlugin extends Plugin
 						continue;
 					}
 					other = SetCalc.perTick(then, with0, target, false);
+					if (target.verzikP1)
+					{
+						other = verzikP1Rate(other, cls, then.speed);
+					}
+				}
+				if (target.verzikP1 && !StyleCalc.MELEE.equals(cls))
+				{
+					// ranged and magic on Verzik's first phase: no figure there (verzikP1Rate)
+					continue;
 				}
 				// nothing lands now and something would: the notice says so instead of a percentage
 				double gain = current == 0 ? (other > 0 ? Double.POSITIVE_INFINITY : Double.NaN) : SetCalc.gain(current, other);
@@ -1275,64 +2054,83 @@ public class CombatCheckPlugin extends Plugin
 		return best;
 	}
 
+	/** The ticks of Verzik's first phase between two of her magic attacks, in which a player hits twice. */
+	static final int VERZIK_P1_CYCLE = 14;
+
+	/**
+	 * What a weapon deals per tick on Verzik's first phase as the phase is played, from its figure at its own speed:
+	 * she charges a magic attack every 14 ticks, "which allows for two hits by any 4 or 5-tick weapon before requiring
+	 * to hide behind a pillar" (OSRS Wiki, Theatre of Blood/Strategies, Verzik Vitur - phase 1), so a 4-tick weapon gets
+	 * no more attacks than a 5-tick one and the two are compared by what one attack deals (two in each 14 ticks). The
+	 * shield's limit on each hit (10 melee, 3 ranged and magic) is in the figure already (SetCalc, Target.verzikP1); the
+	 * Dawnbringer has no figure (SetCalc.plain), so it is never pointed at and nothing is pointed at while it is in hand.
+	 * -1 for what the wiki gives no rhythm for: a weapon of another speed, or ranged and magic, which the wiki does not
+	 * use there (and whose every hit is held at 3).
+	 */
+	static double verzikP1Rate(double perTick, String combatClass, int speed)
+	{
+		if (perTick < 0 || !StyleCalc.MELEE.equals(combatClass) || speed < 4 || speed > 5)
+		{
+			return -1;
+		}
+		return perTick * speed * 2 / VERZIK_P1_CYCLE;
+	}
+
 	/**
 	 * The ammunition the weapon shoots: what is in the ammunition slot, or what Dizana's quiver holds when
-	 * the weapon uses that kind and the slot holds none of it (the slot is shot first).
+	 * the quiver is worn in these pieces, the weapon uses that kind and the slot holds none of it (the slot is shot first).
 	 */
 	private SwitchSet.Piece shotAmmo(SwitchSet.Piece[] pieces, int weaponId)
 	{
+		int amount = client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO_AMOUNT);
+		SwitchSet.Piece quiver = quiverInUse(wearsQuiver(pieces), amount)
+			? piece(client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO)) : null;
+		return shotAmmo(pieces, data.category(weaponId), wearsQuiver(pieces), amount, quiver);
+	}
+
+	/**
+	 * The ammunition a weapon of this category shoots with these pieces on: the slot's, or the quiver's ammunition
+	 * ({@code quiverAmmo}, {@code amount} of it) when the quiver is worn ({@link #quiverInUse}) and {@link #quiverShoots}.
+	 */
+	static SwitchSet.Piece shotAmmo(SwitchSet.Piece[] pieces, String category, boolean quiverWorn, int amount,
+		SwitchSet.Piece quiverAmmo)
+	{
 		SwitchSet.Piece slot = pieces.length > SwitchSet.AMMO ? pieces[SwitchSet.AMMO] : null;
 		SwitchSet.Piece weapon = pieces.length > SwitchSet.WEAPON ? pieces[SwitchSet.WEAPON] : null;
-		if (client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO_AMOUNT) <= 0)
+		if (!quiverInUse(quiverWorn, amount) || quiverAmmo == null)
 		{
 			return slot;
 		}
-		SwitchSet.Piece quiver = piece(client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO));
-		return quiver != null && quiverShoots(data.category(weaponId), weapon == null ? null : weapon.name,
-			slot == null ? null : slot.name, quiver.name) ? quiver : slot;
+		return quiverShoots(category, weapon == null ? null : weapon.name, slot == null ? null : slot.name, quiverAmmo.name)
+			? quiverAmmo : slot;
 	}
+
+	/**
+	 * Whether the ammunition kept in Dizana's quiver is shot: only with the quiver worn, as RuneLite's Ammo plugin reads
+	 * the same varps (AmmoPlugin: the cape's ParamID.QUIVER_AMMO_AVAILABLE is 1), and with some of it there. The quiver
+	 * keeps its ammunition in the inventory and, maybe, in the bank (OSRS Wiki, Dizana's quiver: the extra slot is shown
+	 * "if the quiver is in the inventory or equipped"); in the inventory a ranged switch puts it on (SwitchSet.after).
+	 */
+	static boolean quiverInUse(boolean quiverWorn, int amount)
+	{
+		return quiverWorn && amount > 0;
+	}
+
+	/** Whether the cape of these pieces is a quiver that shoots its own ammunition (Dizana's quiver, a max cape with it). */
+	private boolean wearsQuiver(SwitchSet.Piece[] pieces)
+	{
+		SwitchSet.Piece cape = pieces.length > CAPE_SLOT ? pieces[CAPE_SLOT] : null;
+		return cape != null && cape.itemId > 0
+			&& itemManager.getItemComposition(cape.itemId).getIntValue(ParamID.QUIVER_AMMO_AVAILABLE) == 1;
+	}
+
+	private static final int CAPE_SLOT = EquipmentInventorySlot.CAPE.getSlotIdx();
 
 	/** Whether a weapon of this category shoots the quiver's ammunition instead of what is in the slot. */
 	static boolean quiverShoots(String category, String weaponName, String slotName, String quiverName)
 	{
-		String kind = ammoKind(category, weaponName);
-		return kind != null && has(quiverName, kind) && !has(slotName, kind);
-	}
-
-	/** The word in the name of the ammunition a weapon shoots: "bolts", "arrow", or null when it takes none from the slot. */
-	static String ammoKind(String category, String weaponName)
-	{
-		if ("Crossbow".equals(category))
-		{
-			// Karil's crossbow shoots bolt racks and nothing else; no other crossbow shoots them
-			return has(weaponName, "karil's crossbow") ? "bolt rack" : "bolts";
-		}
-		return "Bow".equals(category) && !shootsNoAmmo(category, weaponName) ? "arrow" : null;
-	}
-
-	/** True for the weapons that are their own ammunition (thrown weapons, the blowpipe, chinchompas). */
-	static boolean throwsItself(String category)
-	{
-		return "Thrown".equals(category) || "Chinchompas".equals(category);
-	}
-
-	/** True for what a bow, a crossbow or a ballista shoots. */
-	static boolean isShotAmmo(String name)
-	{
-		return has(name, "arrow") || has(name, "bolts") || has(name, "bolt rack") || has(name, "javelin");
-	}
-
-	/** A bow that makes its own arrows: what is in the ammunition slot gives it nothing. */
-	static boolean shootsNoAmmo(String category, String weaponName)
-	{
-		String weapon = weaponName == null ? "" : weaponName.toLowerCase(java.util.Locale.ROOT);
-		return "Bow".equals(category) && (weapon.contains("crystal bow") || weapon.contains("faerdhinen")
-			|| weapon.contains("craw's bow") || weapon.contains("webweaver bow"));
-	}
-
-	private static boolean has(String name, String part)
-	{
-		return name != null && name.toLowerCase(java.util.Locale.ROOT).contains(part);
+		String kind = Weapons.ammoKind(category, weaponName);
+		return kind != null && Weapons.has(quiverName, kind) && !Weapons.has(slotName, kind);
 	}
 
 	/**
@@ -1342,7 +2140,7 @@ public class CombatCheckPlugin extends Plugin
 	private WeaponAdvice boltsToPutOn(SwitchSet.Piece[] on, List<SwitchSet.Piece> carried, int weaponId)
 	{
 		SwitchSet.Piece inHand = on.length > SwitchSet.WEAPON ? on[SwitchSet.WEAPON] : null;
-		if (!"bolts".equals(ammoKind(data.category(weaponId), inHand == null ? null : inHand.name)))
+		if (!"bolts".equals(Weapons.ammoKind(data.category(weaponId), inHand == null ? null : inHand.name)))
 		{
 			return null;
 		}
@@ -1352,9 +2150,13 @@ public class CombatCheckPlugin extends Plugin
 			return null;
 		}
 		String[] names = new String[carried.size()];
+		String category = data.category(weaponId);
 		for (int i = 0; i < names.length; i++)
 		{
-			names[i] = carried.get(i).slot == SwitchSet.AMMO ? carried.get(i).name : null;
+			SwitchSet.Piece c = carried.get(i);
+			// only the bolts the crossbow fires (no dragon bolts in a Rune crossbow)
+			names[i] = c.slot == SwitchSet.AMMO && Weapons.canFire(weaponId, category, inHand == null ? null : inHand.name, c.itemId, c.name)
+				? c.name : null;
 		}
 		int at = preferredBolts(names);
 		if (at < 0)
@@ -1398,12 +2200,15 @@ public class CombatCheckPlugin extends Plugin
 	 * go with the weapon in hand are still listed, since that follows the player's own choice of weapon.
 	 */
 	private static final String[] CHANGES_FORM = {
-		// raids
-		"Verzik Vitur", "Nylocas", "Great Olm", "Vanguard", "Elidinis' Warden", "Tumeken's Warden",
+		// raids (not Verzik Vitur: each of her phases is plain to see and lasts; her first phase is compared per attack,
+		// verzikP1Rate)
+		"Nylocas", "Great Olm", "Vanguard", "Elidinis' Warden", "Tumeken's Warden",
 		// bosses with forms or phases that call for another weapon
 		"Zulrah", "Dawn", "Dusk", "Kalphite Queen", "Phantom Muspah", "Strange Creature",
 		"The Nightmare", "Phosani's Nightmare", "Crystalline Hunllef", "Corrupted Hunllef", "Abyssal Sire",
 		"The Hueycoatl", "Yama", "Doom of Mokhaiotl", "Zalcano", "Demonic Brutus", "Maggot King",
+		// Nex: melee in some phases, ranged in her Shadow phase and against Zaros's Deflect Melee
+		"Nex",
 		// monsters that change their protection, and groups fought together with a different weakness each
 		"Demonic gorilla", "Tortured gorilla", "Tormented Demon",
 		"Branda the Fire Queen", "Eldric the Ice King",
@@ -1425,6 +2230,37 @@ public class CombatCheckPlugin extends Plugin
 			}
 		}
 		return false;
+	}
+
+	/** Akkha's NPC ids (RuneLite's NpcID): his forms that attack and pray with melee, ranged and magic, and his enrage. */
+	static final int AKKHA_MELEE = 11790;
+	static final int AKKHA_RANGED = 11791;
+	static final int AKKHA_MAGIC = 11792;
+	static final int AKKHA_ENRAGE = 11795;
+	static final int AKKHA_SHADOW_ENRAGE = 11798;
+
+	/**
+	 * Whether a carried weapon of this combat class may be pointed at against this NPC: never one of the class Akkha is
+	 * praying against (he prays against the style he attacks with: OSRS Wiki, Akkha), and in his enrage, where he and his
+	 * shadows pray against magic and missiles together, only melee. The weapon in hand is the player's own choice and is
+	 * left as it is.
+	 */
+	static boolean classAllowed(int npcId, String combatClass)
+	{
+		switch (npcId)
+		{
+			case AKKHA_MELEE:
+				return !StyleCalc.MELEE.equals(combatClass);
+			case AKKHA_RANGED:
+				return !StyleCalc.RANGED.equals(combatClass);
+			case AKKHA_MAGIC:
+				return !StyleCalc.MAGIC.equals(combatClass);
+			case AKKHA_ENRAGE:
+			case AKKHA_SHADOW_ENRAGE:
+				return StyleCalc.MELEE.equals(combatClass);
+			default:
+				return true;
+		}
 	}
 
 	/** True while the Bolt Swap Reminder plugin is installed and on: it gives the same reminder, so this one keeps quiet. */
@@ -1453,18 +2289,18 @@ public class CombatCheckPlugin extends Plugin
 		SwitchSet.Piece slotAmmo = pieces.length > SwitchSet.AMMO ? pieces[SwitchSet.AMMO] : null;
 		SwitchSet.Piece ammo = shotAmmo(pieces, weaponId);
 		SwitchSet.Piece inHand = pieces.length > SwitchSet.WEAPON ? pieces[SwitchSet.WEAPON] : null;
-		// ammunition the weapon does not shoot gives it nothing: bolts under a bow, arrows under a crossbow,
-		// anything under a bow that makes its own arrows
-		if (ammo != null && ammoKind(data.category(weaponId), inHand == null ? null : inHand.name) != null
-			&& !has(ammo.name, ammoKind(data.category(weaponId), inHand == null ? null : inHand.name)))
+		// ammunition the weapon does not shoot gives it nothing: bolts under a bow, arrows under a crossbow, arrows above
+		// the bow's tier (the calculator's list: Weapons.canFire), anything under a bow that makes its own arrows
+		if (ammo != null && Weapons.ammoKind(data.category(weaponId), inHand == null ? null : inHand.name) != null
+			&& !Weapons.canFire(weaponId, data.category(weaponId), inHand == null ? null : inHand.name, ammo.itemId, ammo.name))
 		{
 			ammo = null;
 		}
-		else if (ammo != null && shootsNoAmmo(data.category(weaponId), inHand == null ? null : inHand.name))
+		else if (ammo != null && Weapons.shootsNoAmmo(data.category(weaponId), inHand == null ? null : inHand.name))
 		{
 			ammo = null;
 		}
-		else if (ammo != null && throwsItself(data.category(weaponId)) && isShotAmmo(ammo.name))
+		else if (ammo != null && Weapons.throwsItself(data.category(weaponId)) && Weapons.isShotAmmo(ammo.name))
 		{
 			// a blowpipe, darts, knives, chinchompas: what they throw is their own, not what the slot holds
 			ammo = null;
@@ -1495,12 +2331,11 @@ public class CombatCheckPlugin extends Plugin
 			l.inquisitor += p.inquisitor;
 			l.mask = Math.max(l.mask, p.mask);
 			l.salve = Math.max(l.salve, p.salve);
-			l.crystal += SetEffects.crystalWeight(p.name);
 			names.add(p.name);
 		}
-		l.voidMelee = SetEffects.voidKind(names, StyleCalc.MELEE);
-		l.dharokSet = SetEffects.wholeBarrowsSet(names, "dharok's ");
-		l.voidRanged = SetEffects.voidKind(names, StyleCalc.RANGED);
+		// the crystal armour, the Void, Dharok's, Ahrim's and obsidian sets, the Berserker necklace
+		SetEffects.wornSets(l, names);
+		l.ammoRangedStrength = ammo == null ? 0 : ammo.rangedStrength;
 		SwitchSet.Piece weapon = pieces.length > SwitchSet.WEAPON ? pieces[SwitchSet.WEAPON] : null;
 		l.weaponName = weapon == null ? "" : weapon.name;
 		l.speed = weapon == null || weapon.speed <= 0 ? 4 : weapon.speed;
@@ -1519,6 +2354,10 @@ public class CombatCheckPlugin extends Plugin
 		l.bolt = ammo == null ? 0 : SetCalc.boltKind(ammo.name);
 		l.boltEffect = l.bolt == 0 && ammo != null && ammo.name != null && ammo.name.endsWith("(e)")
 			&& !SetCalc.harmlessBolts(ammo.name);
+		// what some monsters take damage from: broad ammunition, silver bolts, Ice arrows, brutal arrows
+		l.ammo = ammo == null ? null : ammo.name;
+		l.ammoWorn = slotAmmo == null ? null : slotAmmo.name;
+		l.efaritay = names.contains("Efaritay's aid");
 		// the autocast spell belongs to the weapon in hand: a carried staff has none yet
 		ItemContainer wornNow = client.getItemContainer(InventoryID.WORN);
 		Item inHandNow = wornNow == null ? null : wornNow.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
@@ -1546,6 +2385,7 @@ public class CombatCheckPlugin extends Plugin
 		p.strength = client.getBoostedSkillLevel(Skill.STRENGTH);
 		p.ranged = client.getBoostedSkillLevel(Skill.RANGED);
 		p.magic = client.getBoostedSkillLevel(Skill.MAGIC);
+		p.mining = client.getBoostedSkillLevel(Skill.MINING);
 		p.prayerAttack = 100 + prayer(Prayer.PIETY, 20, Prayer.CHIVALRY, 15, Prayer.INCREDIBLE_REFLEXES, 15,
 			Prayer.IMPROVED_REFLEXES, 10, Prayer.CLARITY_OF_THOUGHT, 5);
 		p.prayerStrength = 100 + prayer(Prayer.PIETY, 23, Prayer.CHIVALRY, 18, Prayer.ULTIMATE_STRENGTH, 15,
@@ -1563,9 +2403,9 @@ public class CombatCheckPlugin extends Plugin
 		p.prayerLevel = client.getRealSkillLevel(Skill.PRAYER);
 		p.piety = hasPiety();
 		p.chivalry = hasChivalry();
-		p.rigour = client.getVarbitValue(VarbitID.PRAYER_RIGOUR_UNLOCKED) == 1;
+		p.rigour = hasRigour();
 		p.deadeye = client.getVarbitValue(VarbitID.PRAYER_DEADEYE_UNLOCKED) == 1;
-		p.augury = client.getVarbitValue(VarbitID.PRAYER_AUGURY_UNLOCKED) == 1;
+		p.augury = hasAugury();
 		p.vigour = client.getVarbitValue(VarbitID.PRAYER_MYSTIC_VIGOUR_UNLOCKED) == 1;
 		return p;
 	}
@@ -1591,13 +2431,22 @@ public class CombatCheckPlugin extends Plugin
 				var stats = itemManager.getItemStats(item.getId());
 				if (stats != null && stats.getEquipment() != null)
 				{
-					in.stab += stats.getEquipment().getAstab();
+					int id = itemManager.canonicalize(item.getId());
+					in.stab += Weapons.stab(id, stats.getEquipment().getAstab());
 					in.slash += stats.getEquipment().getAslash();
 					in.crush += stats.getEquipment().getAcrush();
-					in.strength += stats.getEquipment().getStr();
+					in.ranged += stats.getEquipment().getArange();
+					in.magic += stats.getEquipment().getAmagic();
+					in.strength += Weapons.strength(id, stats.getEquipment().getStr());
 				}
-				in.inquisitor += inquisitorWeight(itemManager.getItemComposition(item.getId()).getName());
+				in.inquisitor += Weapons.inquisitorWeight(itemManager.getItemComposition(item.getId()).getName());
 			}
+		}
+		if (weaponName.startsWith("Keris partisan of amascut") && !monster.toa)
+		{
+			// outside the Tombs of Amascut, as SetCalc counts it (the calculator's Equipment.ts)
+			in.stab -= 50;
+			in.strength -= 22;
 		}
 		in.attackLevel = client.getBoostedSkillLevel(Skill.ATTACK);
 		in.strengthLevel = client.getBoostedSkillLevel(Skill.STRENGTH);
@@ -1605,14 +2454,25 @@ public class CombatCheckPlugin extends Plugin
 			Prayer.IMPROVED_REFLEXES, 10, Prayer.CLARITY_OF_THOUGHT, 5);
 		in.prayerStrength = 100 + prayer(Prayer.PIETY, 23, Prayer.CHIVALRY, 18, Prayer.ULTIMATE_STRENGTH, 15,
 			Prayer.SUPERHUMAN_STRENGTH, 10, Prayer.BURST_OF_STRENGTH, 5);
-		in.fang = isFang(weaponName);
-		in.corpbane = isCorpbane(weaponName);
-		in.defenceLevel = monster.level;
+		in.fang = Weapons.isFang(weaponName);
+		in.corpbane = Weapons.isCorpbane(weaponName);
+		in.twoHits = SetCalc.twoHitWeapon(weaponName.toLowerCase(java.util.Locale.ROOT));
+		in.defenceLevel = levels(monster).defence;
 		in.defenceStab = monster.stab;
 		in.defenceSlash = monster.slash;
 		in.defenceCrush = monster.crush;
 		in.corporealBeast = "Corporeal Beast".equals(monster.name);
-		in.alwaysHit = alwaysHit(monster.name);
+		in.alwaysHit = monster.wardenP2 || monster.everyAttackLands;
+		in.defencelessShare = defencelessShare(monster);
+		in.alwaysMax = monster.alwaysMaxMelee;
+		in.oneHit = monster.oneHit;
+		in.araxyteMax = Weapons.araxyteMax(monster.name);
+		in.noxiousHalberd = weaponName.toLowerCase(java.util.Locale.ROOT).startsWith("noxious halberd");
+		// the Tombs of Amascut: the fang's double roll the raid's way, and the raid level's defence roll
+		in.toa = monster.toa;
+		in.defenceRollInvocation = ToaScaling.invocation(monster, toaRaid);
+		in.hueycoatlTail = monster.hueycoatlTail;
+		in.verzikP1 = monster.verzikP1;
 
 		int best = -1;
 		double bestScore = 0;
@@ -1762,18 +2622,19 @@ public class CombatCheckPlugin extends Plugin
 		p.itemId = id;
 		p.slot = e.getSlot();
 		p.twoHanded = e.isTwoHanded();
-		p.stab = e.getAstab();
+		// the item data the game gives, but the Keris partisan of amascut's stab and strength (Weapons.stab)
+		p.stab = Weapons.stab(id, e.getAstab());
 		p.slash = e.getAslash();
 		p.crush = e.getAcrush();
 		p.magic = e.getAmagic();
 		p.ranged = e.getArange();
-		p.strength = e.getStr();
+		p.strength = Weapons.strength(id, e.getStr());
 		p.rangedStrength = e.getRstr();
 		p.magicDamage = e.getMdmg();
 		String name = itemManager.getItemComposition(id).getName();
 		p.name = name;
 		p.speed = e.getAspeed();
-		p.inquisitor = inquisitorWeight(name);
+		p.inquisitor = Weapons.inquisitorWeight(name);
 		p.keep = SetEffects.keep(name, context);
 		p.carriedForUse = SetEffects.carriedForUse(name);
 		p.mask = SetEffects.maskKind(name);
@@ -1862,46 +2723,14 @@ public class CombatCheckPlugin extends Plugin
 		return index;
 	}
 
-	static int inquisitorWeight(String itemName)
-	{
-		if (itemName == null)
-		{
-			return 0;
-		}
-		if (itemName.startsWith("Inquisitor's great helm"))
-		{
-			return 1;
-		}
-		return itemName.startsWith("Inquisitor's hauberk") || itemName.startsWith("Inquisitor's plateskirt") ? 2 : 0;
-	}
-
-	/** Monsters the calculator treats as always hit. */
-	static boolean alwaysHit(String monsterName)
-	{
-		return "Tormented Demon".equals(monsterName);
-	}
-
-	static boolean isFang(String weaponName)
-	{
-		return weaponName != null && weaponName.startsWith("Osmumten's fang");
-	}
-
-	/** Weapons that deal full damage to the Corporeal Beast when they stab. */
-	static boolean isCorpbane(String weaponName)
-	{
-		if (weaponName == null)
-		{
-			return false;
-		}
-		String n = weaponName.toLowerCase();
-		return isFang(weaponName) || n.contains("halberd") || (n.contains("spear") && !n.startsWith("blue moon spear"));
-	}
+	@Inject
+	private net.runelite.client.callback.ClientThread clientThread;
 
 	@Inject
-	private net.runelite.client.callback.ClientThread reportThread;
+	private okhttp3.OkHttpClient okHttpClient;
 
-	@Inject
-	private okhttp3.OkHttpClient reportHttp;
+	/** Between startUp and shutDown: tables that arrive after the plugin was turned off are dropped. */
+	private volatile boolean running;
 
 	/** "Bug or suggestion" in the settings works as a button: each click opens the report window, whichever way the box ends up. */
 	@Subscribe
@@ -1909,12 +2738,12 @@ public class CombatCheckPlugin extends Plugin
 	{
 		if ("combatcheck".equals(event.getGroup()) && "reportBug".equals(event.getKey()) && event.getNewValue() != null)
 		{
-			reportThread.invokeLater(() ->
+			clientThread.invokeLater(() ->
 			{
 				final NPC monster = targetNpc;
 				final String name = monster == null ? null : monster.getName();
 				final String context = ReportWindow.context(client, monster);
-				javax.swing.SwingUtilities.invokeLater(() -> ReportWindow.open(client.getCanvas(), name, context, reportHttp));
+				javax.swing.SwingUtilities.invokeLater(() -> ReportWindow.open(client.getCanvas(), name, context, okHttpClient));
 			});
 		}
 	}

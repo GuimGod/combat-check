@@ -247,4 +247,14 @@ public class SetEffectsTest
 			org.junit.Assert.assertFalse(String.valueOf(name), SetEffects.isSpecialAttackWeapon(name));
 		}
 	}
+
+	@Test
+	public void aWeaponChosenForHittingSeveralMonstersIsKnown()
+	{
+		org.junit.Assert.assertTrue(SetEffects.isManyTargetWeapon("Venator bow"));
+		org.junit.Assert.assertTrue(SetEffects.isManyTargetWeapon("Venator bow (uncharged)"));
+		org.junit.Assert.assertFalse(SetEffects.isManyTargetWeapon("Toxic blowpipe"));
+		org.junit.Assert.assertFalse(SetEffects.isManyTargetWeapon("Twisted bow"));
+		org.junit.Assert.assertFalse(SetEffects.isManyTargetWeapon(null));
+	}
 }

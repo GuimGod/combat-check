@@ -332,6 +332,65 @@ public interface CombatCheckConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		keyName = "estimateSpecs",
+		name = "Estimate specs",
+		description = "Also count the Elder maul, Dragon warhammer and Bandos godsword special attacks of players whose "
+			+ "specs do not come through the party, from their special attack animation and the hitsplats on the monster. "
+			+ "Only when the hit leaves no doubt. The figures that use one are marked with ~ and \"spec estimated\"",
+		position = 13,
+		section = master
+	)
+	default boolean estimateSpecs()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "coxScaling",
+		name = "Chambers of Xeric scaling",
+		description = "Inside the Chambers of Xeric, work everything out with the monsters' levels and hitpoints scaled "
+			+ "for the raid, as the DPS calculator scales them: the party size the raid was scaled for, Challenge Mode and "
+			+ "the party's highest combat level, read from the game. The party's highest Hitpoints level is taken as 99. "
+			+ "Defence drains are counted on top of the scaled levels",
+		position = 15,
+		section = master
+	)
+	default boolean coxScaling()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "tobScaling",
+		name = "Theatre of Blood scaling",
+		description = "Inside the Theatre of Blood, work everything out with the monsters' hitpoints scaled for the party, "
+			+ "as the DPS calculator scales them: the party size is read from the game (the places of the party that hold "
+			+ "someone). Only the hitpoints scale there (they count for ruby bolts); Hard Mode and Entry Mode monsters have "
+			+ "levels of their own either way",
+		position = 16,
+		section = master
+	)
+	default boolean tobScaling()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "toaScaling",
+		name = "Tombs of Amascut scaling",
+		description = "Inside the Tombs of Amascut, work everything out with the raid level, the path levels and the party "
+			+ "size read from the game, as the DPS calculator does: the monsters' defence rolls grow with the raid level "
+			+ "(not the scarab overlords'), and their hitpoints with the raid level, the path level and the party. "
+			+ "Tumeken's shadow, Osmumten's fang and the Keris partisan of the sun follow the raid's own rules either way",
+		position = 17,
+		section = master
+	)
+	default boolean toaScaling()
+	{
+		return true;
+	}
+
 	@ConfigSection(
 		name = "Gear switch",
 		description = "The pieces that go with the weapon in your hand and are still in your inventory",
@@ -510,5 +569,16 @@ public interface CombatCheckConfig extends Config
 	default boolean reportBug()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+		keyName = "updateData",
+		name = "Update the monster table",
+		description = "When the plugin starts, ask its GitHub repository whether a newer table of monsters and weapons has been published, and use it: a monster the game added is known without waiting for a new version of the plugin. One small request at startup, nothing during a fight; only numbers and names are read. Off: the plugin uses the table it came with and makes no request",
+		position = 101
+	)
+	default boolean updateData()
+	{
+		return true;
 	}
 }

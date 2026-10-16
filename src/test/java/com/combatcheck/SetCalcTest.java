@@ -20,8 +20,8 @@ import java.util.Map;
 import org.junit.Test;
 
 /**
- * Whole sets of gear against a few monsters, compared with the OSRS Wiki calculator.
- * What matters to the plugin is the ratio between two sets, so the test
+ * Whole sets of gear against a few monsters, compared with the OSRS Wiki calculator
+ * (tools/gen_sets.py). What matters to the plugin is the ratio between two sets, so the test
  * checks each figure and then the gain of every pair of sets on the same monster.
  */
 public class SetCalcTest
@@ -31,20 +31,53 @@ public class SetCalcTest
 	/** How far the gain of one set over another may be from the calculator's, in percentage points. */
 	private static final double GAIN_POINTS = 6;
 
-	private static final class Case
+	static final class Case
 	{
 		String set;
 		int npc;
 		double expected;
 		double got;
+		/** In the files of the raids: the monster's health now, the raid level (-1 for none) and the party read. */
+		int health;
+		int toaLevel = -1;
+		int party;
 	}
 
-	private List<Case> cases() throws IOException
+	/**
+	 * The cases of sets.tsv with the plugin's figure for each. A case of the Chambers of Xeric with a party
+	 * (column 26) is worked out with the raid's scaling and then the special attacks of column 28, as the plugin
+	 * does in the raid.
+	 */
+	static List<Case> cases() throws IOException
+	{
+		return cases("sets.tsv");
+	}
+
+	/**
+	 * The cases of a file in the layout of sets.tsv. The files of the raids and of the fights with a rule of their own
+	 * (toa_sets.tsv, tob_sets.tsv, rules_sets.tsv: tools/gen_toa.py, gen_tob.py, gen_rules.py) carry more columns: the
+	 * Tombs of Amascut's raid level (-1 when none is read), the path level, the party read in the Theatre of Blood or the
+	 * Tombs, the monster's health now, the player's boosted levels, the Inquisitor's pieces and the ruby or diamond
+	 * bolts, and in the newer ones (table_sets.tsv: tools/gen_table.py) the ammunition worn and whether Efaritay's aid
+	 * is, and in items_sets.tsv (tools/gen_items.py) the game's names of everything worn and the ammunition's strength. Their monster is scaled as
+	 * the plugin scales it in game ({@link CombatCheckPlugin#scaled}, then Araxxor's enrage), with the Kandarin hard diary
+	 * done, as in the calculator's runs.
+	 */
+	static List<Case> cases(String file) throws IOException
+	{
+		return cases(file, npc -> npc);
+	}
+
+	/**
+	 * The same, each case run on the monster {@code asNpc} gives for the case's own (its {@code npc} becomes that one,
+	 * the calculator's figure stays): the Ruptura araxyte on the Acidic's cases.
+	 */
+	static List<Case> cases(String file, java.util.function.IntUnaryOperator asNpc) throws IOException
 	{
 		StyleData data = new StyleData();
 		List<Case> out = new ArrayList<>();
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(
-			SetCalcTest.class.getResourceAsStream("sets.tsv"), StandardCharsets.UTF_8)))
+			SetCalcTest.class.getResourceAsStream(file), StandardCharsets.UTF_8)))
 		{
 			String line;
 			while ((line = r.readLine()) != null)
@@ -72,9 +105,21 @@ public class SetCalcTest
 				l.magicDamage = Double.parseDouble(c[15]);
 				Case k = new Case();
 				k.set = c[0];
-				k.npc = Integer.parseInt(c[6]);
+				k.npc = asNpc.applyAsInt(Integer.parseInt(c[6]));
 				k.expected = Double.parseDouble(c[16]);
-				SetCalc.Target target = data.monster(k.npc).target();
+				StyleData.Monster monster = data.monster(k.npc);
+				SetCalc.Target target = monster.target();
+				if (c.length > 28 && !c[26].isEmpty() && Integer.parseInt(c[26]) > 0)
+				{
+					DefenceDrains.Levels levels = CoxScaling.levels(monster,
+						new CoxScaling.Raid(Integer.parseInt(c[26]), "1".equals(c[27])));
+					DefenceDrains drains = drains(c[28]);
+					if (drains != null)
+					{
+						levels = drains.apply(levels, monster.demon, DefenceDrains.floor(k.npc, levels.defence));
+					}
+					target = monster.target(levels);
+				}
 				if (c.length > 19)
 				{
 					l.mask = Integer.parseInt(c[17]);
@@ -93,11 +138,94 @@ public class SetCalcTest
 					l.spell = Integer.parseInt(c[24]);
 					l.tome = c[25].isEmpty() ? null : c[25];
 				}
-				k.got = SetCalc.perTick(l, player(c[1]), target, false);
+				SetCalc.Player player = player(c[1]);
+				if (c.length > 35)
+				{
+					int toaLevel = Integer.parseInt(c[29]);
+					int path = Integer.parseInt(c[30]);
+					int party = Integer.parseInt(c[31]);
+					int health = Integer.parseInt(c[32]);
+					ToaScaling.Raid toa = toaLevel < 0 ? null : new ToaScaling.Raid(toaLevel, party, path, path, path, path);
+					TobScaling.Raid tob = party > 0 ? new TobScaling.Raid(party) : null;
+					DefenceDrains.Levels levels = MonsterLevels.scaled(monster, null, tob, toa);
+					levels = MonsterLevels.enraged(monster, levels, health);
+					// the Wardens of the third phase, enraged: the calculator's Enraged version of the same id
+					levels = MonsterLevels.wardenEnraged(monster, levels, c.length > 36 && "Enraged".equals(c[36]));
+					target = monster.target(levels);
+					target.toaInvocation = ToaScaling.invocation(monster, toa);
+					target.hitpointsNow = health;
+					// the fight in the Wilderness (column 23) on the target made again
+					target.inWilderness = "1".equals(c[23]);
+					String[] lv = c[33].split(";");
+					player.attack = Integer.parseInt(lv[0]);
+					player.strength = Integer.parseInt(lv[1]);
+					player.ranged = Integer.parseInt(lv[2]);
+					player.magic = Integer.parseInt(lv[3]);
+					player.kandarinDiary = true;
+					l.inquisitor = Integer.parseInt(c[34]);
+					l.bolt = Integer.parseInt(c[35]);
+					l.voidMagic = c.length > 37 && !c[37].isEmpty() ? Integer.parseInt(c[37]) : 0;
+					// the ammunition worn, which the weapon shoots in these cases (tools/raid_cases.py)
+					if (c.length > 38 && !c[38].isEmpty())
+					{
+						l.ammo = c[38];
+						l.ammoWorn = c[38];
+					}
+					// Efaritay's aid in the ring slot (table_sets.tsv)
+					l.efaritay = c.length > 39 && "1".equals(c[39]);
+					if (c.length > 41)
+					{
+						// the game's names of everything worn (items_sets.tsv): the plugin works out the sets from them, and
+						// the ammunition's own strength
+						SetEffects.wornSets(l, java.util.Arrays.asList(c[40].split(";")));
+						l.ammoRangedStrength = Integer.parseInt(c[41]);
+					}
+					k.health = health;
+					k.toaLevel = toaLevel;
+					k.party = party;
+				}
+				k.got = SetCalc.perTick(l, player, target, false);
 				out.add(k);
 			}
 		}
 		return out;
+	}
+
+	/**
+	 * The special attacks of a case, written "elderMaul=2;dwh=1" (the calculator's counts), added in the calculator's
+	 * order ({@link DefenceDrainsTest#calculatorOrder}); null for none.
+	 */
+	static DefenceDrains drains(String text)
+	{
+		if (text.isEmpty())
+		{
+			return null;
+		}
+		java.util.Map<String, Integer> n = new java.util.HashMap<>();
+		for (String part : text.split(";"))
+		{
+			String[] kv = part.split("=");
+			switch (kv[0])
+			{
+				case "accursed":
+				case "elderMaul":
+				case "dwh":
+				case "arclight":
+				case "emberlight":
+				case "tonalztic":
+				case "seercull":
+				case "bgs":
+				case "ayak":
+					n.put(kv[0], Integer.parseInt(kv[1]));
+					break;
+				default:
+					throw new IllegalArgumentException(part);
+			}
+		}
+		return DefenceDrainsTest.calculatorOrder(n.getOrDefault("accursed", 0) > 0, n.getOrDefault("elderMaul", 0),
+			n.getOrDefault("dwh", 0), n.getOrDefault("arclight", 0), n.getOrDefault("emberlight", 0),
+			n.getOrDefault("tonalztic", 0), n.getOrDefault("seercull", 0), n.getOrDefault("bgs", 0),
+			n.getOrDefault("ayak", 0));
 	}
 
 	/** The presets the cases were generated with: Piety and a super combat, Rigour and a ranging potion, Augury and a heart. */
@@ -128,6 +256,23 @@ public class SetCalcTest
 			p.prayerMagicDamage = 4;
 		}
 		return p;
+	}
+
+	/** Checks that every case of a file is within {@link #FIGURE} of the calculator's figure; returns the cases. */
+	static List<Case> figuresOf(String file) throws IOException
+	{
+		List<Case> all = cases(file);
+		List<String> off = new ArrayList<>();
+		for (Case k : all)
+		{
+			if (Math.abs(k.got - k.expected) > FIGURE * k.expected)
+			{
+				off.add(String.format("%s on %d (raid level %d, party %d, health %d): %.5f, calculator %.5f", k.set, k.npc,
+					k.toaLevel, k.party, k.health, k.got, k.expected));
+			}
+		}
+		assertTrue(off.size() + " of " + all.size() + " off: " + off, off.isEmpty());
+		return all;
 	}
 
 	@Test
@@ -210,12 +355,15 @@ public class SetCalcTest
 	public void anIdTheTableDoesNotListIsFoundByName() throws IOException
 	{
 		StyleData data = new StyleData();
-		// the Hellhound of the Catacombs of Kourend
-		org.junit.Assert.assertNull(data.monster(7256));
-		org.junit.Assert.assertNotNull(data.monster(7256, "Hellhound"));
-		org.junit.Assert.assertEquals("Hellhound", data.monster(7256, "Hellhound").name);
-		org.junit.Assert.assertNull(data.monster(7256, "No such monster"));
+		// Dagannoth Prime in Deadman Mode: the OSRS Wiki lists the id in a version the calculator's data does not have
+		org.junit.Assert.assertNull(data.monster(12442));
+		org.junit.Assert.assertNotNull(data.monster(12442, "Dagannoth Prime"));
+		org.junit.Assert.assertEquals("Dagannoth Prime", data.monster(12442, "Dagannoth Prime").name);
+		org.junit.Assert.assertNull(data.monster(12442, "No such monster"));
 		org.junit.Assert.assertSame(data.monster(415), data.monster(415, "Something else"));
+		// the Hellhound of the Catacombs of Kourend has a row of its own now, with the numbers of its version
+		org.junit.Assert.assertEquals(data.monster(104).level, data.monster(7256).level);
+		org.junit.Assert.assertSame(data.monster(7256), data.monster(7256, "Hellhound"));
 	}
 
 	@Test
@@ -359,5 +507,183 @@ public class SetCalcTest
 		t.name = "Gemstone Crab";
 		assertEquals(0.06 * 60, SetCalc.withBolt(SetCalc.RUBY, false, p, t, 40, 0.0), 1e-9);
 		assertEquals(0.06 * 66, SetCalc.withBolt(SetCalc.RUBY, true, p, t, 40, 0.0), 1e-9);
+	}
+
+	/** A melee weapon with its bonuses as in sets.tsv (the cox- sets), with its styles from the bundled table. */
+	private static SetCalc.Loadout melee(StyleData data, int id, String name, String category, int speed,
+		int stab, int slash, int crush, int strength)
+	{
+		SetCalc.Loadout l = new SetCalc.Loadout();
+		l.weaponName = name;
+		l.category = category;
+		l.speed = speed;
+		l.styles = data.styles(id);
+		l.stab = stab;
+		l.slash = slash;
+		l.crush = crush;
+		l.strength = strength;
+		return l;
+	}
+
+	/**
+	 * The Guardians of the Chambers of Xeric take damage from a pickaxe only: every one of their ids, any other
+	 * weapon deals nothing, and so no other weapon is ever better than the pickaxe in hand (CombatCheckPlugin's
+	 * betterWeapon weighs the two with SetCalc.gain, and a gain of -100% is never shown).
+	 */
+	@Test
+	public void onlyAPickaxeHurtsTheGuardians() throws IOException
+	{
+		StyleData data = new StyleData();
+		SetCalc.Loadout dpick = melee(data, 11920, "Dragon pickaxe", "Pickaxe", 5, 115, 112, 107, 113);
+		SetCalc.Loadout rpick = melee(data, 1275, "Rune pickaxe", "Pickaxe", 5, 103, 112, 99, 100);
+		SetCalc.Loadout scythe = melee(data, 22325, "Scythe of vitur", "Scythe", 5, 117, 210, 77, 138);
+		SetCalc.Loadout tbow = new SetCalc.Loadout();
+		tbow.weaponName = "Twisted bow";
+		tbow.category = "Bow";
+		tbow.speed = 6;
+		tbow.ranged = 215;
+		tbow.rangedStrength = 100;
+		SetCalc.Loadout shadow = new SetCalc.Loadout();
+		shadow.weaponName = "Tumeken's shadow";
+		shadow.category = "Powered Staff";
+		shadow.speed = 5;
+		shadow.magic = 200;
+		for (int id = 7569; id <= 7572; id++)
+		{
+			SetCalc.Target t = data.monster(id).target();
+			double pick = SetCalc.perTick(dpick, player("melee"), t, false);
+			assertTrue("the dragon pickaxe on " + id + ": " + pick, Math.abs(pick - 5.25851) <= FIGURE * 5.25851);
+			double rune = SetCalc.perTick(rpick, player("melee"), t, false);
+			assertTrue("the rune pickaxe on " + id + ": " + rune, Math.abs(rune - 4.37679) <= FIGURE * 4.37679);
+			assertEquals(0, SetCalc.perTick(scythe, player("melee"), t, false), 0);
+			assertEquals(0, SetCalc.perTick(tbow, player("ranged"), t, false), 0);
+			assertEquals(0, SetCalc.perTick(shadow, player("magic"), t, false), 0);
+			assertEquals(-100, SetCalc.gain(pick, SetCalc.perTick(scythe, player("melee"), t, false)), 1e-9);
+			// with a pickaxe in the inventory and anything else in hand, the pickaxe is the one that can hit
+			assertTrue(SetCalc.perTick(scythe, player("melee"), t, false) == 0 && rune > 0);
+		}
+		// the damage grows with the Mining level: (50 + Mining + the pickaxe's bonus) / 150 of each hit
+		SetCalc.Player low = player("melee");
+		low.mining = 60;
+		SetCalc.Target guardian = data.monster(7569).target();
+		assertTrue(SetCalc.perTick(dpick, low, guardian, false) < SetCalc.perTick(dpick, player("melee"), guardian, false));
+		assertEquals(61, SetCalc.pickaxeBonus("dragon pickaxe"));
+		assertEquals(61, SetCalc.pickaxeBonus("crystal pickaxe"));
+		assertEquals(41, SetCalc.pickaxeBonus("gilded pickaxe"));
+		assertEquals(1, SetCalc.pickaxeBonus("bronze pickaxe"));
+		// a pickaxe is an ordinary weapon everywhere else
+		assertTrue(SetCalc.perTick(dpick, player("melee"), data.monster(7584).target(), false) > 0);
+	}
+
+	/** Every id the game gives the Chambers of Xeric's monsters finds the row of the right form or part. */
+	@Test
+	public void everyChambersOfXericIdFindsItsRow() throws IOException
+	{
+		StyleData data = new StyleData();
+		for (int id : new int[]{7540, 7541, 7542, 7545})
+		{
+			assertEquals("Tekton " + id, 155, data.monster(id).stab);
+		}
+		for (int id : new int[]{7543, 7544})
+		{
+			assertEquals("enraged Tekton " + id, 280, data.monster(id).stab);
+		}
+		for (int id = 7540; id <= 7545; id++)
+		{
+			assertTrue(data.monster(id).immune.contains("r"));
+			assertEquals(5, data.monster(id).magicDivisor);
+		}
+		for (int id : new int[]{7551, 7554})
+		{
+			assertEquals("Great Olm", data.monster(id).name);
+			assertEquals(3, data.monster(id).magicDivisor);
+			assertEquals(1, data.monster(id).rangedDivisor);
+		}
+		for (int id : new int[]{7552, 7555})
+		{
+			assertEquals("Great Olm (Left claw)", data.monster(id).name);
+			assertEquals(3, data.monster(id).magicDivisor);
+			assertEquals(3, data.monster(id).rangedDivisor);
+		}
+		for (int id : new int[]{7550, 7553})
+		{
+			assertEquals("Great Olm (Right claw)", data.monster(id).name);
+			assertEquals(1, data.monster(id).magicDivisor);
+			assertEquals(3, data.monster(id).rangedDivisor);
+		}
+		// the claws dying: found by name, each its own part
+		assertSame(data.monster(7550), data.monster(7556, "Great Olm (Right claw)"));
+		assertSame(data.monster(7552), data.monster(7557, "Great Olm (Left claw)"));
+		for (int id : new int[]{7573, 7574})
+		{
+			assertEquals("Lizardman shaman (Chambers of Xeric)", data.monster(id).name);
+		}
+		for (int id : new int[]{7584, 7585})
+		{
+			StyleData.Monster m = data.monster(id);
+			assertEquals(3, m.meleeDivisor);
+			assertTrue(m.divisionSparesFire && m.magicDefenceFromDefence && m.xerician);
+		}
+		assertEquals(220, data.monster(7563).level); // the large Muttadile
+		assertEquals("f", data.monster(7530).immune); // Vespula: melee with a polearm only, as before
+	}
+
+	/** The Ice demon takes a third of every hit but a fire spell's and a demonbane weapon's (the calculator's figures). */
+	@Test
+	public void theIceDemonTakesAThirdButOfFireAndDemonbane() throws IOException
+	{
+		StyleData data = new StyleData();
+		SetCalc.Target demon = data.monster(7585).target();
+		SetCalc.Loadout kodai = new SetCalc.Loadout();
+		kodai.weaponName = "Kodai wand";
+		kodai.category = "Staff";
+		kodai.magic = 157;
+		kodai.magicDamage = 39;
+		kodai.spell = 51; // Fire Surge
+		double fire = SetCalc.perTick(kodai, player("magic"), demon, false);
+		assertEquals(6.25518, fire, FIGURE * 6.25518);
+		kodai.spell = 49; // Water Surge
+		double water = SetCalc.perTick(kodai, player("magic"), demon, false);
+		assertEquals(0.78337, water, FIGURE * 0.78337);
+		SetCalc.Loadout ember = melee(data, 29589, "Emberlight", "Slash Sword", 4, 140, 184, 75, 84);
+		assertEquals(6.64119, SetCalc.perTick(ember, player("melee"), demon, false), FIGURE * 6.64119);
+		SetCalc.Loadout scythe = melee(data, 22325, "Scythe of vitur", "Scythe", 5, 117, 210, 77, 138);
+		assertEquals(1.66495, SetCalc.perTick(scythe, player("melee"), demon, false), FIGURE * 1.66495);
+	}
+
+	/** A table published before the columns of the Chambers of Xeric's rules still reads, with no rule. */
+	@Test
+	public void aTableWithoutTheChambersOfXericColumnsStillReads() throws IOException
+	{
+		StyleData old = new StyleData("11920\tPickaxe\n", "Pickaxe\tSpike:stab:Accurate;Smash:crush:Aggressive\n",
+			"7584\tIce demon\t160\t70\t70\t110\t390\t40\t140\t140\t140\t2\t390\t0\t\t\td\t115\t140\tfire\t150\n");
+		StyleData.Monster m = old.monster(7584);
+		assertEquals(1, m.meleeDivisor);
+		assertEquals(1, m.rangedDivisor);
+		assertEquals(1, m.magicDivisor);
+		assertFalse(m.divisionSparesFire || m.divisionKeepsOne || m.magicDefenceFromDefence || m.xerician);
+		SetCalc.Target t = m.target();
+		assertTrue(SetCalc.perTick(melee(old, 11920, "Dragon pickaxe", "Pickaxe", 5, 115, 112, 107, 113),
+			player("melee"), t, false) > 0);
+	}
+
+	/**
+	 * The Deathly rangers of a Challenge Mode raid of 24 (2026-10-14): read as a normal raid, Tumeken's shadow comes
+	 * out ahead of the Twisted bow, which is the switch the plugin called for while the Challenge Mode varbit read 0;
+	 * with Challenge Mode the Twisted bow is ahead, as in the calculator.
+	 */
+	@Test
+	public void theDeathlyRangersOfAChallengeModeRaidTakeTheTwistedBow() throws IOException
+	{
+		Map<String, Double> got = new HashMap<>();
+		for (Case k : cases())
+		{
+			if (k.npc == 7559)
+			{
+				got.put(k.set, k.got);
+			}
+		}
+		assertTrue(got.get("cox24-shadow") > got.get("cox24-tbow"));
+		assertTrue(got.get("cox24cm-tbow") > got.get("cox24cm-shadow") * 1.15);
 	}
 }

@@ -13,7 +13,7 @@ final class Words
 	enum Key
 	{
 		WRONG_PRAYER, PRAYER_OFF, PRAYER_STILL_ON, CHECK_BLOWPIPE, PIECES_LEFT, PIECES_OFF,
-		MELEE_PRAYER, RANGED_PRAYER, MAGIC_PRAYER, RUBY, DIAMOND, QUIVER
+		MELEE_PRAYER, RANGED_PRAYER, MAGIC_PRAYER, RUBY, DIAMOND, QUIVER, SPEC_ESTIMATED
 	}
 
 	/** One row per key, in the order of {@link CombatCheckConfig.Language}: English, Portuguese, Spanish, German, French. */
@@ -31,6 +31,8 @@ final class Words
 		{"Ruby", "Ruby", "Ruby", "Ruby", "Ruby"},
 		{"Diamond", "Diamond", "Diamond", "Diamond", "Diamond"},
 		{"quiver", "quiver", "quiver", "quiver", "quiver"},
+		// the note after the figures worked out with a special attack estimated ("spec" as players say it everywhere)
+		{"spec estimated", "spec estimada", "spec estimado", "Spec geschätzt", "spec estimé"},
 	};
 
 	private Words()
