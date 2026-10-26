@@ -1515,12 +1515,12 @@ public class CombatCheckPlugin extends Plugin
 
 	/**
 	 * Whether the monster's Defence is not known now (the line says "Def ?"): drains carried over a change nobody knows
-	 * the rule of (Ocellus's next phase), a special attack counted on a monster no drain is confirmed on (Ezekiel), or
-	 * Bork stunned (the examine of the stun was never taken).
+	 * the rule of (Ocellus's next phase), or a special attack counted on a monster no drain is confirmed on (Ezekiel).
+	 * Bork's stun is not one: it changes the figures (his flat armour), never the line, so nothing on screen marks it.
 	 */
-	static boolean defenceUnknown(boolean carriedUnknown, boolean notConfirmed, boolean borkStunned, int specs)
+	static boolean defenceUnknown(boolean carriedUnknown, boolean notConfirmed, int specs)
 	{
-		return carriedUnknown || notConfirmed && specs > 0 || borkStunned;
+		return carriedUnknown || notConfirmed && specs > 0;
 	}
 
 	/** The line of a Defence not known: "Def ?", with the special attacks counted when there are any. */
@@ -1544,8 +1544,7 @@ public class CombatCheckPlugin extends Plugin
 			return null;
 		}
 		int specs = drains.counted(npc.getIndex(), npc);
-		if (defenceUnknown(drains.unknown(npc.getIndex(), npc), DefenceDrains.notConfirmed(npc.getId()), borkStunned(monster),
-			specs))
+		if (defenceUnknown(drains.unknown(npc.getIndex(), npc), DefenceDrains.notConfirmed(npc.getId()), specs))
 		{
 			return unknownDefenceText(config.language(), specs);
 		}
@@ -1968,6 +1967,11 @@ public class CombatCheckPlugin extends Plugin
 			specEnergy = -1;
 			// read again from the profile of the account logged in next
 			coxChallengeSeen = null;
+			if (event.getGameState() == GameState.LOGIN_SCREEN)
+			{
+				// another account may log in: its bank is not the one remembered
+				bank.clear();
+			}
 		}
 	}
 
@@ -3618,7 +3622,7 @@ public class CombatCheckPlugin extends Plugin
 		return ArchiveItems.equipment(itemId);
 	}
 
-	/** Zeal is on (VarbitID.PRAYER_ZEAL: the prayer is not in RuneLite's Prayer list yet). */
+	/** Zeal is on (VarbitID.PRAYER_ZEAL: RuneLite's Prayer list has it only from 1.13.4 on). */
 	private boolean zealOn()
 	{
 		return client.getVarbitValue(VarbitID.PRAYER_ZEAL) == 1;

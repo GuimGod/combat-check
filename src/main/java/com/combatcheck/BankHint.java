@@ -210,5 +210,13 @@ final class BankHint
 			key = null;
 			last = null;
 		}
+
+		/** Logged out: the next account's bank is not this one's, so nothing is named until it is seen open. */
+		void clear()
+		{
+			weapons = null;
+			version++;
+			forgetLine();
+		}
 	}
 }

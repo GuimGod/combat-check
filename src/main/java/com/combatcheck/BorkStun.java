@@ -9,8 +9,8 @@ import java.util.Map;
 
 /**
  * Bork of the Fractured Archive stunned by the Smorks' heavy cannonball, read from what the game shows. While stunned his
- * flat armour is 0 (OSRS Wiki, Bork: "10 (base), 0 (stunned)"); nothing else of the stun is known (the examine of a
- * stunned Bork was never taken), so the plugin shows his Defence as not known for its length.
+ * flat armour is 0 (OSRS Wiki, Bork); nothing else of the stun is known. Only the figures change: nothing is drawn for
+ * the stun, and the Defence line stays as it was.
  *
  * <p>The stun as recorded in two measured fights: the cannonball falls on him, he says "Oof." and plays the stun's
  * animation ({@link #STUNNED}); 14 ticks on he says "Bork very angry!!" and starts his stomps ({@link #STOMP}), which

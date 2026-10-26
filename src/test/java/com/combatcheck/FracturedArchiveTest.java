@@ -215,7 +215,7 @@ public class FracturedArchiveTest
 		assertTrue(drains.unknown(3, npc));
 		assertEquals(2, drains.counted(3, npc));
 		assertNull("the figures no longer count the first phase's drains", drains.of(3, npc));
-		assertTrue(CombatCheckPlugin.defenceUnknown(drains.unknown(3, npc), false, false, 2));
+		assertTrue(CombatCheckPlugin.defenceUnknown(drains.unknown(3, npc), false, 2));
 		assertEquals("Def ? (2 specs)", CombatCheckPlugin.unknownDefenceText(CombatCheckConfig.Language.ENGLISH, 2));
 		// a special attack in the third phase: counted from its full Defence, the line still "?"
 		drains.add(3, npc, SpecialWeapon.DRAGON_WARHAMMER, 30, false, 200);
@@ -244,8 +244,8 @@ public class FracturedArchiveTest
 		DefenceDrains drains = new DefenceDrains();
 		drains.add(SpecialWeapon.DRAGON_WARHAMMER, 40, false, 0);
 		assertEquals(140, DefenceDrains.left(ezekiel, 16652, MonsterLevels.scaled(ezekiel, null, null, null), drains, 0).defence);
-		assertTrue(CombatCheckPlugin.defenceUnknown(false, DefenceDrains.notConfirmed(16652), false, 1));
-		assertFalse(CombatCheckPlugin.defenceUnknown(false, DefenceDrains.notConfirmed(16652), false, 0));
+		assertTrue(CombatCheckPlugin.defenceUnknown(false, DefenceDrains.notConfirmed(16652), 1));
+		assertFalse(CombatCheckPlugin.defenceUnknown(false, DefenceDrains.notConfirmed(16652), 0));
 		assertFalse(DefenceDrains.notConfirmed(16640));
 		assertEquals("Def ? (1 spec)", CombatCheckPlugin.unknownDefenceText(CombatCheckConfig.Language.ENGLISH, 1));
 	}
@@ -277,7 +277,8 @@ public class FracturedArchiveTest
 		stun.animation(smorks, 16641, BorkStun.STUNNED, 400);
 		stun.says(smorks, 16641, "Oof.", 400);
 		assertFalse(stun.stunned(smorks, 401));
-		assertTrue(CombatCheckPlugin.defenceUnknown(false, false, true, 0));
+		// the stun shows nothing of its own: only the figures change, the Defence line stays as it was
+		assertFalse(CombatCheckPlugin.defenceUnknown(false, false, 0));
 
 		// the flat armour: 8 off every hit that lands outside the stun, nothing in it
 		StyleData data = new StyleData();
@@ -473,6 +474,11 @@ public class FracturedArchiveTest
 			false)));
 		memory.bank(Arrays.asList(22325));
 		assertTrue("another bank", memory.changed(Arrays.asList(8061, 5, Arrays.asList(4151), memory.version(), 10.0, false)));
+		// logging out forgets the bank: another account gets no line until its own bank is seen open
+		memory.clear();
+		assertNull(memory.weapons());
+		assertNull(memory.last());
+		assertTrue(memory.changed(Arrays.asList(8061, 5, Arrays.asList(4151), memory.version(), 10.0, false)));
 	}
 
 	/** The line's words: "Bank: <weapon> +X%". */
