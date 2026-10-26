@@ -41,6 +41,19 @@ final class ShownFor
 		return true;
 	}
 
+	/**
+	 * A reminder with one time on screen for the fight and another for out of it: shown while gearing up away from any
+	 * monster (with "Only while fighting" off), it is still shown once the fight begins. A pickaxe wielded in the raid's
+	 * lobby with the ranged armour on used up the time before the Guardians were reached, and the fight itself, the one
+	 * time the figure of what the pieces add is there, showed nothing.
+	 *
+	 * @param fighting whether a monster attacked is remembered now
+	 */
+	static boolean visible(ShownFor inFight, ShownFor outOfFight, boolean fighting, boolean showing, int ticks)
+	{
+		return (fighting ? inFight : outOfFight).visible(showing, ticks);
+	}
+
 	/** The player did what makes the reminder worth showing again. */
 	void arm()
 	{

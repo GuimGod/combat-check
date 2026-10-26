@@ -36,11 +36,12 @@ public class CoxChallengeModeTest
 	}
 
 	/**
-	 * The Deathly ranger in a raid of 23 at combat level 126, by the OSRS Wiki calculator (2026-10-16): the Twisted bow with Seeking dragon arrows, Masori (f), Dizana's max cape,
-	 * Necklace of rupture, Zaryte vambraces, Avernic treads (max) and Lightbearer, Rigour and +13 Ranged, against
-	 * Tumeken's shadow with Ancestral, the Imbued Zamorak max cape, Occult necklace, Confliction gauntlets, the same treads
-	 * and ring, Augury and +13 Magic. Challenge Mode: Twisted bow 12.14 per second, Shadow 10.09. Normal: Twisted bow
-	 * 10.26, Shadow 10.49. The plugin's "Shadow +1.3%" in a Challenge Mode raid was the normal raid's figure.
+	 * The Deathly ranger in a raid of 23 at combat level 126, by the OSRS Wiki calculator (2026-10-16): the Twisted bow
+	 * with Seeking dragon arrows, Masori (f), Dizana's max cape, Necklace of rupture, Zaryte vambraces, Avernic treads
+	 * (max) and Lightbearer, Rigour and +13 Ranged, against Tumeken's shadow with Ancestral, the Imbued Zamorak max
+	 * cape, Occult necklace, Confliction gauntlets, the same treads and ring, Augury and +13 Magic. Challenge Mode:
+	 * Twisted bow 12.14 per second, Shadow 10.09. Normal: Twisted bow 10.26, Shadow 10.49. The plugin's "Shadow +1.3%"
+	 * in a Challenge Mode raid was the normal raid's figure.
 	 */
 	@Test
 	public void deathlyRangerInARaidOf23() throws java.io.IOException

@@ -126,12 +126,12 @@ public class TobScalingTest
 
 	/**
 	 * On every phase of Verzik, in every mode, any carried weapon is pointed at, as against a boss that does not change
-	 * form, each phase being plain to see. The figures of the calculator:
-	 * on the second phase the Scythe in hand (Ultor ring, Torva full helm, Oathplate, Infernal max cape, Rancour,
-	 * Ferocious, Avernic treads (max); Piety and a super combat) at 16/3 ticks 9.19, against Tumeken's shadow with the
-	 * whole magic switch (Ancestral, Imbued Zamorak max cape, Occult, Confliction, Magus ring, the same treads; Augury and
-	 * a saturated heart, +13) 9.85, the magic defence rolled with Defence 200: the Shadow is pointed at with the Scythe in
-	 * hand, nothing with the Shadow in hand. The third phase: each weapon at its own speed.
+	 * form: each phase is plain to see. The figures: on the second phase the Scythe in hand (Ultor ring, Torva full
+	 * helm, Oathplate, Infernal max cape, Rancour, Ferocious, Avernic treads (max); Piety and a super combat) at 16/3
+	 * ticks 9.19, against Tumeken's shadow with the whole magic switch (Ancestral, Imbued Zamorak max cape, Occult,
+	 * Confliction, Magus ring, the same treads; Augury and a saturated heart, +13) 9.85, the magic defence rolled with
+	 * Defence 200: the Shadow is pointed at with the Scythe in hand, nothing with the Shadow in hand. The third phase:
+	 * each weapon at its own speed.
 	 */
 	@Test
 	public void everyPhaseOfVerzikPointsAtAnyCarriedWeapon() throws IOException
@@ -228,7 +228,7 @@ public class TobScalingTest
 		assertFalse(SetCalc.plain(dawnbringer));
 	}
 
-	/** Maxed melee levels and prayer in the Theatre's figures: 118 with a super combat, Piety. */
+	/** A player's melee levels and prayer in the Theatre's figures: 118 with a super combat, Piety. */
 	private static SetCalc.Player meleePlayer()
 	{
 		SetCalc.Player p = new SetCalc.Player();
@@ -412,5 +412,34 @@ public class TobScalingTest
 			assertEquals(20, data.monster(id).level);
 			assertEquals(22, data.monster(id).hitpoints);
 		}
+	}
+
+	/**
+	 * The forms of Xarpus and of the Maiden the OSRS Wiki's infobox does not list are their mode's own rows: in the Theatre
+	 * of 2026-10-17 Xarpus turned into 8341 at 1% of his health, the plugin found the Entry Mode Xarpus by the name
+	 * (Defence 100), dropped the drains on the change (another level) and pointed at the Twisted bow over the Scythe.
+	 */
+	@Test
+	public void xarpusAndTheMaidenKeepTheirModeToTheEnd() throws java.io.IOException
+	{
+		StyleData data = new StyleData();
+		int[][] forms = {{8340, 8338, 8339, 8341}, {10768, 10766, 10767, 10769}, {10772, 10770, 10771, 10773},
+			{8363, 8364, 8365}, {10814, 10818, 10819}, {10822, 10826, 10827}};
+		for (int[] mode : forms)
+		{
+			StyleData.Monster fighting = data.monster(mode[0]);
+			for (int i = 1; i < mode.length; i++)
+			{
+				StyleData.Monster form = data.monster(mode[i], fighting.name);
+				assertEquals(mode[i] + " has a row of its own", mode[i], form.id);
+				assertEquals(mode[i] + "'s Defence", fighting.level, form.level);
+				assertEquals(mode[i] + "'s hitpoints", fighting.hitpoints, form.hitpoints);
+				assertEquals(mode[i] + "'s scaling", fighting.tobScaling, form.tobScaling);
+				// the change of form keeps what was counted on him (CombatCheckPlugin.onNpcChanged: the same level)
+				assertFalse(DefenceDrains.resets(mode[0], mode[i]));
+			}
+		}
+		// the normal Xarpus at his death form is the normal one: Defence 250, not the Entry Mode's 100
+		assertEquals(250, data.monster(8341, "Xarpus").level);
 	}
 }

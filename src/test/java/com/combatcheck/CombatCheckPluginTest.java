@@ -43,10 +43,20 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("The Leviathan"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Cerberus"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Kraken"));
-		// a dead monster: about 10 seconds on a task of it, about a second otherwise or when the task is not known
-		org.junit.Assert.assertEquals(17, CombatCheckPlugin.afterDeathTicks(true));
-		org.junit.Assert.assertEquals(2, CombatCheckPlugin.afterDeathTicks(false));
-		org.junit.Assert.assertEquals(2, CombatCheckPlugin.afterDeathTicks(null));
+		// the Fractured Archive: the Guardian flies and lands, Ocellus changes phase, Bork and the Smorks are a pair;
+		// Ezekiel and Xarth keep their form
+		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Archive Guardian"));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Ocellus"));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("Bork"));
+		org.junit.Assert.assertTrue(CombatCheckPlugin.changesForm("The Smorks"));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Xarth"));
+		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Ezekiel"));
+		// a dead monster: on a task of it, the option's seconds (0, the default: until let go the other ways), about a
+		// second otherwise or when the task is not known
+		org.junit.Assert.assertEquals(17, CombatCheckPlugin.afterDeathTicks(true, 10));
+		org.junit.Assert.assertEquals(Integer.MAX_VALUE, CombatCheckPlugin.afterDeathTicks(true, 0));
+		org.junit.Assert.assertEquals(2, CombatCheckPlugin.afterDeathTicks(false, 0));
+		org.junit.Assert.assertEquals(2, CombatCheckPlugin.afterDeathTicks(null, 10));
 		// Barrows sets
 		org.junit.Assert.assertEquals(0, SetEffects.barrowsPart("Dharok's greataxe 75"));
 		org.junit.Assert.assertEquals(2, SetEffects.barrowsPart("Karil's leathertop"));
@@ -106,6 +116,21 @@ public class CombatCheckPluginTest
 		org.junit.Assert.assertTrue(CombatCheckPlugin.leftTheFight(new net.runelite.api.coords.WorldPoint(1124, 3418, 1), fight, 80));
 		org.junit.Assert.assertTrue(CombatCheckPlugin.leftTheFight(fight, fight, 0));
 		org.junit.Assert.assertEquals(1420, CombatCheckOverlay.prayerSprite("Rigour"));
+		org.junit.Assert.assertEquals(8595, CombatCheckOverlay.prayerSprite("Zeal"));
+		// Zeal once, whether RuneLite's Prayer list has it (1.13.4 on) or only its varbit tells (not two Zeal icons in
+		// "Prayer still on")
+		org.junit.Assert.assertEquals("Zeal", CombatCheckPlugin.prayerName("ZEAL"));
+		org.junit.Assert.assertEquals(java.util.Arrays.asList("Zeal"),
+			CombatCheckPlugin.withZeal(new java.util.ArrayList<>(java.util.Arrays.asList("Zeal")), true));
+		org.junit.Assert.assertEquals(java.util.Arrays.asList("Zeal"),
+			CombatCheckPlugin.withZeal(new java.util.ArrayList<>(), true));
+		org.junit.Assert.assertEquals(java.util.Arrays.asList("Protect from melee", "Zeal"),
+			CombatCheckPlugin.withZeal(new java.util.ArrayList<>(java.util.Arrays.asList(
+				CombatCheckPlugin.prayerName("PROTECT_FROM_MELEE"), "Zeal")), true));
+		org.junit.Assert.assertEquals(java.util.Arrays.asList("Protect from melee", "Zeal"),
+			CombatCheckPlugin.withZeal(new java.util.ArrayList<>(java.util.Arrays.asList("Protect from melee")), true));
+		org.junit.Assert.assertEquals(java.util.Collections.emptyList(),
+			CombatCheckPlugin.withZeal(new java.util.ArrayList<>(), false));
 		org.junit.Assert.assertEquals(-1, CombatCheckOverlay.prayerSprite("Melee prayer"));
 		org.junit.Assert.assertFalse(CombatCheckPlugin.changesForm("Dagannoth Rex"));
 		// the darts inside the blowpipe, as its Check message names them

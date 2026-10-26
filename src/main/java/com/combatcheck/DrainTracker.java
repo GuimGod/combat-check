@@ -50,6 +50,11 @@ final class DrainTracker
 		DefenceDrains drains = new DefenceDrains();
 		/** The game tick of the last special attack counted. */
 		int lastTick;
+		/**
+		 * The special attacks counted before a change the drains' carry over is not known for (Ocellus's phases): they
+		 * are not in {@link #records} any more, and the Defence left is not known while there are any.
+		 */
+		int unknown;
 
 		Entry(Object npc)
 		{
@@ -61,7 +66,7 @@ final class DrainTracker
 			drains = new DefenceDrains();
 			for (Record r : records)
 			{
-				drains.add(r.weapon, r.hit, r.tekton);
+				drains.add(r.weapon, r.hit, r.tekton, r.tick);
 			}
 		}
 	}
@@ -85,7 +90,7 @@ final class DrainTracker
 		Entry e = entry(index, npc);
 		int last = e.records.isEmpty() ? 0 : e.records.get(e.records.size() - 1).tick;
 		e.records.add(new Record(weapon, hit, tekton, last, EXACT));
-		e.drains.add(weapon, hit, tekton);
+		e.drains.add(weapon, hit, tekton, last);
 		e.lastTick = 0;
 	}
 
@@ -94,7 +99,7 @@ final class DrainTracker
 	{
 		Entry e = entry(index, npc);
 		insert(e, new Record(weapon, hit, tekton, tick, EXACT));
-		e.lastTick = tick;
+		e.lastTick = Math.max(e.lastTick, tick);
 	}
 
 	/**
@@ -119,7 +124,7 @@ final class DrainTracker
 		e.records.add(at, r);
 		if (at == e.records.size() - 1)
 		{
-			e.drains.add(r.weapon, r.hit, r.tekton);
+			e.drains.add(r.weapon, r.hit, r.tekton, r.tick);
 		}
 		else
 		{
@@ -162,11 +167,39 @@ final class DrainTracker
 		return e != null && e.npc == npc && e.records.stream().anyMatch(r -> r.estimatedBy != EXACT);
 	}
 
-	/** How many special attacks are counted on this monster, the ones that lowered nothing too (for the tests). */
+	/**
+	 * How many special attacks are counted on this monster, the ones that lowered nothing too, and the ones before a change
+	 * whose carry over is not known ({@link #carryUnknown}).
+	 */
 	int counted(int index, Object npc)
 	{
 		Entry e = byIndex.get(index);
-		return e == null || e.npc != npc ? 0 : e.records.size();
+		return e == null || e.npc != npc ? 0 : e.records.size() + e.unknown;
+	}
+
+	/**
+	 * The monster changed in a way that keeps its drains, but not in a way that is known (OSRS Wiki, Ocellus: "Defence
+	 * reduction works on all phases", not whether the levels or the share go on): the drains counted so far are dropped
+	 * from the figures and kept as not known, so the Defence left is shown as not known from here on. The ones counted
+	 * after it are counted from the new form's full Defence: all that is known of them is that they lowered it that much.
+	 */
+	void carryUnknown(int index, Object npc)
+	{
+		Entry e = byIndex.get(index);
+		if (e == null || e.npc != npc || e.records.isEmpty() && e.unknown == 0)
+		{
+			return;
+		}
+		e.unknown += e.records.size();
+		e.records.clear();
+		e.drains = new DefenceDrains();
+	}
+
+	/** True when drains whose carry over is not known were counted on this monster ({@link #carryUnknown}). */
+	boolean unknown(int index, Object npc)
+	{
+		Entry e = byIndex.get(index);
+		return e != null && e.npc == npc && e.unknown > 0;
 	}
 
 	/** How many ticks ago, at tick {@code now}, the last special attack was counted on this monster; 0 for none. */

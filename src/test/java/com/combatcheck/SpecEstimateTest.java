@@ -43,7 +43,7 @@ public class SpecEstimateTest
 		"^party spec player (\\d+)( \\(me\\))? (?:seen|not seen) weapon (\\S+) hit (\\d+) npc (\\d+).*$");
 
 	/** A party message of the file: the answer key. */
-	private static final class Message
+	static final class Message
 	{
 		final int tick;
 		final int player;
@@ -64,7 +64,7 @@ public class SpecEstimateTest
 	}
 
 	/** What a replay of the file gives: the estimates counted, the drains, and the monsters by index. */
-	private static final class Replay
+	static final class Replay
 	{
 		final List<SpecEstimate.Landed> landed = new ArrayList<>();
 		/** The special attacks estimated from an animation, decided or not: "tick weapon". */
@@ -80,11 +80,11 @@ public class SpecEstimateTest
 		}
 	}
 
-	private static Map<Integer, List<String>> ticks() throws IOException
+	private static Map<Integer, List<String>> ticks(String file) throws IOException
 	{
 		Map<Integer, List<String>> byTick = new TreeMap<>();
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(
-			SpecEstimateTest.class.getResourceAsStream("spec_estimate_cox.txt"), StandardCharsets.UTF_8)))
+			SpecEstimateTest.class.getResourceAsStream(file), StandardCharsets.UTF_8)))
 		{
 			String line;
 			while ((line = r.readLine()) != null)
@@ -111,19 +111,24 @@ public class SpecEstimateTest
 		return replay(party, false);
 	}
 
+	private static Replay replay(boolean party, boolean meAsOther) throws IOException
+	{
+		return replay("spec_estimate_cox.txt", party, meAsOther);
+	}
+
 	/**
 	 * The same, and with {@code meAsOther} the player of the client taken as one more player outside the party, the Bandos
 	 * godsword estimated: that player's own Bandos godsword special attacks, whose damage the message gives, are then
 	 * judged as anybody else's would be.
 	 */
-	private static Replay replay(boolean party, boolean meAsOther) throws IOException
+	static Replay replay(String file, boolean party, boolean meAsOther) throws IOException
 	{
 		Replay out = new Replay();
 		SpecEstimate e = new SpecEstimate();
 		e.bgs(meAsOther);
 		Set<Integer> aiming = new HashSet<>();
 		int target = -1;
-		for (Map.Entry<Integer, List<String>> tick : ticks().entrySet())
+		for (Map.Entry<Integer, List<String>> tick : ticks(file).entrySet())
 		{
 			int t = tick.getKey();
 			List<String> players = new ArrayList<>();
@@ -149,6 +154,12 @@ public class SpecEstimateTest
 				{
 					e.hitsplat(t, out.npc(Integer.parseInt(m.group(1))), Integer.parseInt(m.group(2)),
 						Integer.parseInt(m.group(3)), m.group(4).equals("mine") && !meAsOther);
+				}
+				else if (line.equals("world hop"))
+				{
+					// another world: the plugin clears the estimate (SpecEstimate.clear), and the file's numbers start again
+					e.clear();
+					aiming.clear();
 				}
 				else if ((m = TARGET.matcher(line)).matches())
 				{

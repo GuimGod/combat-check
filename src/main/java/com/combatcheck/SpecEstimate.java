@@ -145,8 +145,10 @@ final class SpecEstimate
 	}
 
 	/** The special attack an animation is, with the weapon seen in hand, the Bandos godsword with {@code bgs}. */
-	static SpecialWeapon weapon(int animation, int weaponItem, boolean bgs)
+	static SpecialWeapon weapon(int animation, int seenItem, boolean bgs)
 	{
+		// another dress of a weapon (an ornament kit, a corrupted one: Variants) is the weapon
+		int weaponItem = Variants.base(seenItem);
 		if (bgs && (animation == AnimationID.BGS_SPECIAL_PLAYER || animation == AnimationID.BGS_SPECIAL_ORNATE_PLAYER)
 			&& (weaponItem == ItemID.BGS || weaponItem == ItemID.BGSG))
 		{
@@ -323,6 +325,21 @@ final class SpecEstimate
 	{
 		senders.add(playerId);
 		pending.removeIf(p -> p.playerId == playerId);
+	}
+
+	/**
+	 * The player at {@code playerId} no longer sends through the party (they left it): their special attacks are estimated
+	 * again, as any other player's.
+	 */
+	void notSender(int playerId)
+	{
+		senders.remove(playerId);
+	}
+
+	/** Another party joined, or none: nobody is known to send through it. */
+	void noSenders()
+	{
+		senders.clear();
 	}
 
 	/** Another world, another login, or the option turned off. */

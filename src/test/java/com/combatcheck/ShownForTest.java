@@ -108,4 +108,36 @@ public class ShownForTest
 		alsoEmpty[1] = -1;
 		assertFalse(ShownFor.armourChanged(empty, alsoEmpty));
 	}
+
+	/**
+	 * The Guardians of a Challenge Mode raid (2026-10-17): the Crystal pickaxe wielded in the lobby with the ranged
+	 * armour on and "Only while fighting" off. The pieces' 5 seconds ran out before the first Guardian was attacked, and
+	 * the whole room showed nothing.
+	 */
+	@Test
+	public void timeShownOutOfAFightDoesNotUseUpTheFights()
+	{
+		ShownFor fight = new ShownFor();
+		ShownFor idle = new ShownFor();
+		int ticks = ShownFor.ticks(5);
+		// walking to the room with the pickaxe in hand: shown its 9 ticks, then quiet
+		for (int i = 0; i < ticks; i++)
+		{
+			assertTrue(ShownFor.visible(fight, idle, false, true, ticks));
+		}
+		assertFalse(ShownFor.visible(fight, idle, false, true, ticks));
+		// the first Guardian attacked: shown again, its 9 ticks, with the figure
+		for (int i = 0; i < ticks; i++)
+		{
+			assertTrue(ShownFor.visible(fight, idle, true, true, ticks));
+		}
+		// then quiet for the rest of the room, the next Guardian included, and out of the fight too
+		assertFalse(ShownFor.visible(fight, idle, true, true, ticks));
+		assertFalse(ShownFor.visible(fight, idle, false, true, ticks));
+		// a piece of armour changed arms both
+		fight.arm();
+		idle.arm();
+		assertTrue(ShownFor.visible(fight, idle, true, true, ticks));
+		assertTrue(ShownFor.visible(fight, idle, false, true, ticks));
+	}
 }

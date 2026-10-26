@@ -45,6 +45,8 @@ class CombatCheckOverlay extends Overlay
 	private static final Color WRONG_EDGE = new Color(255, 60, 60);
 	private static final Color RIGHT_BACK = new Color(0, 40, 0, 200);
 	private static final Color RIGHT_EDGE = new Color(60, 220, 60);
+	private static final Color INFO_BACK = new Color(20, 20, 20, 200);
+	private static final Color INFO_EDGE = new Color(170, 170, 170);
 	private static final int PAD = 2;
 	/** Icons are drawn at this height; item icons are 36x32. */
 	private static final int ICON_H = 18;
@@ -90,7 +92,11 @@ class CombatCheckOverlay extends Overlay
 		String prayer = plugin.prayerNotice();
 		String leftOn = plugin.leftOnNotice();
 		String blowpipe = plugin.blowpipeNotice();
-		if (advice == null && !rows && weapon == null && bolts == null && prayer == null && leftOn == null && blowpipe == null)
+		String defence = plugin.defenceLine();
+		String bash = plugin.bulwarkSpecLine();
+		CombatCheckPlugin.WeaponAdvice bank = plugin.bankAdvice();
+		if (advice == null && !rows && weapon == null && bolts == null && prayer == null && leftOn == null && blowpipe == null
+			&& defence == null && bash == null && bank == null)
 		{
 			return null;
 		}
@@ -138,7 +144,16 @@ class CombatCheckOverlay extends Overlay
 		{
 			// a weapon in the inventory whose set would deal much more: its icon and how much
 			box(graphics, fm, 0, y, h, weapon.alsoItemId > 0
-				? new BufferedImage[]{icon(weapon.itemId), icon(weapon.alsoItemId)} : new BufferedImage[]{icon(weapon.itemId)}, 0, weapon.text, WRONG_BACK, WRONG_EDGE);
+				? new BufferedImage[]{icon(weapon.itemId), icon(weapon.alsoItemId)} : new BufferedImage[]{icon(weapon.itemId)}, 0,
+				Words.weapon(config.language(), weapon.text), WRONG_BACK, WRONG_EDGE);
+			y += h + 3;
+		}
+		if (bank != null)
+		{
+			// the weapon of the bank that would deal the most in place of the one in hand ("Bank: <weapon> +X%")
+			box(graphics, fm, 0, y, h, new BufferedImage[]{icon(bank.itemId)}, 0,
+				String.format(Words.of(config.language(), Words.Key.BANK), bank.name, Words.weapon(config.language(), bank.text)),
+				WRONG_BACK, WRONG_EDGE);
 			y += h + 3;
 		}
 		if (bolts != null)
@@ -161,8 +176,11 @@ class CombatCheckOverlay extends Overlay
 			String named = wrong ? prayer.substring(WRONG_PRAYER.length()) : prayer.endsWith(" off") ? prayer.substring(0, prayer.length() - 4) : "";
 			int spriteId = prayerSprite(named);
 			BufferedImage symbol = spriteId <= 0 ? null : sprites.computeIfAbsent(spriteId, id -> spriteManager.getSprite(id, 0));
+			// with what that prayer would add to the gear worn, as the pieces' box writes it
+			String more = plugin.prayerGainText();
+			String text = Words.prayerNotice(config.language(), prayer);
 			box(graphics, fm, 0, y, h, symbol == null ? new BufferedImage[0] : new BufferedImage[]{symbol}, wrong ? 1 : 0,
-				Words.prayerNotice(config.language(), prayer),
+				more == null ? text : text + " " + more,
 				WRONG_BACK, WRONG_EDGE);
 			y += h + 3;
 		}
@@ -188,6 +206,22 @@ class CombatCheckOverlay extends Overlay
 		{
 			box(graphics, fm, 0, y, h, new BufferedImage[0], 0, Words.of(config.language(), Words.Key.CHECK_BLOWPIPE),
 				WRONG_BACK, WRONG_EDGE);
+			y += h + 3;
+		}
+		if (defence != null)
+		{
+			// the monster's Defence after the special attacks: information, not a mistake, so in the neutral colours; it
+			// carries its own "~" for an estimate, so the box does not mark it again
+			boolean marking = estimated;
+			estimated = false;
+			box(graphics, fm, 0, y, h, new BufferedImage[0], 0, defence, INFO_BACK, INFO_EDGE);
+			estimated = marking;
+			y += h + 3;
+		}
+		if (bash != null)
+		{
+			// Dinh's bulwark's special attack: information, in the neutral colours
+			box(graphics, fm, 0, y, h, new BufferedImage[0], 0, bash, INFO_BACK, INFO_EDGE);
 			y += h + 3;
 		}
 		return y <= 0 ? null : new Dimension(drawnWidth, y - 2);
@@ -257,6 +291,9 @@ class CombatCheckOverlay extends Overlay
 				return 1422;
 			case "mystic vigour":
 				return 1423;
+			case "zeal":
+				// SpriteID.Prayeron.ZEAL of RuneLite's game values of 2026-10-20 (not in the RuneLite 1.13.3 API yet)
+				return 8595;
 			default:
 				return -1;
 		}

@@ -57,4 +57,37 @@ public class ConfigMigrationTest
 		}
 		assertTrue(estimate);
 	}
+	/**
+	 * "Weapon: minimum gain" is a decimal number: 1% by default, a whole number saved when it was an int reads the
+	 * same, half a percent can be set, and 0, which points at any gain that shows as +0.1%; kept from 0 to 200.
+	 */
+	@Test
+	public void theMinimumGainTakesHalfAPercent() throws Exception
+	{
+		CombatCheckConfig config = new CombatCheckConfig()
+		{
+		};
+		assertEquals(1.0, config.weaponMinimumGain(), 0);
+		Method m = CombatCheckConfig.class.getDeclaredMethod("weaponMinimumGain");
+		assertEquals(double.class, m.getReturnType());
+		assertEquals("weaponMinimumGain", m.getAnnotation(ConfigItem.class).keyName());
+		// RuneLite reads a double setting with Double.parseDouble: what an int setting saved ("1", "3") reads the same
+		assertEquals(1.0, CombatCheckPlugin.minimumGain(Double.parseDouble("1")), 0);
+		assertEquals(3.0, CombatCheckPlugin.minimumGain(Double.parseDouble("3")), 0);
+		assertEquals(0.5, CombatCheckPlugin.minimumGain(Double.parseDouble("0.5")), 0);
+		assertEquals(0, CombatCheckPlugin.minimumGain(0), 0);
+		assertEquals(0, CombatCheckPlugin.minimumGain(-2), 0);
+		// with 0: +0.1% is pointed at, a gain that would read +0.0% is not, nor none at all
+		assertTrue(CombatCheckPlugin.pointsAt(0.09, 0));
+		assertEquals("+0.1%", CombatCheckPlugin.gainText(0.09));
+		assertTrue(!CombatCheckPlugin.pointsAt(0.04, 0));
+		assertTrue(!CombatCheckPlugin.pointsAt(0, 0));
+		assertTrue(!CombatCheckPlugin.pointsAt(Double.NaN, 0));
+		assertEquals(200, CombatCheckPlugin.minimumGain(500), 0);
+		// a weapon 0.6% better is pointed at with 0.5, not with 1; "(low HP)" follows the same minimum
+		assertTrue(CombatCheckPlugin.pointsAt(0.6, CombatCheckPlugin.minimumGain(0.5)));
+		assertTrue(!CombatCheckPlugin.pointsAt(0.6, CombatCheckPlugin.minimumGain(1)));
+		assertTrue(CombatCheckPlugin.killsSooner(0.3, 0.6, 0.5));
+		assertTrue(!CombatCheckPlugin.killsSooner(0.3, 0.6, 1));
+	}
 }

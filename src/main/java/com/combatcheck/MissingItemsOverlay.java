@@ -57,7 +57,7 @@ class MissingItemsOverlay extends WidgetItemOverlay
 		if (equipment)
 		{
 			// a worn piece to take off: always marked, with a circle unless another shape was picked
-			if (!plugin.takeOff().contains(itemManager.canonicalize(itemId)))
+			if (!plugin.takeOff().contains(plugin.itemOf(itemId)))
 			{
 				return;
 			}
@@ -66,10 +66,10 @@ class MissingItemsOverlay extends WidgetItemOverlay
 				shape = CombatCheckConfig.Highlight.CIRCLE;
 			}
 		}
-		else if (shape == CombatCheckConfig.Highlight.OFF || !(plugin.missing().contains(itemManager.canonicalize(itemId))
-			|| (plugin.weaponAdvice() != null && (plugin.weaponAdvice().itemId == itemManager.canonicalize(itemId)
-				|| plugin.weaponAdvice().alsoItemId == itemManager.canonicalize(itemId)))
-			|| (plugin.boltAdvice() != null && plugin.boltAdvice().itemId == itemManager.canonicalize(itemId))))
+		else if (shape == CombatCheckConfig.Highlight.OFF || !(plugin.missing().contains(plugin.itemOf(itemId))
+			|| (plugin.weaponAdvice() != null && (plugin.weaponAdvice().itemId == plugin.itemOf(itemId)
+				|| plugin.weaponAdvice().alsoItemId == plugin.itemOf(itemId)))
+			|| (plugin.boltAdvice() != null && plugin.boltAdvice().itemId == plugin.itemOf(itemId))))
 		{
 			return;
 		}

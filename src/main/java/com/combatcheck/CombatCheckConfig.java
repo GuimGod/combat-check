@@ -178,7 +178,7 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "prayerShowFor",
 		name = "Attack prayer: show for",
-		description = "How long the \"no attack prayer on\" reminder stays on screen. After that it keeps quiet until you turn an attack prayer on: fighting without one on purpose is not nagged about. The \"wrong prayer\" reminder always stays until it is put right",
+		description = "With \"Attack prayer: keep on screen\" off, how long the \"no attack prayer on\" reminder stays on screen. After that it keeps quiet until you turn an attack prayer on: fighting without one on purpose is not nagged about. The \"wrong prayer\" reminder always stays until it is put right",
 		position = 6,
 		section = delays
 	)
@@ -190,13 +190,13 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "prayerKeep",
 		name = "Attack prayer: keep on screen",
-		description = "Keep the \"no attack prayer on\" reminder on screen until an attack prayer is on, however long that takes",
+		description = "Keep the \"no attack prayer on\" reminder on screen until an attack prayer is on, however long that takes (on by default). Off: it stays for \"Attack prayer: show for\"",
 		position = 7,
 		section = delays
 	)
 	default boolean prayerKeep()
 	{
-		return false;
+		return true;
 	}
 
 	@Range(min = 1, max = 120)
@@ -204,7 +204,7 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "switchShowFor",
 		name = "Switch pieces: show for",
-		description = "How long the pieces to put on or take off stay on screen. After that they are not shown again until you change a piece of armour (a shield counts; the weapon and the ammunition do not): changing only the weapon does not bring them back",
+		description = "With \"Switch pieces: keep on screen\" off, how long the pieces to put on or take off stay on screen. After that they are not shown again until you change a piece of armour (a shield counts; the weapon and the ammunition do not): changing only the weapon does not bring them back",
 		position = 8,
 		section = delays
 	)
@@ -216,13 +216,55 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "switchKeep",
 		name = "Switch pieces: keep on screen",
-		description = "Keep the pieces to put on or take off on screen until the switch is complete, however long that takes",
+		description = "Keep the pieces to put on or take off on screen until the switch is complete, however long that takes (on by default). Off: they stay for \"Switch pieces: show for\"",
 		position = 9,
 		section = delays
 	)
 	default boolean switchKeep()
 	{
-		return false;
+		return true;
+	}
+
+	@Range(min = 0, max = 60)
+	@Units(Units.SECONDS)
+	@ConfigItem(
+		keyName = "prayerAfterAttack",
+		name = "Attack prayer: after the last attack",
+		description = "How long after your last attack on the monster the attack prayer reminder stays. 0 (the default) keeps it for as long as the monster is the one you fight: until it dies, a minute passes without an attack, you walk away or you attack another",
+		position = 10,
+		section = delays
+	)
+	default int prayerAfterAttack()
+	{
+		return 0;
+	}
+
+	@Range(min = 0, max = 60)
+	@Units(Units.SECONDS)
+	@ConfigItem(
+		keyName = "boltsAfterAttack",
+		name = "Bolts: after the last attack",
+		description = "How long after your last attack on the monster the ruby or diamond bolts reminder stays. 0 (the default) keeps it for as long as the monster is the one you fight: until it dies, a minute passes without an attack, you walk away or you attack another",
+		position = 11,
+		section = delays
+	)
+	default int boltsAfterAttack()
+	{
+		return 0;
+	}
+
+	@Range(min = 0, max = 60)
+	@Units(Units.SECONDS)
+	@ConfigItem(
+		keyName = "afterKillOnTask",
+		name = "After a kill on task",
+		description = "On a Slayer task of the monster, how long it stays the one you fight after it dies, so its reminders (weapon, pieces, prayer, bolts) stay for the next one. 0 (the default) keeps it until a minute passes without an attack, you walk away or you attack another. Off a task a dead monster is let go at once",
+		position = 12,
+		section = delays
+	)
+	default int afterKillOnTask()
+	{
+		return 0;
 	}
 
 	@ConfigItem(
@@ -323,7 +365,7 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "showGain",
 		name = "Show the gain %",
-		description = "Write how much more damage you would deal, in percent: after the best style's name, and after the count of switch pieces left",
+		description = "Write how much more damage you would deal, in percent: after the best style's name, after the count of switch pieces left, and after the attack prayer reminder (what the prayer would add to the gear worn)",
 		position = 11,
 		section = master
 	)
@@ -342,6 +384,36 @@ public interface CombatCheckConfig extends Config
 		section = master
 	)
 	default boolean estimateSpecs()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showDefence",
+		name = "Show the Defence left",
+		description = "While a special attack that lowers Defence is counted on the monster you fight, a line with its "
+			+ "Defence before them and now, and how many were counted (\"Def 246 -> 158 (3 specs)\"): yours, your party's "
+			+ "and, with \"Estimate specs\", the others' (then the figure gets ~). Not for a monster whose Defence cannot be "
+			+ "lowered. With a magic weapon it gives the Magic level instead, and only when it was lowered (except where magic "
+			+ "rolls against Defence). The Special Attack Counter shows each weapon's drain; this shows the level the figures use",
+		position = 14,
+		section = master
+	)
+	default boolean showDefence()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showBulwarkSpec",
+		name = "Show Dinh's bulwark's spec",
+		description = "With Dinh's bulwark in hand in its Pummel style and half your special attack energy left, a line with "
+			+ "what its Shield Bash deals: on the monster you fight (two hits), and in a multicombat area on each other "
+			+ "monster within 5 tiles (one hit, up to 10 monsters in all), as mean and max (OSRS Wiki, Dinh's bulwark)",
+		position = 18,
+		section = master
+	)
+	default boolean showBulwarkSpec()
 	{
 		return true;
 	}
@@ -410,18 +482,83 @@ public interface CombatCheckConfig extends Config
 		return true;
 	}
 
-	@Range(min = 1, max = 200)
+	@ConfigItem(
+		keyName = "bankWeapon",
+		name = "Better weapon in the bank",
+		description = "Outside the raids, name the weapon of the bank (the one last seen open) that would deal the most to the "
+			+ "monster you are fighting in place of the one in your hand, with everything else you have on (a weapon of two "
+			+ "hands without your shield), and how much more: \"Bank: <weapon> +X%\". Only a weapon, never armour or a shield; "
+			+ "not one without charges or without ammunition you have on",
+		position = 29,
+		section = master
+	)
+	default boolean bankWeapon()
+	{
+		return true;
+	}
+
+	// 10% by default; it can be turned off and the percent changed
+	@Units(Units.PERCENT)
+	@ConfigItem(
+		keyName = "bankMinimumGain",
+		name = "Bank weapon: minimum gain",
+		description = "Only name a weapon of the bank when it would deal at least this much more than what you have on",
+		position = 21,
+		section = gearSwitch
+	)
+	default double bankMinimumGain()
+	{
+		return BankHint.DEFAULT_MINIMUM;
+	}
+
+	// a decimal number from 0; the whole numbers saved when it was an int read the same ("1" is 1.0). 0 points at any
+	// gain that shows as +0.1% or more; above 200 counts as 200 (CombatCheckPlugin.minimumGain,
+	// CombatCheckPlugin.pointsAt)
 	@Units(Units.PERCENT)
 	@ConfigItem(
 		keyName = "weaponMinimumGain",
 		name = "Weapon: minimum gain",
-		description = "Only point at a carried weapon when its set would deal at least this much more than what you have on",
+		description = "Only point at a carried weapon when its set would deal at least this much more than what you have on. Steps of 0.1: 0.5 is half a percent, 0 any gain (from +0.1%)",
 		position = 20,
 		section = gearSwitch
 	)
-	default int weaponMinimumGain()
+	default double weaponMinimumGain()
 	{
 		return 1;
+	}
+
+	/** What the weapon notice compares a carried weapon's set with what you have on by. */
+	enum WeaponComparison
+	{
+		DAMAGE_PER_SECOND("Damage per second"),
+		TIME_TO_KILL("Time to kill");
+
+		private final String label;
+
+		WeaponComparison(String label)
+		{
+			this.label = label;
+		}
+
+		@Override
+		public String toString()
+		{
+			return label;
+		}
+	}
+
+	// the damage per second by default; the time to kill, which counts what a hit deals beyond the hitpoints left as
+	// wasted, is the other choice (CombatCheckPlugin.comparedGain)
+	@ConfigItem(
+		keyName = "weaponComparison",
+		name = "Compare weapons by",
+		description = "Damage per second: the weapon whose set deals the most per second. Time to kill: the one that kills the monster soonest from its full hitpoints, a hit beyond the hitpoints left being wasted, so a fast weapon can beat a slow one on a monster of few hitpoints (marked \"(low HP)\")",
+		position = 21,
+		section = gearSwitch
+	)
+	default WeaponComparison weaponComparison()
+	{
+		return WeaponComparison.DAMAGE_PER_SECOND;
 	}
 
 	@ConfigItem(

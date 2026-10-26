@@ -105,7 +105,17 @@ final class SetEffects
 		{
 			return TOME_BONUS;
 		}
-		return c.castingStaff && c.ancientSpellbook && startsWith(itemName, "Virtus ") ? VIRTUS_ANCIENT_BONUS : 0;
+		return c.castingStaff && c.ancientSpellbook && isVirtus(itemName) ? VIRTUS_ANCIENT_BONUS : 0;
+	}
+
+	/**
+	 * A piece of Virtus, the echo Virtus too: the ornament kit "gives no additional bonuses, and is only used to add
+	 * aesthetics" (OSRS Wiki, Echo virtus robe top). The calculator gives the Ancient Magicks' bonus only to a name with
+	 * "Virtus" in capitals, so the echo pieces get none there; here they are Virtus.
+	 */
+	static boolean isVirtus(String itemName)
+	{
+		return startsWith(itemName, "Virtus ") || startsWith(itemName, "Echo virtus ");
 	}
 
 	/** A charged Tome of fire, water or earth while a spell of its element is on autocast: a tenth more damage. */
@@ -123,6 +133,17 @@ final class SetEffects
 	{
 		int i = spell >= 1 && spell <= 16 ? (spell - 1) % 4 : spell >= 48 && spell <= 51 ? spell - 48 : -1;
 		return i < 0 ? null : new String[]{"air", "water", "earth", "fire"}[i];
+	}
+
+	/**
+	 * What a piece's defence bonuses are worth with Dinh's bulwark in hand, in the score's units (a point of strength
+	 * counts twice): every 12 of stab, slash, crush and ranged defence is a point of strength once the sum is over the
+	 * bulwark's threshold ({@link SetCalc#bulwarkStrength}), so a defensive piece is not swapped for one with a little
+	 * more strength. 0 with any other weapon.
+	 */
+	static double bulwarkBonus(int defence, Context c)
+	{
+		return c != null && StyleCalc.MELEE.equals(c.combatClass) && SetCalc.isBulwark(c.weaponName) ? 2 * defence / 12.0 : 0;
 	}
 
 	/** Extra score the piece has in this context. */
@@ -210,6 +231,9 @@ final class SetEffects
 		"vesta's longsword", "vesta's spear", "statius's warhammer", "morrigan's javelin", "morrigan's throwing axe",
 		"dragon crossbow", "armadyl crossbow", "light ballista", "heavy ballista", "volatile nightmare staff",
 		"eldritch nightmare staff", "rune claws", "brine sabre",
+		// Zorya's tome: "Its primary purpose is for its Special Attack" (the post "Out Today" of 2026-10-20); its spec's
+		// three faster attacks after it are still the tome's
+		"zorya's tome",
 		// the Tonalztics of Ralos: its special attack lowers the monster's defence (DefenceDrains), like the hammers below
 		"tonalztics",
 		// the monster's defence or other levels
@@ -217,7 +241,7 @@ final class SetEffects
 		"ancient mace", "dorgeshuun crossbow",
 		// healing, holding in place, a boost
 		"saradomin godsword", "zamorak godsword", "ancient godsword", "dragon spear", "zamorakian spear", "dragon battleaxe",
-		"excalibur", "dinh's bulwark"};
+		"excalibur", "dinh's bulwark", "dinh's blazing bulwark"};
 
 	/** Whether the weapon is one held for its special attack rather than to fight with. */
 	static boolean isSpecialAttackWeapon(String weaponName)
@@ -488,6 +512,30 @@ final class SetEffects
 	}
 
 	/**
+	 * Dizana's quiver with charges, the Blessed Dizana's quiver or Dizana's max cape, locked or not: the quiver's bonus on
+	 * the arrows and bolts shot ({@link SetCalc#QUIVER_ACCURACY}). The charges are told by the item: the quiver without
+	 * them is another item, "Dizana's quiver (uncharged)" (28947, locked 28949), and has no bonus; the blessed quiver and
+	 * the max cape made from it have the effect for good (OSRS Wiki: "essentially acting as a variant of the original with
+	 * unlimited charges"). A charged quiver whose charges are not known counts as charged. Not a broken or mangled one.
+	 */
+	static boolean dizanaQuiver(Collection<String> names)
+	{
+		if (names != null)
+		{
+			for (String name : names)
+			{
+				String n = name == null ? "" : name.replace(" (l)", "");
+				if (n.equalsIgnoreCase("Dizana's quiver") || n.equalsIgnoreCase("Blessed Dizana's quiver")
+					|| n.equalsIgnoreCase("Dizana's max cape"))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Ahrim's whole set with the Amulet of the damned (the calculator's isWearingAhrims): the staff, the hood, the robetop
 	 * and the robeskirt, none broken.
 	 */
@@ -528,6 +576,11 @@ final class SetEffects
 		l.ahrimsSet = ahrimsSet(names);
 		l.obsidianSet = obsidianSet(names);
 		l.berserkerNecklace = berserkerNecklace(names);
+		l.dizanaQuiver = dizanaQuiver(names);
+		l.conflictionGauntlets = names != null && names.stream().anyMatch(n -> n != null && n.equalsIgnoreCase("Confliction gauntlets"));
+		// the calculator's isWearingBloodMoonSet: the Dual macuahuitl with the helm, the chestplate and the tassets
+		l.bloodMoonSet = hasStart(names, "Dual macuahuitl") && hasStart(names, "Blood moon helm")
+			&& hasStart(names, "Blood moon chestplate") && hasStart(names, "Blood moon tassets");
 	}
 
 	private static boolean hasStart(Collection<String> names, String prefix)
