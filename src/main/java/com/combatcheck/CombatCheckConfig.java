@@ -377,10 +377,11 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "estimateSpecs",
 		name = "Mark estimated specs",
-		description = "The Elder maul, Dragon warhammer and Bandos godsword special attacks of players whose specs do not "
-			+ "come through the party are always counted, from their special attack animation and the hitsplats on the "
-			+ "monster, only when the hit leaves no doubt. With this on, the figures that use one are marked with ~ and "
-			+ "\"spec estimated\"; the figures are the same either way",
+		description = "The special attacks that lower the monster's levels (the hammers, the Bandos godsword, the "
+			+ "Tonalztics of Ralos, Arclight and the like) of players whose specs do not come through the party are always "
+			+ "counted, from their special attack animation and the hitsplats on the monster, only as far as the hit leaves "
+			+ "no doubt. With this on, the figures that use one are marked with ~ and \"spec estimated\"; the figures are "
+			+ "the same either way",
 		position = 13,
 		section = master
 	)

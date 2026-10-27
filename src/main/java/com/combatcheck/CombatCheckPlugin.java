@@ -699,6 +699,7 @@ public class CombatCheckPlugin extends Plugin
 		drains.clear();
 		bloatShutDown.clear();
 		estimate.clear();
+		waitingSpecs.clear();
 		drainsEstimated = false;
 		hydra.clear();
 		bork.clear();
@@ -828,6 +829,7 @@ public class CombatCheckPlugin extends Plugin
 		NPC npc = event.getNpc();
 		hydra.form(npc, npc.getId(), client.getTickCount());
 		borkArmour.bork(npc.getId());
+		countWaitingSpecs(npc);
 	}
 
 	/** The Alchemical Hydra's roar when the right vent sprays it: its damage reduction is off ({@link HydraShield}). */
@@ -846,8 +848,8 @@ public class CombatCheckPlugin extends Plugin
 	/** The Defence drains counted on each monster around: the player's own special attacks and the party's. */
 	private final DrainTracker drains = new DrainTracker();
 	/**
-	 * The Elder maul and Dragon warhammer special attacks of players whose specs do not come through the party, and their
-	 * Bandos godsword's with its own option.
+	 * The special attacks that lower the monster's levels of players whose specs do not come through the party, estimated
+	 * from their animation ({@link SpecEstimate}).
 	 */
 	private final SpecEstimate estimate = new SpecEstimate();
 	/** True while the Defence used for the monster fought counts one of those ({@link #drainsEstimated}). */
@@ -1250,7 +1252,37 @@ public class CombatCheckPlugin extends Plugin
 				drains.add(npc.getIndex(), npc, event.getWeapon(), rolled, DefenceDrains.tekton(npc.getId()),
 					partyHitTick(event.getWeapon(), client.getTickCount()));
 			}
+			else
+			{
+				// a monster not in the scene yet (the player is outside its room): counted when it comes in
+				waitingSpecs.add(event.getNpcIndex(), event.getWeapon(), event.getHit(), client.getTickCount(),
+					event.getPlayerId());
+			}
 		});
+	}
+
+	/** The party's special attacks on monsters not in the scene yet ({@link WaitingSpecs}). */
+	private final WaitingSpecs waitingSpecs = new WaitingSpecs();
+
+	/**
+	 * A monster comes into the scene: the party's special attacks that waited for its index are counted on it, by the tick
+	 * each landed, unless it comes in dead.
+	 */
+	private void countWaitingSpecs(NPC npc)
+	{
+		if (waitingSpecs.none())
+		{
+			return;
+		}
+		for (WaitingSpecs.Spec s : waitingSpecs.arrived(npc.getIndex(), client.getTickCount()))
+		{
+			if (!npc.isDead())
+			{
+				int rolled = HydraShield.rolled(s.weapon, s.hit, hydra.shielded(npc));
+				drains.add(npc.getIndex(), npc, s.weapon, rolled, DefenceDrains.tekton(npc.getId()),
+					partyHitTick(s.weapon, s.received));
+			}
+		}
 	}
 
 	/** The game's index of each party member whose special attack came through the party, by their member id. */
@@ -1818,8 +1850,8 @@ public class CombatCheckPlugin extends Plugin
 	}
 
 	/**
-	 * The players whose target is the monster fought, looked at once a tick for the start of an Elder maul or Dragon
-	 * warhammer special attack, or a Bandos godsword's ({@link SpecEstimate}). Not
+	 * The players whose target is the monster fought, looked at once a tick for the start of a special attack that lowers
+	 * its levels ({@link SpecEstimate}), with how far each stands from it (the hit delay of the ranged and magic ones). Not
 	 * with the game's hitsplat tinting turned off: the hitsplats of the others were measured with it on only.
 	 */
 	private void lookForSpecs()
@@ -1835,8 +1867,11 @@ public class CombatCheckPlugin extends Plugin
 				aimingNow.add(p.getId());
 				net.runelite.api.PlayerComposition composition = p.getPlayerComposition();
 				int weapon = composition == null ? -1 : composition.getEquipmentId(net.runelite.api.kit.KitType.WEAPON);
+				net.runelite.api.coords.WorldArea area = npc.getWorldArea();
+				net.runelite.api.coords.WorldPoint at = p.getWorldLocation();
+				int distance = area == null || at == null ? 1 : area.distanceTo(at);
 				estimate.seen(client.getTickCount(), p.getId(), p == me, p.getAnimation(), p.getAnimationFrame(), weapon,
-					npc.getIndex(), npc, tekton);
+					npc.getIndex(), npc, tekton, distance);
 			}
 		}
 		estimate.endTick(aimingNow);
@@ -1949,6 +1984,7 @@ public class CombatCheckPlugin extends Plugin
 			drains.clear();
 			bloatShutDown.clear();
 			estimate.clear();
+			waitingSpecs.clear();
 			drainsEstimated = false;
 			hydra.clear();
 			bork.clear();
@@ -1993,6 +2029,7 @@ public class CombatCheckPlugin extends Plugin
 			bloatStomps();
 			landSpecialAttack();
 			countEstimates();
+			waitingSpecs.expire(client.getTickCount());
 			readWardenEnrage();
 			readSmorks();
 			CoxScaling.Raid before = raid;

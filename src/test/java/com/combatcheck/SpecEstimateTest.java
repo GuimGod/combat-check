@@ -381,7 +381,8 @@ public class SpecEstimateTest
 		assertFalse(e.seen(10, 2, false, 7642, 0, 11804, 3, npc, false));
 		assertFalse(e.seen(10, 3, false, 11124, 0, 13576, 3, npc, false));
 		assertFalse(e.seen(10, 4, false, 11124, 5, 21003, 3, npc, false));
-		assertNull(SpecEstimate.weapon(12394, 31113));
+		// the Seercull's special attack is not estimated: no animation of it is known for sure
+		assertNull(SpecEstimate.weapon(1074, 6724));
 		// the same animation on the next tick, not set again, is the same attack
 		assertTrue(e.seen(10, 5, false, 1378, 0, 26710, 3, npc, false));
 		assertFalse(e.seen(11, 5, false, 1378, 1, 26710, 3, npc, false));
@@ -402,19 +403,23 @@ public class SpecEstimateTest
 	}
 
 	/**
-	 * The two Bandos godswords of the raid's file are the client player's own (its message: 38 on Tekton). Taken as another
-	 * player's, neither is counted: on the tick each lands there are 3 and 4 hitsplats (0, 17, 38; 26, 50, 13, 20), and
-	 * nothing says which is the godsword's. So it was with all 20 of that player's in the 12 raids of the measurement.
+	 * The two Bandos godswords of the raid's file are the client player's own (its message: 38 on Tekton; the second's own
+	 * hitsplat 20). Taken as another player's, on the tick each lands there are 3 and 4 hitsplats (0, 17, 38; 26, 50, 13,
+	 * 20), and nothing says which is the godsword's: the first, with a 0 among them, may have missed, and is not counted;
+	 * the second dealt at least the smallest, 13, which is counted, under its own 20.
 	 */
 	@Test
 	public void theRaidsBandosGodswordsHaveMoreThanOneHitsplat() throws IOException
 	{
 		Replay r = replay(false, true);
-		// both are estimated from the animation, and both left out on their tick's hitsplats
 		assertTrue(r.started.contains("651 BANDOS_GODSWORD"));
 		assertTrue(r.started.contains("657 BANDOS_GODSWORD"));
 		assertTrue(r.messages.stream().anyMatch(m -> m.me && m.weapon == SpecialWeapon.BANDOS_GODSWORD && m.hit == 38));
-		assertTrue(r.landed.stream().noneMatch(l -> l.weapon == SpecialWeapon.BANDOS_GODSWORD));
+		List<SpecEstimate.Landed> godswords = new ArrayList<>();
+		r.landed.stream().filter(l -> l.weapon == SpecialWeapon.BANDOS_GODSWORD).forEach(godswords::add);
+		assertEquals(1, godswords.size());
+		assertEquals(659, godswords.get(0).tick);
+		assertEquals(13, godswords.get(0).hit);
 	}
 
 	/** The Bandos godsword with its option on: one hitsplat not the player's own on the tick it lands is its damage. */
@@ -466,18 +471,23 @@ public class SpecEstimateTest
 		assertNull(SpecEstimate.weapon(7642, 11804));
 	}
 
-	/** Two hitsplats not the player's own, or none: not counted; a 0 alone is a miss, which counts only on Tekton (10). */
+	/**
+	 * Two hitsplats not the player's own: the smallest when both are above 0, nothing with a 0 among them, or none; a 0
+	 * alone is a miss, which counts only on Tekton (10).
+	 */
 	@Test
 	public void aBandosGodswordInDoubtOrMissing()
 	{
 		Object npc = new Object();
 		SpecEstimate e = new SpecEstimate();
 		e.bgs(true);
-		// two hitsplats of others on the tick: one is the godsword's, nobody can tell which
+		// two hitsplats of others on the tick: one is the godsword's, nobody can tell which; it dealt 17 at least
 		assertTrue(e.seen(100, 7, false, 7642, 0, 11804, 5, npc, false));
 		e.hitsplat(101, npc, 42, HitsplatID.DAMAGE_OTHER, false);
 		e.hitsplat(101, npc, 17, HitsplatID.DAMAGE_OTHER, false);
-		assertTrue(e.resolve(101).isEmpty());
+		List<SpecEstimate.Landed> least = e.resolve(101);
+		assertEquals(1, least.size());
+		assertEquals(17, least.get(0).hit);
 		// a 0 with a hit: still two
 		assertTrue(e.seen(110, 8, false, 7642, 0, 11804, 5, npc, false));
 		e.hitsplat(111, npc, 0, HitsplatID.BLOCK_OTHER, false);
