@@ -13,18 +13,19 @@ import net.runelite.client.config.ConfigItem;
 import org.junit.Test;
 
 /**
- * The defence drain settings: one "Estimate specs" option for the Elder maul, Dragon warhammer and Bandos godsword, on by
- * default and on when either old option was on; the drains of the player and the party counted with no option at all.
+ * The defence drain settings: one "Mark estimated specs" option for the Elder maul, Dragon warhammer and Bandos godsword,
+ * off by default and on when either old option was on; the drains of the player, the party and the estimates counted with
+ * no option at all; the raids always scaled, with no option.
  */
 public class ConfigMigrationTest
 {
-	/** "Estimate specs" is on when either old option was on; what is saved for it already holds otherwise. */
+	/** "Mark estimated specs" is on when either old option was on; what is saved for it already holds otherwise. */
 	@Test
 	public void eitherOldOptionOnTurnsItOn()
 	{
 		// a profile with estimateSpecs=true, estimateBgs=false: stays on, nothing to write
 		assertNull(CombatCheckPlugin.mergedEstimate("true", "false"));
-		// never saved: the default, on
+		// never saved: the default, off
 		assertNull(CombatCheckPlugin.mergedEstimate(null, null));
 		assertNull(CombatCheckPlugin.mergedEstimate(null, "true"));
 		assertNull(CombatCheckPlugin.mergedEstimate("true", "true"));
@@ -35,14 +36,18 @@ public class ConfigMigrationTest
 		assertNull(CombatCheckPlugin.mergedEstimate("false", null));
 	}
 
-	/** One option for the estimate, on by default; none for the BGS alone, none for counting the drains. */
+	/**
+	 * One option to mark the estimates, off by default; none for the BGS alone, none for counting the drains, none for the
+	 * raids' scaling. "Show the Defence left" off by default.
+	 */
 	@Test
 	public void theOptions()
 	{
 		CombatCheckConfig config = new CombatCheckConfig()
 		{
 		};
-		assertTrue(config.estimateSpecs());
+		assertTrue(!config.estimateSpecs());
+		assertTrue(!config.showDefence());
 		boolean estimate = false;
 		for (Method m : CombatCheckConfig.class.getDeclaredMethods())
 		{
@@ -51,9 +56,10 @@ public class ConfigMigrationTest
 			{
 				continue;
 			}
-			assertTrue(item.keyName(), !item.keyName().equals("countDrains") && !item.keyName().equals("estimateBgs"));
+			assertTrue(item.keyName(), !item.keyName().equals("countDrains") && !item.keyName().equals("estimateBgs")
+				&& !item.keyName().endsWith("Scaling"));
 			assertTrue(item.name(), !item.name().contains("outside the party"));
-			estimate |= item.keyName().equals("estimateSpecs") && item.name().equals("Estimate specs");
+			estimate |= item.keyName().equals("estimateSpecs") && item.name().equals("Mark estimated specs");
 		}
 		assertTrue(estimate);
 	}

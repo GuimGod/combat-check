@@ -426,10 +426,19 @@ public class CombatCheckPlugin extends Plugin
 		return boltAdvice;
 	}
 
-	/** True while the Defence the figures use counts a special attack estimated from what the client shows. */
+	/**
+	 * True while the Defence the figures use counts a special attack estimated from what the client shows and "Mark
+	 * estimated specs" is on: the figures get "~". The estimate is counted either way.
+	 */
 	boolean drainsEstimated()
 	{
-		return drainsEstimated;
+		return marksEstimate(drainsEstimated, config.estimateSpecs());
+	}
+
+	/** Whether figures that count an estimated special attack get "~": only with "Mark estimated specs" on. */
+	static boolean marksEstimate(boolean estimated, boolean markOption)
+	{
+		return estimated && markOption;
 	}
 
 	/** The attack prayer reminder to draw now, or null. */
@@ -719,8 +728,9 @@ public class CombatCheckPlugin extends Plugin
 
 	/**
 	 * The settings of earlier versions: "Estimate specs outside the party" and "Estimate BGS outside the party" are one
-	 * option now, "Estimate specs" (key {@code estimateSpecs}), on when either was on; "Count defence drains" is gone (the
-	 * drains are always counted). The old keys are removed.
+	 * option now, "Mark estimated specs" (key {@code estimateSpecs}), on when either was on; "Count defence drains" is gone
+	 * (the drains are always counted), and so are the three raids' scaling options (the raids are always scaled). The old
+	 * keys are removed.
 	 */
 	private void migrateConfig()
 	{
@@ -735,15 +745,18 @@ public class CombatCheckPlugin extends Plugin
 		{
 			configManager.unsetConfiguration(CONFIG_GROUP, "estimateBgs");
 		}
-		if (configManager.getConfiguration(CONFIG_GROUP, "countDrains") != null)
+		for (String gone : new String[]{"countDrains", "coxScaling", "tobScaling", "toaScaling"})
 		{
-			configManager.unsetConfiguration(CONFIG_GROUP, "countDrains");
+			if (configManager.getConfiguration(CONFIG_GROUP, gone) != null)
+			{
+				configManager.unsetConfiguration(CONFIG_GROUP, gone);
+			}
 		}
 	}
 
 	/**
-	 * The value "Estimate specs" takes from the two old options' saved values (null where never saved: the default, on
-	 * for the specs and off for the godsword), or null when what is saved for it already holds: on when either was on.
+	 * The value "Mark estimated specs" takes from the two old options' saved values (null where never saved: its default,
+	 * off, and off for the godsword), or null when what is saved for it already holds: on when either was on.
 	 */
 	static Boolean mergedEstimate(String specs, String bgs)
 	{
@@ -986,9 +999,9 @@ public class CombatCheckPlugin extends Plugin
 	 * each account, so a relog or a restart inside the raid keeps it. Null until read from the account's profile.
 	 */
 	private Boolean coxChallengeSeen;
-	/** The Theatre of Blood's party, read each game tick; null when it is not known or the option is off. */
+	/** The Theatre of Blood's party, read each game tick; null when it is not known. */
 	private volatile TobScaling.Raid tobRaid;
-	/** The Tombs of Amascut's raid level, party and path levels, read each game tick; null with the option off. */
+	/** The Tombs of Amascut's raid level, party and path levels, read each game tick. */
 	private volatile ToaScaling.Raid toaRaid;
 	/** The special attack energy last seen, -1 before the first. */
 	private int specEnergy = -1;
@@ -1143,7 +1156,7 @@ public class CombatCheckPlugin extends Plugin
 	@Subscribe
 	public void onHitsplatApplied(HitsplatApplied event)
 	{
-		if (estimating() && targetNpc != null && event.getActor() == targetNpc)
+		if (targetNpc != null && event.getActor() == targetNpc)
 		{
 			net.runelite.api.Hitsplat h = event.getHitsplat();
 			estimate.hitsplat(client.getTickCount(), targetNpc, h.getAmount(), h.getHitsplatType(), h.isMine());
@@ -1555,19 +1568,18 @@ public class CombatCheckPlugin extends Plugin
 			return null;
 		}
 		return defenceTextFor(config.language(), combatClass, monster.magicDefenceFromDefence, full, levels(monster), specs,
-			drains.estimated(npc.getIndex(), npc));
+			marksEstimate(drains.estimated(npc.getIndex(), npc), config.estimateSpecs()));
 	}
 
 	/**
 	 * The Chambers of Xeric's scaling while the player is inside the raid, read from the game: the party size the
 	 * raid was scaled for, Challenge Mode (its varbit, or the game's message at the raid's start: the varbit reads 0
 	 * for a member who is not the leader) and the party's highest combat level. The highest Hitpoints level has no
-	 * varbit: 99 is taken, and 99 Mining for each member (the Guardians' hitpoints). Null outside the raid or with
-	 * the option off.
+	 * varbit: 99 is taken, and 99 Mining for each member (the Guardians' hitpoints). Null outside the raid.
 	 */
 	private CoxScaling.Raid raidNow()
 	{
-		if (!config.coxScaling() || client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON) != 1)
+		if (client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON) != 1)
 		{
 			return null;
 		}
@@ -1709,16 +1721,12 @@ public class CombatCheckPlugin extends Plugin
 
 	/**
 	 * The Theatre of Blood's party, read from the game: the places of its party that hold someone (RuneLite's
-	 * THEATRE_OF_BLOOD_ORB varbits, alive or dead), the most since they were first held ({@link #lockedParty}). Null with
-	 * the option off or when no place holds anyone: then the hitpoints stay as the table has them. Only the Theatre's own
+	 * THEATRE_OF_BLOOD_ORB varbits, alive or dead), the most since they were first held ({@link #lockedParty}). Null when
+	 * no place holds anyone: then the hitpoints stay as the table has them. Only the Theatre's own
 	 * monsters are scaled with it.
 	 */
 	private TobScaling.Raid tobNow()
 	{
-		if (!config.tobScaling())
-		{
-			return null;
-		}
 		// the party the raid began with: a player leaving does not lower it, as in the Chambers and the Tombs; the
 		// places all empty, the raid is over and nothing is kept
 		int members = members(TOB_PARTY);
@@ -1773,16 +1781,12 @@ public class CombatCheckPlugin extends Plugin
 
 	/**
 	 * The Tombs of Amascut's raid level, party and path levels, read from the game (TOA_CLIENT_RAID_LEVEL, the places of
-	 * the party that hold someone, and each path's level). Null with the option off. A party that cannot be read is
+	 * the party that hold someone, and each path's level). A party that cannot be read is
 	 * left out of the hitpoints (0 members). Inside the raid the party is the most seen since it began ({@link
 	 * #lockedParty}). Only the raid's own monsters are scaled with it.
 	 */
 	private ToaScaling.Raid toaNow()
 	{
-		if (!config.toaScaling())
-		{
-			return null;
-		}
 		int members = members(TOA_PARTY);
 		boolean inRaid = inToaRoom();
 		toaPartyLocked = lockedParty(toaPartyLocked, inRaid, members);
@@ -1793,25 +1797,13 @@ public class CombatCheckPlugin extends Plugin
 		return now.equals(toaRaid) ? toaRaid : now;
 	}
 
-	/** True with "Estimate specs" on. */
-	private boolean estimating()
-	{
-		return config.estimateSpecs();
-	}
-
 	/**
 	 * The estimated special attacks whose hit has landed by this tick, counted in the drains by the tick a party message of
-	 * them would come; and whether the Defence of the monster fought now counts one. With the option off nothing is kept.
+	 * them would come; and whether the Defence of the monster fought now counts one. Always, whatever "Mark estimated
+	 * specs" says: that option only marks the figures.
 	 */
 	private void countEstimates()
 	{
-		if (!estimating())
-		{
-			estimate.clear();
-			drains.dropEstimated();
-			drainsEstimated = false;
-			return;
-		}
 		estimate.bgs(true);
 		for (SpecEstimate.Landed l : estimate.resolve(client.getTickCount()))
 		{
@@ -1835,7 +1827,7 @@ public class CombatCheckPlugin extends Plugin
 		NPC npc = targetNpc;
 		Player me = client.getLocalPlayer();
 		java.util.Set<Integer> aimingNow = new java.util.HashSet<>();
-		if (estimating() && npc != null && me != null && client.getVarbitValue(VarbitID.HITSPLAT_TINT_DISABLED) == 0)
+		if (npc != null && me != null && client.getVarbitValue(VarbitID.HITSPLAT_TINT_DISABLED) == 0)
 		{
 			boolean tekton = DefenceDrains.tekton(npc.getId());
 			for (Player p : SpecEstimate.aiming(client.getTopLevelWorldView().players(), Player::getInteracting, npc))
@@ -1863,7 +1855,7 @@ public class CombatCheckPlugin extends Plugin
 				bloatShutDown.put(npc, client.getTickCount());
 			}
 		}
-		if (estimating() && targetNpc != null && event.getActor() instanceof Player)
+		if (targetNpc != null && event.getActor() instanceof Player)
 		{
 			estimate.animationSet(((Player) event.getActor()).getId());
 		}

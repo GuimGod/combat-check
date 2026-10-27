@@ -114,7 +114,7 @@ final class SpecEstimate
 	/** The players whose special attacks come through the party: never estimated. */
 	private final Set<Integer> senders = new HashSet<>();
 	private final List<Pending> pending = new ArrayList<>();
-	/** True when the Bandos godsword is estimated too (always, in the plugin: "Estimate specs"). */
+	/** True when the Bandos godsword is estimated too (always, in the plugin). */
 	private boolean bgs;
 
 	/** The players whose target (Actor.getInteracting) is this very monster, not another of the same id. */
@@ -246,7 +246,7 @@ final class SpecEstimate
 	}
 
 	/**
-	 * Whether the Bandos godsword is estimated too (the plugin always turns it on with "Estimate specs"); turned off, the
+	 * Whether the Bandos godsword is estimated too (the plugin always turns it on); turned off, the
 	 * ones not yet decided are dropped.
 	 */
 	void bgs(boolean on)

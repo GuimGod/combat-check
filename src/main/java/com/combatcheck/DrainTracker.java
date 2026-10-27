@@ -148,18 +148,6 @@ final class DrainTracker
 		return true;
 	}
 
-	/** Takes out every estimated special attack, on every monster: the option was turned off. */
-	void dropEstimated()
-	{
-		for (Entry e : byIndex.values())
-		{
-			if (e.records.removeIf(r -> r.estimatedBy != EXACT))
-			{
-				e.rebuild();
-			}
-		}
-	}
-
 	/** True when the drains on this monster count a special attack estimated from what the client shows. */
 	boolean estimated(int index, Object npc)
 	{

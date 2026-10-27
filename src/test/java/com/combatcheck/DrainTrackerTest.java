@@ -72,9 +72,18 @@ public class DrainTrackerTest
 		assertTrue(tracker.dropEstimated(2, xarpus, 9, SpecialWeapon.ELDER_MAUL, 95));
 		assertTrue(!tracker.estimated(2, xarpus));
 		assertEquals(200, tracker.of(2, xarpus).apply(250, 250, 0, false, 0).defence);
-		// the option turned off takes out every estimate
+		// an estimate is always counted: "Mark estimated specs" off, the Defence is the same, only the "~" goes
 		tracker.addEstimated(2, xarpus, SpecialWeapon.DRAGON_WARHAMMER, 1, false, 106, 4);
-		tracker.dropEstimated();
-		assertEquals(1, tracker.counted(2, xarpus));
+		assertEquals(2, tracker.counted(2, xarpus));
+		int left = tracker.of(2, xarpus).apply(250, 250, 0, false, 0).defence;
+		assertEquals(140, left);
+		boolean estimated = tracker.estimated(2, xarpus);
+		CombatCheckConfig.Language en = CombatCheckConfig.Language.ENGLISH;
+		assertEquals("Def 250 -> 140 (2 specs)",
+			CombatCheckPlugin.defenceText(en, 250, left, 2, CombatCheckPlugin.marksEstimate(estimated, false)));
+		assertEquals("Def 250 -> ~140 (2 specs)",
+			CombatCheckPlugin.defenceText(en, 250, left, 2, CombatCheckPlugin.marksEstimate(estimated, true)));
+		// with no estimate in the Defence, nothing is marked whatever the option
+		assertTrue(!CombatCheckPlugin.marksEstimate(false, true));
 	}
 }
