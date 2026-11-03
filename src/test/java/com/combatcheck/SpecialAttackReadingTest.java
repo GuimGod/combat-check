@@ -127,10 +127,10 @@ public class SpecialAttackReadingTest
 		assertEquals(2, CombatCheckPlugin.specialHits(28922));
 		assertEquals(1, CombatCheckPlugin.specialHits(28919));
 		assertEquals(1, CombatCheckPlugin.specialHits(30305));
-		// the hits that landed, of the weapon's last hitsplats (a thrall's may come before them on the same tick)
-		assertEquals(Integer.valueOf(1), CombatCheckPlugin.landedHits(Arrays.asList(3, 12, 0), 2));
+		// the hits that landed, of the weapon's first hitsplats (a thrall's comes after them on the same tick)
+		assertEquals(Integer.valueOf(2), CombatCheckPlugin.landedHits(Arrays.asList(3, 12, 0), 2));
 		assertEquals(Integer.valueOf(2), CombatCheckPlugin.landedHits(Arrays.asList(9, 14), 2));
-		assertEquals(Integer.valueOf(0), CombatCheckPlugin.landedHits(Arrays.asList(12, 0), 1));
+		assertEquals(Integer.valueOf(0), CombatCheckPlugin.landedHits(Arrays.asList(0, 12), 1));
 		assertEquals(Integer.valueOf(1), CombatCheckPlugin.landedHits(Collections.singletonList(31), 1));
 		assertNull(CombatCheckPlugin.landedHits(Collections.singletonList(31), 2));
 		assertNull(CombatCheckPlugin.landedHits(Collections.emptyList(), 1));

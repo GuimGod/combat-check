@@ -95,8 +95,9 @@ class CombatCheckOverlay extends Overlay
 		String defence = plugin.defenceLine();
 		String bash = plugin.bulwarkSpecLine();
 		CombatCheckPlugin.WeaponAdvice bank = plugin.bankAdvice();
+		List<ArchiveNotices.Notice> archive = plugin.archiveNotices();
 		if (advice == null && !rows && weapon == null && bolts == null && prayer == null && leftOn == null && blowpipe == null
-			&& defence == null && bash == null && bank == null)
+			&& defence == null && bash == null && bank == null && archive.isEmpty())
 		{
 			return null;
 		}
@@ -206,6 +207,13 @@ class CombatCheckOverlay extends Overlay
 		{
 			box(graphics, fm, 0, y, h, new BufferedImage[0], 0, Words.of(config.language(), Words.Key.CHECK_BLOWPIPE),
 				WRONG_BACK, WRONG_EDGE);
+			y += h + 3;
+		}
+		for (ArchiveNotices.Notice note : archive)
+		{
+			// the Fractured Archive's reminders: the item they name, if any, and their words
+			box(graphics, fm, 0, y, h, note.itemId > 0 ? new BufferedImage[]{icon(note.itemId)} : new BufferedImage[0], 0,
+				note.text, WRONG_BACK, WRONG_EDGE);
 			y += h + 3;
 		}
 		if (defence != null)

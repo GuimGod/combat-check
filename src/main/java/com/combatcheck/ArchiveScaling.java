@@ -17,8 +17,10 @@ import java.util.Map;
  * scaled as a duo ("the minimum scaling being set to two players"): both have the base hitpoints. Two places the wiki
  * leaves empty, Dreadnoth with 7 and Ezekiel with 8, are the rule all the others follow, the base x 1.45, 1.87, 2.29, 2.71,
  * 3.13, 3.55 for 3 to 8, to the nearest ten (measured in recorded fights): 6570 (also measured, three fights)
- * and 10650; the wiki's "8.130" for Ezekiel with 6 is 8,130. Moia, the Dagon'hai and The Blade have no table: no
- * hitpoints.
+ * and 10650; the wiki's "8.130" for Ezekiel with 6 is 8,130. Moia has no table on the wiki, and its 785 is not her
+ * base: in recorded fights the hits on her up to her death came to 1,900 in each of 6 duos and 2,760 in each of 4
+ * trios (1,900 x 1.45), so 1,900 is her base and the rule the rest. The Dagon'hai (the shields take the hits first)
+ * and The Blade have no table: no hitpoints.
  */
 final class ArchiveScaling
 {
@@ -35,6 +37,7 @@ final class ArchiveScaling
 		HITPOINTS.put(16640, new int[]{1500, 1500, 2180, 2810, 3440, 4070, 4700, 5330}); // Bork
 		HITPOINTS.put(16641, new int[]{600, 600, 870, 1120, 1370, 1630, 1880, 2130}); // the Smorks
 		HITPOINTS.put(16652, new int[]{3000, 3000, 4350, 5610, 6870, 8130, 9390, 10650}); // Ezekiel
+		HITPOINTS.put(16667, new int[]{1900, 1900, 2760, 3550, 4350, 5150, 5950, 6750}); // Moia (measured)
 		HITPOINTS.put(16665, new int[]{2100, 2100, 3050, 3930, 4810, 5690, 6570, 7460}); // Dreadnoth the Jellied
 		HITPOINTS.put(16684, new int[]{2600, 2600, 3770, 4860, 5950, 7050, 8140, 9230}); // Xarth
 		int[] ocellusFirst = {2500, 2500, 3630, 4680, 5730, 6780, 7830, 8880};

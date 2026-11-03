@@ -91,6 +91,36 @@ public class CombatCheckPlugin extends Plugin
 		boolean worse;
 		/** The weapon's name, for the line of the bank's weapon ("Bank: <weapon> +X%"). */
 		String name;
+		/** What the weapon deals a tick: between two that "can hit", where the one in hand lands nothing, the larger wins. */
+		double figure;
+	}
+
+	/** True when melee does not reach a monster with these immunities, or only a polearm's ({@link SetCalc.Target#immune}). */
+	static boolean meleeOut(String immune)
+	{
+		return immune != null && (immune.contains("M") || immune.contains("f"));
+	}
+
+	/** True when a melee weapon of this category reaches a monster with these immunities. */
+	static boolean meleeReaches(String immune, String category)
+	{
+		return immune == null || !immune.contains("M") && !(immune.contains("f") && !"Polearm".equals(category));
+	}
+
+	/**
+	 * Whether the weapon notice looks at a weapon of class {@code cls} in step {@code pass}: the first step the class in
+	 * hand, the second the others.
+	 */
+	static boolean inPass(int pass, String cls, String classHeld)
+	{
+		return (pass == 0) == java.util.Objects.equals(cls, classHeld);
+	}
+
+	/** True when a carried weapon of this gain and figure is a better pick than {@code best}. */
+	static boolean beats(double gain, double figure, WeaponAdvice best)
+	{
+		return best == null || gain > best.gain
+			|| Double.isInfinite(gain) && Double.isInfinite(best.gain) && figure > best.figure;
 	}
 
 	/** A difference in percent with its sign: "+12%", "+0.4%", "-5%". */
@@ -336,6 +366,23 @@ public class CombatCheckPlugin extends Plugin
 			configManager.setRSProfileConfiguration(CONFIG_GROUP, COX_CHALLENGE_KEY, challenge);
 			return;
 		}
+		if (event.getType() == net.runelite.api.ChatMessageType.MESBOX || event.getType() == net.runelite.api.ChatMessageType.GAMEMESSAGE)
+		{
+			// what adds to the elemental spells, as the game says it: a fragment broken, the pages in the Tome of Fire
+			String said = net.runelite.client.util.Text.removeTags(event.getMessage());
+			String fragment = SetEffects.brokenFragment(said);
+			if (fragment != null)
+			{
+				configManager.setConfiguration(CONFIG_GROUP, fragmentKey(fragment), true);
+				return;
+			}
+			Boolean searing = SetEffects.searingPages(said);
+			if (searing != null)
+			{
+				configManager.setConfiguration(CONFIG_GROUP, "searingPages", searing);
+				return;
+			}
+		}
 		if (event.getType() != net.runelite.api.ChatMessageType.GAMEMESSAGE && event.getType() != net.runelite.api.ChatMessageType.SPAM)
 		{
 			return;
@@ -354,6 +401,35 @@ public class CombatCheckPlugin extends Plugin
 		int dart = dartFromCheck(text);
 		blowpipeDarts.put(kind, dart);
 		configManager.setRSProfileConfiguration(CONFIG_GROUP, dartKey(kind), dart);
+	}
+
+	/** The option of the fragment of an element ("fire" → "fragmentFire"). */
+	private static String fragmentKey(String element)
+	{
+		return "fragment" + Character.toUpperCase(element.charAt(0)) + element.substring(1);
+	}
+
+	/** The elemental fragments the player broke: the plugin's options, and the varbits recorded for fire and earth. */
+	private java.util.Set<String> fragments()
+	{
+		java.util.Set<String> broken = new java.util.HashSet<>();
+		if (config.fragmentFire() || client.getVarbitValue(SetEffects.FRAGMENT_FIRE_VARBIT) == 1)
+		{
+			broken.add("fire");
+		}
+		if (config.fragmentWater())
+		{
+			broken.add("water");
+		}
+		if (config.fragmentEarth() || client.getVarbitValue(SetEffects.FRAGMENT_EARTH_VARBIT) == 1)
+		{
+			broken.add("earth");
+		}
+		if (config.fragmentAir())
+		{
+			broken.add("air");
+		}
+		return broken;
 	}
 
 	/** The darts last seen in each of this account's blowpipes, and whether to ask for a Check of the one in hand. */
@@ -463,6 +539,21 @@ public class CombatCheckPlugin extends Plugin
 		return leftOnNotice;
 	}
 
+	/**
+	 * The ticks a hitsplat of the player's own on a monster, or an attack on the player, keeps the player in a fight. Hitting
+	 * Bork stunned the game shows no target between the attacks, and he none either (the recorder, 2026-10-29); against
+	 * Ocellus and the Archive Guardian the same: in recorded fights of 2026-10-20 to 29 "Prayer still on" came on 1,531
+	 * ticks with a hit of his own up to 8 ticks before and another up to 8 after. With these 10 ticks, none; his hits come
+	 * less than 20 ticks apart (10 here and the 10 of his "Prayer left on") 98.9% of the time.
+	 */
+	static final int OWN_HIT_TICKS = 10;
+
+	/** True while a hitsplat of the player's own on a monster, or an attack on the player, is recent enough to be a fight. */
+	static boolean hitLately(int tick, int ownHit, int hitOnMe)
+	{
+		return tick - ownHit <= OWN_HIT_TICKS || tick - hitOnMe <= OWN_HIT_TICKS;
+	}
+
 	/** Whether to say that a prayer was left on: one is, and nothing has been fought for the time asked. */
 	static boolean leftOn(boolean drainingPrayerOn, int ticksOutOfCombat, int delay)
 	{
@@ -472,7 +563,8 @@ public class CombatCheckPlugin extends Plugin
 	/** True while the player attacks a monster or a monster attacks the player. */
 	private boolean inCombat(Player me)
 	{
-		if (me.getInteracting() instanceof NPC && canBeFought((NPC) me.getInteracting()))
+		if (me.getInteracting() instanceof NPC && canBeFought((NPC) me.getInteracting())
+			|| hitLately(client.getTickCount(), ownHitTick, hitOnMeTick))
 		{
 			return true;
 		}
@@ -704,6 +796,7 @@ public class CombatCheckPlugin extends Plugin
 		hydra.clear();
 		bork.clear();
 		borkArmour.clear();
+		ocellus.clear();
 		specWeapon = null;
 		specTarget = null;
 		specEnergy = -1;
@@ -820,6 +913,10 @@ public class CombatCheckPlugin extends Plugin
 		hydra.forget(event.getNpc());
 		bork.forget(event.getNpc());
 		borkArmour.bork(event.getNpc().getId());
+		if (event.getNpc().getId() == XarthShield.XARTH && event.getNpc().isDead())
+		{
+			xarth.died(event.getNpc().getIndex());
+		}
 	}
 
 	/** An Alchemical Hydra that comes into the scene starts its phase with its damage reduction up. */
@@ -862,6 +959,44 @@ public class CombatCheckPlugin extends Plugin
 	private final BorkStun bork = new BorkStun();
 	/** Bork's flat armour and magic resistance by the Smorks' health ({@link BorkArmour}). */
 	private final BorkArmour borkArmour = new BorkArmour();
+	/** Ocellus's first phase out of melee's reach ({@link OcellusReach}). */
+	private final OcellusReach ocellus = new OcellusReach();
+	/** Xarth out of melee's reach until his first charge ({@link XarthShield}). */
+	private final XarthShield xarth = new XarthShield();
+	/** The tick an explosion of Ocellus's last stage was last seen ({@link ArchiveNotices}), -1 for none. */
+	private int lastExplosionTick = -1;
+	/** The last tick of the notice of a damage special attack used during those explosions. */
+	private int explosionSpecUntil = -1;
+	/** The tick a Jelly of Dreadnoth's was last attacked. */
+	private int lastJellyTick = Integer.MIN_VALUE / 2;
+	/** The tick the special attack bar has been at half or more without being used since, -1 under half. */
+	private int specUnusedSince = -1;
+	/** The last tick of the notice of the Ancient Magicks cast on a Jelly. */
+	private int jellyMagicUntil = -1;
+	/** The reminders of the Fractured Archive on screen ({@link ArchiveNotices}). */
+	private volatile List<ArchiveNotices.Notice> archiveNotices = Collections.emptyList();
+
+	List<ArchiveNotices.Notice> archiveNotices()
+	{
+		return archiveNotices;
+	}
+
+	/** An explosion of Ocellus's last stage: the graphic on the floor that everyone sees. */
+	@Subscribe
+	public void onGraphicsObjectCreated(net.runelite.api.events.GraphicsObjectCreated event)
+	{
+		if (event.getGraphicsObject().getId() == ArchiveNotices.EXPLOSION_GRAPHIC)
+		{
+			lastExplosionTick = client.getTickCount();
+		}
+	}
+	/**
+	 * The game ticks of the player's own last hitsplat on a monster and of the last attack on the player (a block or a
+	 * hit): the game drops the player's target between attacks on a stunned monster (Bork stunned, 2026-10-29), so a
+	 * fight is also these, for {@link #OWN_HIT_TICKS}.
+	 */
+	private int ownHitTick = Integer.MIN_VALUE / 2;
+	private int hitOnMeTick = Integer.MIN_VALUE / 2;
 	/** The weapons of the bank last seen open and the line worked out from them ({@link BankHint}). */
 	private final BankHint.Memory bank = new BankHint.Memory();
 	/** The line of the best weapon in the bank to draw now, or null. */
@@ -973,7 +1108,7 @@ public class CombatCheckPlugin extends Plugin
 			{
 				context = mine;
 			}
-			result = BankHint.best(current, candidates, stats, target, minimum);
+			result = BankHint.best(current, candidates, stats, target, minimum, classNow);
 		}
 		bank.remember(key, result);
 		return advice(result);
@@ -1035,6 +1170,7 @@ public class CombatCheckPlugin extends Plugin
 		}
 		int energy = event.getValue();
 		boolean used = specEnergy != -1 && energy < specEnergy;
+		specUnusedSince = ArchiveNotices.unusedSince(specUnusedSince, specEnergy, energy, client.getTickCount());
 		specEnergy = energy;
 		if (!used)
 		{
@@ -1045,6 +1181,14 @@ public class CombatCheckPlugin extends Plugin
 		clientThread.invokeLater(() ->
 		{
 			int item = weaponInHand();
+			// a damage special attack on Ocellus's last stage during its explosions, where he takes half the damage
+			Actor attacked = client.getLocalPlayer() == null ? null : client.getLocalPlayer().getInteracting();
+			if (config.specExplosions() && attacked instanceof NPC && item > 0
+				&& ArchiveNotices.specIntoExplosions(((NPC) attacked).getId(), itemManager.getItemComposition(item).getName(),
+				lastExplosionTick, serverTick))
+			{
+				explosionSpecUntil = serverTick + ArchiveNotices.NOTICE_TICKS;
+			}
 			specWeapon = specialWeapon(item);
 			specSplats = specialHits(item);
 			specHits.clear();
@@ -1115,8 +1259,11 @@ public class CombatCheckPlugin extends Plugin
 	}
 
 	/**
-	 * The hits of a Tonalztics of Ralos' special attack that landed, of the last {@code splats} hitsplats on the tick it
-	 * hits (the weapon's come last, as the Special Attack Counter reads them); null while they have not all come.
+	 * The hits of a Tonalztics of Ralos' special attack that landed, of the first {@code splats} hitsplats on the tick it
+	 * hits; null while they have not all come. The Ralos is thrown, a delayed hit, and the player's hitsplats on a tick come
+	 * in the order "[delayed hits, thrall hit, veng, instant hits]" (the Special Attack Counter, which reads the first two):
+	 * a thrall's hitsplat comes after the weapon's (recordings of 2026-11-02, the Counter's message against these: [20, 14,
+	 * 0] is 2 hits, [0, 0, 1] none; the last two read 7 of 60 wrong).
 	 */
 	static Integer landedHits(List<Integer> hitsplats, int splats)
 	{
@@ -1126,11 +1273,26 @@ public class CombatCheckPlugin extends Plugin
 			return null;
 		}
 		int landed = 0;
-		for (int i = n - splats; i < n; i++)
+		for (int i = 0; i < splats; i++)
 		{
 			landed += Math.min(hitsplats.get(i), 1);
 		}
 		return landed;
+	}
+
+	/**
+	 * The weapon's hitsplat among the player's own on the tick its special attack hits, as the Special Attack Counter picks
+	 * it: the first for a delayed hit (every ranged and magic special attack, whose hit delay is over a tick), the last for
+	 * an instant one (the melee ones but the Elder maul), since a thrall's and vengeance's come between the two kinds
+	 * ("[delayed hits, thrall hit, veng, instant hits]"); null for none yet.
+	 */
+	static Integer weaponHitsplat(SpecialWeapon weapon, List<Integer> hitsplats)
+	{
+		if (hitsplats.isEmpty())
+		{
+			return null;
+		}
+		return hitsplats.get(weapon.getHitDelay(1) > 1 ? 0 : hitsplats.size() - 1);
 	}
 
 	@Subscribe
@@ -1158,6 +1320,16 @@ public class CombatCheckPlugin extends Plugin
 	@Subscribe
 	public void onHitsplatApplied(HitsplatApplied event)
 	{
+		net.runelite.api.Hitsplat hit = event.getHitsplat();
+		if (event.getActor() instanceof NPC && hit.isMine())
+		{
+			ownHitTick = client.getTickCount();
+		}
+		else if (event.getActor() == client.getLocalPlayer()
+			&& (hit.getHitsplatType() == net.runelite.api.HitsplatID.BLOCK_ME || hit.getHitsplatType() == net.runelite.api.HitsplatID.DAMAGE_ME))
+		{
+			hitOnMeTick = client.getTickCount();
+		}
 		if (targetNpc != null && event.getActor() == targetNpc)
 		{
 			net.runelite.api.Hitsplat h = event.getHitsplat();
@@ -1186,7 +1358,6 @@ public class CombatCheckPlugin extends Plugin
 		}
 		else if (tick == specTick)
 		{
-			int n = specHits.size();
 			if (specWeapon == SpecialWeapon.TONALZTICS_OF_RALOS)
 			{
 				// the hits that landed: two hitsplats for the charged weapon, one for the uncharged
@@ -1194,8 +1365,8 @@ public class CombatCheckPlugin extends Plugin
 			}
 			else
 			{
-				// the weapon's hitsplat comes last, after a thrall's or vengeance's on the same tick
-				hit = n == 0 ? null : specHits.get(n - 1);
+				// a delayed hit's hitsplat comes first, an instant one's last (a thrall's or vengeance's in between)
+				hit = weaponHitsplat(specWeapon, specHits);
 			}
 			if (hit == null)
 			{
@@ -1316,15 +1487,21 @@ public class CombatCheckPlugin extends Plugin
 	/**
 	 * The tick a party member's special attack is counted on, from the tick its message came: the drains go in the order
 	 * the hits landed (OSRS Wiki, Hit delay: an attack is queued and "processed on an entity" when it hits; Tekton: "If
-	 * multiple specials land on the same tick"). The Special Attack Counter sends an Elder maul's on the tick of the attack,
-	 * without waiting for its hit, which lands {@link SpecEstimate#ELDER_MAUL_DELAY} ticks later ("The hitsplat is applied
-	 * 2t after spec unlike most melee weapons"), and any other weapon's on the tick of its hit: so a godsword that lands
-	 * between an Elder maul's attack and its hit is counted first, as in the game.
+	 * multiple specials land on the same tick"). The Special Attack Counter sends an Elder maul's the tick after the attack,
+	 * without waiting for its hit, and any other weapon's on the tick its hit lands; the message comes here a tick after it
+	 * is sent ({@link #PARTY_MESSAGE_TICKS}). So an Elder maul's comes on the tick its hit lands ("The hitsplat is applied
+	 * 2t after spec unlike most melee weapons": 77 of 77 messages 2 ticks after the animation, 2026-11-02) and any other
+	 * weapon's the tick after its hit (the Tonalztics of Ralos: 116 of 118 three ticks after the animation, its hit two
+	 * after): each is counted on the tick its hit landed, as the player's own, so a Ralos landing after an Elder maul is
+	 * counted after it, as in the game (the Blade of 2026-11-02 19:52: Defence 136, not 145).
 	 */
 	static int partyHitTick(SpecialWeapon weapon, int received)
 	{
-		return weapon == SpecialWeapon.ELDER_MAUL ? received + SpecEstimate.ELDER_MAUL_DELAY : received;
+		return weapon == SpecialWeapon.ELDER_MAUL ? received : received - PARTY_MESSAGE_TICKS;
 	}
+
+	/** Ticks from the Special Attack Counter sending a party message to it coming here (measured: 116 of 118 Ralos). */
+	static final int PARTY_MESSAGE_TICKS = 1;
 
 	/**
 	 * A monster that changes into one with another Defence (a new phase) keeps nothing of the drains, nor one whose Defence
@@ -1676,6 +1853,55 @@ public class CombatCheckPlugin extends Plugin
 		wardenEnraged = now;
 	}
 
+	/** Where each Ocellus of the first phase stands ({@link OcellusReach}). Read each game tick. */
+	private void readOcellus()
+	{
+		if (client.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+		for (NPC npc : client.getTopLevelWorldView().npcs())
+		{
+			if (npc != null && OcellusReach.firstPhase(npc.getId()) && npc.getWorldLocation() != null)
+			{
+				ocellus.at(npc, npc.getId(), npc.getWorldLocation().getX(), npc.getWorldLocation().getY(), client.getTickCount());
+			}
+		}
+	}
+
+	/** True while the monster fought is Ocellus out of melee's reach ({@link OcellusReach}). */
+	private boolean ocellusOutOfReach(StyleData.Monster monster)
+	{
+		NPC npc = targetNpc;
+		return npc != null && monster != null && OcellusReach.firstPhase(npc.getId())
+			&& ocellus.outOfReach(npc, client.getTickCount());
+	}
+
+	/** True while the monster fought is Xarth with his shield up, before his first charge ({@link XarthShield}). */
+	private boolean xarthShielded(StyleData.Monster monster)
+	{
+		NPC npc = targetNpc;
+		return npc != null && monster != null && npc.getId() == XarthShield.XARTH
+			&& xarth.shielded(npc.getIndex(), npc.getId(), XarthShield.healthPercent(npc.getHealthRatio(), npc.getHealthScale()));
+	}
+
+	/** True while the monster fought is Moia outside the middle of her arena ({@link MoiaReach}). */
+	private boolean moiaOutOfReach(StyleData.Monster monster)
+	{
+		NPC npc = targetNpc;
+		if (npc == null || monster == null || npc.getId() != MoiaReach.MOIA)
+		{
+			return false;
+		}
+		net.runelite.api.coords.LocalPoint centre = npc.getLocalLocation();
+		if (centre == null)
+		{
+			return false;
+		}
+		net.runelite.api.coords.WorldPoint at = net.runelite.api.coords.WorldPoint.fromLocalInstance(client, centre);
+		return at != null && MoiaReach.outOfReach(at.getX(), at.getY());
+	}
+
 	/**
 	 * The Smorks' health for Bork's armour ({@link BorkArmour}): from the boss health display when it shows them, and from
 	 * their health bar over them. Read each game tick.
@@ -1830,8 +2056,9 @@ public class CombatCheckPlugin extends Plugin
 	}
 
 	/**
-	 * The estimated special attacks whose hit has landed by this tick, counted in the drains by the tick a party message of
-	 * them would come; and whether the Defence of the monster fought now counts one. Always, whatever "Mark estimated
+	 * The estimated special attacks whose hit has landed by this tick, counted in the drains by the tick it landed, as a
+	 * party member's message ({@link #partyHitTick}); and whether the Defence of the monster fought now counts one.
+	 * Always, whatever "Mark estimated
 	 * specs" says: that option only marks the figures.
 	 */
 	private void countEstimates()
@@ -1841,7 +2068,7 @@ public class CombatCheckPlugin extends Plugin
 		{
 			// a Bandos godsword's drain is the damage rolled, where the Alchemical Hydra's reduction cut the hitsplat
 			int hit = HydraShield.rolled(l.weapon, l.hit, hydra.shielded(l.npc));
-			drains.addEstimated(l.npcIndex, l.npc, l.weapon, hit, l.tekton, l.tick, l.playerId);
+			drains.addEstimated(l.npcIndex, l.npc, l.weapon, hit, l.tekton, l.hitTick, l.playerId);
 		}
 		NPC npc = targetNpc;
 		StyleData.Monster monster = npc == null || data == null ? null : tableMonster(npc);
@@ -1884,6 +2111,7 @@ public class CombatCheckPlugin extends Plugin
 		{
 			NPC npc = (NPC) event.getActor();
 			bork.animation(npc, npc.getId(), npc.getAnimation(), client.getTickCount());
+			xarth.animation(npc.getIndex(), npc.getId(), npc.getAnimation());
 			if (DefenceDrains.bloat(npc.getId()) && npc.getAnimation() == DefenceDrains.BLOAT_SLEEP_ANIMATION)
 			{
 				// the Bloat shuts down: its stomp, some ticks on, restores its Defence
@@ -1989,6 +2217,16 @@ public class CombatCheckPlugin extends Plugin
 			hydra.clear();
 			bork.clear();
 			borkArmour.clear();
+			ocellus.clear();
+			xarth.clear();
+			lastExplosionTick = -1;
+			explosionSpecUntil = -1;
+			lastJellyTick = Integer.MIN_VALUE / 2;
+			jellyMagicUntil = -1;
+			specUnusedSince = -1;
+			archiveNotices = Collections.emptyList();
+			ownHitTick = Integer.MIN_VALUE / 2;
+			hitOnMeTick = Integer.MIN_VALUE / 2;
 			archivePartyLocked = 0;
 			specWeapon = null;
 			specTarget = null;
@@ -2032,6 +2270,7 @@ public class CombatCheckPlugin extends Plugin
 			waitingSpecs.expire(client.getTickCount());
 			readWardenEnrage();
 			readSmorks();
+			readOcellus();
 			CoxScaling.Raid before = raid;
 			raid = client.getGameState() == GameState.LOGGED_IN ? raidNow() : null;
 			tobRaid = client.getGameState() == GameState.LOGGED_IN ? tobNow() : null;
@@ -2054,6 +2293,7 @@ public class CombatCheckPlugin extends Plugin
 				bulwarkSpecLine = null;
 				blowpipeNotice = null;
 				piecesGain = Double.NaN;
+				archiveNotices = Collections.emptyList();
 				return;
 			}
 			if (fightingPlayer(client.getTickCount()))
@@ -2065,6 +2305,7 @@ public class CombatCheckPlugin extends Plugin
 				defenceLine = null;
 				bulwarkSpecLine = null;
 				leftOnNotice = null;
+				archiveNotices = Collections.emptyList();
 				outOfCombat = 0;
 				prayerTimer.reset();
 				return;
@@ -2076,6 +2317,7 @@ public class CombatCheckPlugin extends Plugin
 		catch (RuntimeException e)
 		{
 			blowpipeNotice = null;
+			archiveNotices = Collections.emptyList();
 			// a cache lookup that fails must not break the tick for every other plugin
 			log.debug("could not check the gear", e);
 			leftOnNotice = null;
@@ -2218,6 +2460,17 @@ public class CombatCheckPlugin extends Plugin
 			targetId = -1;
 			targetNpc = null;
 		}
+		else if (targetId != -1 && targetNpc != null && !targetNpc.isDead())
+		{
+			// the monster remembered changed form while the game showed no target of the player's (the Archive Guardian
+			// taking off between two attacks, recorded 2026-10-29 07:40:51): its row is the form it has now
+			StyleData.Monster form = tableMonster(targetNpc);
+			if (form != null && form != targetRow)
+			{
+				targetRow = form;
+				targetId = form.id;
+			}
+		}
 		StyleData.Monster monster = targetId == -1 ? null : targetRow;
 		if (monster != null)
 		{
@@ -2248,16 +2501,23 @@ public class CombatCheckPlugin extends Plugin
 		int[] index = indices(clientStyleNames(client.getVarbitValue(VarbitID.COMBAT_WEAPON_CATEGORY)), styles.size());
 		int selectedIndex = client.getVarpValue(VarPlayerID.COM_MODE);
 		String selectedType = null;
+		String selectedName = null;
 		for (int i = 0; i < styles.size(); i++)
 		{
 			if (index[i] == selectedIndex)
 			{
 				selectedType = styles.get(i).type;
+				selectedName = styles.get(i).name;
 			}
 		}
 
-		// 1. the attack style of the weapon in hand, against the monster being fought
-		Advice style = monster == null || !config.styleReminder() ? null
+		// 1. the attack style of the weapon in hand, against the monster being fought; none for a melee weapon that does not
+		// reach it (the Archive Guardian in flight but for a polearm, Ocellus flying, Moia outside the arena): the weapon
+		// notice points at a ranged or magic weapon instead
+		String immune = monster == null ? "" : target(monster).immune;
+		boolean meleeOut = meleeOut(immune);
+		boolean handOut = StyleCalc.melee(selectedType) && !meleeReaches(immune, data.category(weaponId));
+		Advice style = monster == null || !config.styleReminder() || handOut ? null
 			: style(monster, worn, weaponId, styles, index, selectedIndex, selectedType);
 		boolean mistake = style != null && !style.selected;
 		int level = targetId == -1 ? 0 : client.getNpcDefinition(targetId).getCombatLevel();
@@ -2270,6 +2530,24 @@ public class CombatCheckPlugin extends Plugin
 		else
 		{
 			advice = null;
+		}
+		// 1b. Dreadnoth's Jellies, which have no row (ArchiveNotices): a chinchompa thrown at them on Short fuse is shown
+		// the Medium fuse, at once, as a melee style is
+		boolean onJelly = interacting instanceof NPC && ((NPC) interacting).getId() == ArchiveNotices.JELLY;
+		if (onJelly)
+		{
+			lastJellyTick = tick;
+		}
+		if (advice == null && config.styleReminder() && ArchiveNotices.shortFuseOnJelly(
+			tick - lastJellyTick <= ArchiveNotices.JELLY_TICKS, data.category(weaponId), selectedName))
+		{
+			advice = fuseAdvice(weaponId, styles, index);
+		}
+		if (config.weaponNotice() && ArchiveNotices.ancientsOnJelly(onJelly,
+			client.getVarbitValue(VarbitID.SPELLBOOK) == ANCIENT_SPELLBOOK, me.getAnimation(),
+			client.getVarbitValue(VarbitID.AUTOCAST_SPELL)))
+		{
+			jellyMagicUntil = tick + ArchiveNotices.NOTICE_TICKS;
 		}
 
 		// 2. the pieces that go with the weapon in hand and are still in the inventory
@@ -2343,12 +2621,14 @@ public class CombatCheckPlugin extends Plugin
 		// 3. a carried weapon whose set would deal much more to this monster than what is worn
 		// against a monster that changes form or phase during the fight, only a weapon of the same combat class is
 		// pointed at (a better sword for the sword in hand): which class each form calls for is the fight itself
+		// (a monster melee does not reach: a ranged or a magic weapon too, and at once while the melee weapon in hand lands
+		// nothing)
 		WeaponAdvice better = monster != null && config.weaponNotice()
-			? betterWeapon(monster, worn, weaponId, on, changesForm(monster.name)) : null;
-		boolean wait = !weaponTimer.due(tick, better != null, WEAPON_DELAY_FLOOR);
+			? betterWeapon(monster, worn, weaponId, on, changesForm(monster.name) && !meleeOut) : null;
+		boolean wait = !weaponTimer.due(tick, better != null, handOut ? 0 : WEAPON_DELAY_FLOOR);
 		weaponAdvice = wait ? null : better;
 		// 3a. the best weapon of the bank last seen open, outside the raids
-		bankAdvice = bankWeaponNow(monster, worn, weaponId, on, monster != null && changesForm(monster.name));
+		bankAdvice = bankWeaponNow(monster, worn, weaponId, on, monster != null && changesForm(monster.name) && !meleeOut);
 
 		// 3b. the other of ruby and diamond bolts (e), when it deals more at the monster's current health
 		boltAdvice = monster != null && targetTicks <= afterAttackTicks(config.boltsAfterAttack()) && config.boltReminder() && !boltPluginOn()
@@ -2409,6 +2689,74 @@ public class CombatCheckPlugin extends Plugin
 		// a prayer just turned on is not one left on: praying ahead of a fight is given the same wait
 		leftOnNotice = config.prayerLeftOn() && leftOn(draining, Math.min(outOfCombat, prayerOnFor), config.prayerLeftOnDelay())
 			? "Prayer still on" : null;
+
+		// 6. the Fractured Archive's reminders, each of what the player did (ArchiveNotices)
+		List<ArchiveNotices.Notice> notes = new ArrayList<>();
+		if (jellyMagicUntil >= tick)
+		{
+			notes.add(new ArchiveNotices.Notice(carriedOf("Chinchompas", null),
+				Words.of(config.language(), Words.Key.JELLY_CHINCHOMPA)));
+		}
+		if (explosionSpecUntil >= tick)
+		{
+			notes.add(new ArchiveNotices.Notice(0, Words.of(config.language(), Words.Key.SPEC_EXPLOSIONS)));
+		}
+		int kisten = carriedOf(null, ArchiveNotices.KISTEN);
+		int energy = client.getVarpValue(VarPlayerID.SA_ENERGY);
+		int npcId = targetNpc != null ? targetNpc.getId() : monster != null ? monster.id : -1;
+		if (config.specUnused() && ArchiveNotices.specUnused(monster != null && monster.fracturedArchive,
+			!meleeOut(immune) && classAllowed(npcId, StyleCalc.MELEE), StyleCalc.MELEE.equals(c.combatClass), kisten > 0,
+			energy, specUnusedSince, tick))
+		{
+			notes.add(new ArchiveNotices.Notice(kisten, String.format(Words.of(config.language(), Words.Key.SPEC_UNUSED),
+				energy / 10)));
+		}
+		archiveNotices = notes.isEmpty() ? Collections.emptyList() : notes;
+	}
+
+	/**
+	 * The first item of the inventory of this weapon category, or whose name starts with {@code name}; 0 for none.
+	 */
+	private int carriedOf(String category, String name)
+	{
+		ItemContainer inventory = client.getItemContainer(InventoryID.INV);
+		if (inventory == null)
+		{
+			return 0;
+		}
+		for (Item item : inventory.getItems())
+		{
+			if (item == null || item.getId() <= 0)
+			{
+				continue;
+			}
+			int id = itemOf(item.getId());
+			if (category != null && category.equals(data.category(id))
+				|| name != null && itemManager.getItemComposition(id).getName().startsWith(name))
+			{
+				return id;
+			}
+		}
+		return 0;
+	}
+
+	/** The Medium fuse of the chinchompa in hand, as the attack style notice shows a melee style. */
+	private static Advice fuseAdvice(int weaponId, List<StyleData.Style> styles, int[] index)
+	{
+		for (int i = 0; i < styles.size(); i++)
+		{
+			if (ArchiveNotices.MEDIUM_FUSE.equals(styles.get(i).name))
+			{
+				Advice a = new Advice();
+				a.weaponItemId = weaponId;
+				a.bestIndex = index[i];
+				a.text = ArchiveNotices.MEDIUM_FUSE;
+				a.selected = false;
+				a.gain = Double.NaN;
+				return a;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -2480,6 +2828,12 @@ public class CombatCheckPlugin extends Plugin
 		t.toaInvocation = ToaScaling.invocation(monster, toaRaid);
 		t.hitpointsNow = healthNow(monster, levels.hitpoints);
 		t.defencelessShare = defencelessShare(monster);
+		if (ocellusOutOfReach(monster) || moiaOutOfReach(monster) || xarthShielded(monster))
+		{
+			// Ocellus flying from corner to corner, Moia outside the arena, Xarth before his first charge: melee lands
+			// nothing (OcellusReach, MoiaReach, XarthShield)
+			t.immune = (t.immune == null ? "" : t.immune) + "M";
+		}
 		if (monster.id == BorkStun.BORK && monster.fracturedArchive)
 		{
 			// Bork's flat armour and magic resistance by the Smorks' health; stunned by the Smorks' heavy cannonball, his
@@ -2790,123 +3144,131 @@ public class CombatCheckPlugin extends Plugin
 		List<Integer> seen = new ArrayList<>();
 		// the NPC itself, for the forms that pray against a class (Akkha): the table's row may be another id of it
 		int npcId = targetNpc != null ? targetNpc.getId() : monster.id;
+		// first the weapons of the class in hand (a better bow for the bow); only when the one in hand is already the best
+		// of its class, by the minimum gain, a weapon of another class
+		String classHeld = SetCalc.combatClass(now);
 		try
 		{
-			for (Item item : inventory.getItems())
+			for (int pass = 0; pass < (sameClassOnly ? 1 : 2) && best == null; pass++)
 			{
-				if (item == null || item.getId() <= 0)
+				seen.clear();
+				for (Item item : inventory.getItems())
 				{
-					continue;
-				}
-				int id = itemOf(item.getId());
-				var stats0 = equipment(id);
-				if (seen.contains(id) || id == weaponId || stats0 == null || stats0.getSlot() != SwitchSet.WEAPON)
-				{
-					continue;
-				}
-				seen.add(id);
-				SetCalc.Loadout bare = new SetCalc.Loadout();
-				bare.category = data.category(id);
-				String cls = SetCalc.combatClass(bare);
-				if (cls == null || (sameClassOnly && !cls.equals(SetCalc.combatClass(now))) || !classAllowed(npcId, cls))
-				{
-					continue;
-				}
-				// the pieces as they count with that weapon in hand, and the attack prayer that goes with it
-				context = contextFor(id, cls, null, worn);
-				SetCalc.Player with0 = SetCalc.withPrayerOf(stats, cls);
-				SwitchSet.Piece weapon = piece(id);
-				SwitchSet.Piece[] with = pieces(worn);
-				with[SwitchSet.WEAPON] = weapon;
-				if (weapon != null && weapon.twoHanded)
-				{
-					with[SwitchSet.SHIELD] = null;
-				}
-				List<SwitchSet.Piece> carried = new ArrayList<>();
-				for (SwitchSet.Piece p : inventoryPieces())
-				{
-					if (p.itemId != id)
+					if (item == null || item.getId() <= 0)
 					{
-						carried.add(p);
+						continue;
 					}
-				}
-				SwitchSet.Piece[] after = SwitchSet.after(cls, null, with, carried);
-				int bolts = 0;
-				double other = -1;
-				// the set the figure is for, for the time it takes to kill
-				SetCalc.Loadout chosen = null;
-				if ("Crossbow".equals(bare.category))
-				{
-					// a crossbow shoots the bolts worn or the best of the carried ones; with none, it is no option
-					List<SwitchSet.Piece> ammo = new ArrayList<>();
-					SwitchSet.Piece ready = shotAmmo(after, id);
-					ammo.add(ready);
-					ammo.addAll(carried);
-					for (SwitchSet.Piece b : ammo)
+					int id = itemOf(item.getId());
+					var stats0 = equipment(id);
+					if (seen.contains(id) || id == weaponId || stats0 == null || stats0.getSlot() != SwitchSet.WEAPON)
 					{
-						// bolts the crossbow does not fire (dragon bolts in a Rune crossbow) are no option
-						if (b == null || b.slot != SwitchSet.AMMO
-							|| !Weapons.canFire(id, bare.category, weapon == null ? null : weapon.name, b.itemId, b.name))
+						continue;
+					}
+					seen.add(id);
+					SetCalc.Loadout bare = new SetCalc.Loadout();
+					bare.category = data.category(id);
+					String cls = SetCalc.combatClass(bare);
+					if (cls == null || !inPass(pass, cls, classHeld) || !classAllowed(npcId, cls))
+					{
+						continue;
+					}
+					// the pieces as they count with that weapon in hand, and the attack prayer that goes with it
+					context = contextFor(id, cls, null, worn);
+					SetCalc.Player with0 = SetCalc.withPrayerOf(stats, cls);
+					SwitchSet.Piece weapon = piece(id);
+					SwitchSet.Piece[] with = pieces(worn);
+					with[SwitchSet.WEAPON] = weapon;
+					if (weapon != null && weapon.twoHanded)
+					{
+						with[SwitchSet.SHIELD] = null;
+					}
+					List<SwitchSet.Piece> carried = new ArrayList<>();
+					for (SwitchSet.Piece p : inventoryPieces())
+					{
+						if (p.itemId != id)
+						{
+							carried.add(p);
+						}
+					}
+					SwitchSet.Piece[] after = SwitchSet.after(cls, null, with, carried);
+					int bolts = 0;
+					double other = -1;
+					// the set the figure is for, for the time it takes to kill
+					SetCalc.Loadout chosen = null;
+					if ("Crossbow".equals(bare.category))
+					{
+						// a crossbow shoots the bolts worn or the best of the carried ones; with none, it is no option
+						List<SwitchSet.Piece> ammo = new ArrayList<>();
+						SwitchSet.Piece ready = shotAmmo(after, id);
+						ammo.add(ready);
+						ammo.addAll(carried);
+						for (SwitchSet.Piece b : ammo)
+						{
+							// bolts the crossbow does not fire (dragon bolts in a Rune crossbow) are no option
+							if (b == null || b.slot != SwitchSet.AMMO
+								|| !Weapons.canFire(id, bare.category, weapon == null ? null : weapon.name, b.itemId, b.name))
+							{
+								continue;
+							}
+							SwitchSet.Piece[] shot = after.clone();
+							shot[SwitchSet.AMMO] = b;
+							SetCalc.Loadout l = loadout(shot, id);
+							double d = SetCalc.plain(l) ? SetCalc.perTick(l, with0, target, false) : -1;
+							if (d > other)
+							{
+								other = d;
+								bolts = b == ready ? 0 : b.itemId;
+								chosen = l;
+							}
+						}
+						if (other < 0)
 						{
 							continue;
 						}
-						SwitchSet.Piece[] shot = after.clone();
-						shot[SwitchSet.AMMO] = b;
-						SetCalc.Loadout l = loadout(shot, id);
-						double d = SetCalc.plain(l) ? SetCalc.perTick(l, with0, target, false) : -1;
-						if (d > other)
+					}
+					else
+					{
+						// a bow with no arrows to shoot is no option, nor with arrows it does not fire (dragon arrows in a Magic
+						// shortbow (i)); the Comp ogre bow fires brutal arrows
+						String kind = Weapons.ammoKind(bare.category, weapon == null ? null : weapon.name);
+						SwitchSet.Piece arrows = shotAmmo(after, id);
+						if (kind != null && (arrows == null
+							|| !Weapons.canFire(id, bare.category, weapon == null ? null : weapon.name, arrows.itemId, arrows.name)))
 						{
-							other = d;
-							bolts = b == ready ? 0 : b.itemId;
-							chosen = l;
+							continue;
+						}
+						SetCalc.Loadout then = loadout(after, id);
+						if (!SetCalc.plain(then))
+						{
+							continue;
+						}
+						other = SetCalc.perTick(then, with0, target, false);
+						chosen = then;
+						if (target.verzikP1)
+						{
+							other = verzikP1Rate(other, cls, then.speed);
 						}
 					}
-					if (other < 0)
+					if (target.verzikP1 && !StyleCalc.MELEE.equals(cls))
 					{
+						// ranged and magic on Verzik's first phase: no figure there (verzikP1Rate)
 						continue;
 					}
-				}
-				else
-				{
-					// a bow with no arrows to shoot is no option, nor with arrows it does not fire (dragon arrows in a Magic
-					// shortbow (i)); the Comp ogre bow fires brutal arrows
-					String kind = Weapons.ammoKind(bare.category, weapon == null ? null : weapon.name);
-					SwitchSet.Piece arrows = shotAmmo(after, id);
-					if (kind != null && (arrows == null
-						|| !Weapons.canFire(id, bare.category, weapon == null ? null : weapon.name, arrows.itemId, arrows.name)))
+					// nothing lands now and something would: the notice says so instead of a percentage
+					double perTickGain = current == 0 ? (other > 0 ? Double.POSITIVE_INFINITY : Double.NaN) : SetCalc.gain(current, other);
+					// the time it takes to kill, where both weapons have one: what is dealt beyond the hitpoints is wasted
+					double ticksOther = Double.isNaN(ticksNow) || chosen == null ? Double.NaN : killTicks(chosen, with0, target, monster);
+					double gain = comparedGain(config.weaponComparison(), perTickGain, ticksNow, ticksOther);
+					if (pointsAt(gain, minimum) && beats(gain, other, best))
 					{
-						continue;
+						best = new WeaponAdvice();
+						best.itemId = id;
+						best.alsoItemId = bolts;
+						best.gain = gain;
+						best.figure = other;
+						best.text = Double.isInfinite(gain) ? "can hit"
+							: gainText(gain) + (byTime && killsSooner(perTickGain, gain, minimum) ? " " + LOW_HP : "");
 					}
-					SetCalc.Loadout then = loadout(after, id);
-					if (!SetCalc.plain(then))
-					{
-						continue;
-					}
-					other = SetCalc.perTick(then, with0, target, false);
-					chosen = then;
-					if (target.verzikP1)
-					{
-						other = verzikP1Rate(other, cls, then.speed);
-					}
-				}
-				if (target.verzikP1 && !StyleCalc.MELEE.equals(cls))
-				{
-					// ranged and magic on Verzik's first phase: no figure there (verzikP1Rate)
-					continue;
-				}
-				// nothing lands now and something would: the notice says so instead of a percentage
-				double perTickGain = current == 0 ? (other > 0 ? Double.POSITIVE_INFINITY : Double.NaN) : SetCalc.gain(current, other);
-				// the time it takes to kill, where both weapons have one: what is dealt beyond the hitpoints is wasted
-				double ticksOther = Double.isNaN(ticksNow) || chosen == null ? Double.NaN : killTicks(chosen, with0, target, monster);
-				double gain = comparedGain(config.weaponComparison(), perTickGain, ticksNow, ticksOther);
-				if (pointsAt(gain, minimum) && (best == null || gain > best.gain))
-				{
-					best = new WeaponAdvice();
-					best.itemId = id;
-					best.alsoItemId = bolts;
-					best.gain = gain;
-					best.text = Double.isInfinite(gain) ? "can hit"
-						: gainText(gain) + (byTime && killsSooner(perTickGain, gain, minimum) ? " " + LOW_HP : "");
 				}
 			}
 		}
@@ -3202,17 +3564,22 @@ public class CombatCheckPlugin extends Plugin
 	static final int AKKHA_MAGIC = 11792;
 	static final int AKKHA_ENRAGE = 11795;
 	static final int AKKHA_SHADOW_ENRAGE = 11798;
+	/** The Blade of Ocellus's second phase (the Fractured Archive). */
+	static final int THE_BLADE = 16676;
 
 	/**
 	 * Whether a carried weapon of this combat class may be pointed at against this NPC: never one of the class Akkha is
 	 * praying against (he prays against the style he attacks with: OSRS Wiki, Akkha), and in his enrage, where he and his
-	 * shadows pray against magic and missiles together, only melee. The weapon in hand is the player's own choice and is
-	 * left as it is.
+	 * shadows pray against magic and missiles together, only melee. On The Blade, never melee: the room is fought from
+	 * the path between the lines, the weapons compared for it are ranged and magic, and a melee weapon was never tried on it but for the Elder
+	 * maul's special attack. The weapon in hand is the player's own choice and is left as it is.
 	 */
 	static boolean classAllowed(int npcId, String combatClass)
 	{
 		switch (npcId)
 		{
+			case THE_BLADE:
+				return !StyleCalc.MELEE.equals(combatClass);
 			case AKKHA_MELEE:
 				return !StyleCalc.MELEE.equals(combatClass);
 			case AKKHA_RANGED:
@@ -3335,10 +3702,11 @@ public class CombatCheckPlugin extends Plugin
 		boolean held = inHandNow != null && inHandNow.getId() > 0 && itemOf(inHandNow.getId()) == weaponId;
 		l.spell = held ? client.getVarbitValue(VarbitID.AUTOCAST_SPELL) : 0;
 		SwitchSet.Piece shield = pieces.length > SwitchSet.SHIELD ? pieces[SwitchSet.SHIELD] : null;
-		String element = SetEffects.autocastElement(l.spell);
-		if (shield != null && element != null && shield.name != null && shield.name.equalsIgnoreCase("Tome of " + element))
+		String element = shield == null ? null : SetEffects.tomeElement(shield.name, l.spell);
+		if (element != null)
 		{
 			l.tome = element;
+			l.searingPages = "fire".equals(element) && config.searingPages();
 			if (SetEffects.tomeInUse(shield.name, context))
 			{
 				// the piece carries the tome as plain magic damage, to be ranked; the figure applies it as the game does
@@ -3380,6 +3748,7 @@ public class CombatCheckPlugin extends Plugin
 		p.deadeye = client.getVarbitValue(VarbitID.PRAYER_DEADEYE_UNLOCKED) == 1;
 		p.augury = hasAugury();
 		p.vigour = client.getVarbitValue(VarbitID.PRAYER_MYSTIC_VIGOUR_UNLOCKED) == 1;
+		p.fragments.addAll(fragments());
 		return p;
 	}
 
@@ -3449,11 +3818,13 @@ public class CombatCheckPlugin extends Plugin
 		in.verzikP1 = monster.verzikP1;
 
 		// the Obligator's styles differ in speed and in the Thrust's rolls: compared per tick by the figures' own rules
-		// (SetCalc.styleFigure), on the monster as fought; uncharged it has no figure, and no style is pointed out
+		// (SetCalc.styleFigure), on the monster as fought, the Thrust with the other monsters it reaches too; uncharged
+		// it has no figure, and no style is pointed out
 		boolean obligator = ArchiveItems.isObligator(weaponName.toLowerCase(java.util.Locale.ROOT));
 		SetCalc.Loadout held = obligator ? loadout(pieces(worn), weaponId) : null;
 		SetCalc.Player me = obligator ? stats() : null;
 		SetCalc.Target fought = obligator ? target(monster) : null;
+		List<SetCalc.Target> alsoHit = obligator ? thrustAlsoHits() : Collections.emptyList();
 		int best = -1;
 		double bestScore = 0;
 		double selectedScore = -1;
@@ -3475,7 +3846,8 @@ public class CombatCheckPlugin extends Plugin
 			{
 				meleeTypes = 2;
 			}
-			double score = obligator ? SetCalc.styleFigure(held, me, fought, s) : StyleCalc.expectedHit(in, s.type, s.stance);
+			double score = obligator ? SetCalc.styleFigure(held, me, fought, alsoHit, s)
+				: StyleCalc.expectedHit(in, s.type, s.stance);
 			if (score > bestScore)
 			{
 				bestScore = score;
@@ -3503,6 +3875,42 @@ public class CombatCheckPlugin extends Plugin
 			a.text += " " + gainText(a.gain);
 		}
 		return a;
+	}
+
+	/**
+	 * The other monsters of the table the Obligator's Thrust would hit now along with the one fought, in a multicombat
+	 * area ({@link ArchiveItems#obligatorReach}: on its tile nearest the player or up to two tiles behind, two at most),
+	 * each with its own levels; none elsewhere, or with nothing in that line.
+	 */
+	private List<SetCalc.Target> thrustAlsoHits()
+	{
+		Player player = client.getLocalPlayer();
+		NPC npc = targetNpc;
+		net.runelite.api.coords.WorldArea area = npc == null ? null : npc.getWorldArea();
+		net.runelite.api.coords.WorldPoint at = player == null ? null : player.getWorldLocation();
+		if (area == null || at == null || client.getVarbitValue(VarbitID.MULTIWAY_INDICATOR) != 1)
+		{
+			return Collections.emptyList();
+		}
+		List<StyleData.Monster> rows = new ArrayList<>();
+		List<int[]> tiles = new ArrayList<>();
+		for (NPC other : client.getTopLevelWorldView().npcs())
+		{
+			net.runelite.api.coords.WorldArea a = other == null ? null : other.getWorldArea();
+			StyleData.Monster m = a == null || other == npc || other.isDead() || a.getPlane() != at.getPlane()
+				|| !canBeFought(other) ? null : tableMonster(other);
+			if (m != null)
+			{
+				rows.add(m);
+				tiles.add(new int[]{a.getX(), a.getY(), a.getWidth()});
+			}
+		}
+		List<SetCalc.Target> hit = new ArrayList<>();
+		for (int i : ArchiveItems.obligatorReach(at.getX(), at.getY(), area.getX(), area.getY(), area.getWidth(), tiles))
+		{
+			hit.add(otherTarget(rows.get(i)));
+		}
+		return hit;
 	}
 
 	/** How much more the best style deals, as the notice writes it: "+0.4%" under ten percent, "+12%" from there on. */

@@ -4,7 +4,9 @@
  */
 package com.combatcheck;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import net.runelite.api.gameval.ItemID;
@@ -50,6 +52,14 @@ final class ArchiveItems
 	 * Wiki, Obligator; Module:CombatStyles gives the Extending Chain Mace's Smash 3 ticks). Its Thrust has the item's 5.
 	 */
 	static final int OBLIGATOR_SMASH_SPEED = 3;
+
+	/**
+	 * How many monsters besides the one fought the Obligator's Thrust reaches: "up to two additional targets on or behind
+	 * the main target, giving it an effective reach of 3 tiles" (OSRS Wiki, Obligator, read 2026-10-28). Measured in the
+	 * Fractured Archive (recorded fights of 2026-10-27 and 28, 721 Thrusts): five Jellies on one tile, three of them
+	 * hit by each Thrust.
+	 */
+	static final int OBLIGATOR_EXTRA_TARGETS = 2;
 
 	/**
 	 * Zeal: "Increases your defence by 25%, strength by 28%, and attack by 25%" (OSRS Wiki, Zeal), in the place of Piety's
@@ -128,6 +138,41 @@ final class ArchiveItems
 	static int[] obligatorSize(int size)
 	{
 		return size >= 3 ? new int[]{14, 10} : size == 2 ? new int[]{12, 10} : new int[]{1, 1};
+	}
+
+	/**
+	 * The other monsters the Obligator's Thrust hits along with the one fought, as indices into {@code others} (each
+	 * {x, y, size} of its south-west tile), nearest first, {@link #OBLIGATOR_EXTRA_TARGETS} at most: those standing on the
+	 * tile of the monster fought nearest the player or on the two tiles behind it, in the line from the player to that
+	 * tile. Each is hit with its own rolls and size. Measured in recorded fights (2026-10-27 and 28, the Fractured
+	 * Archive): a Thrust on a Corpse with Xarth on the tile behind it hit Xarth too 5 times of 5 (the sixth, Xarth was
+	 * dead), with his own 40% more (up to 43; fought, he took up to 53 in that kill, 38 without the 40%); on Xarth from the tile next to him, a
+	 * Corpse on the tile behind him (the fourth from the player) was never hit (7 of 7), and a Corpse beside him not on the
+	 * line never (167); the Jellies on the tile fought, two besides it. The posts of 2026-06-16 and 2026-07-30 said a large
+	 * monster around takes the Thrust's targets away; the wiki and the post "Out Today" (2026-10-20) do not, and the game
+	 * does not. Empty when the player stands on the monster's tiles.
+	 */
+	static List<Integer> obligatorReach(int playerX, int playerY, int x, int y, int size, List<int[]> others)
+	{
+		int nearX = Math.max(x, Math.min(playerX, x + size - 1));
+		int nearY = Math.max(y, Math.min(playerY, y + size - 1));
+		int dx = Integer.signum(nearX - playerX);
+		int dy = Integer.signum(nearY - playerY);
+		List<Integer> hit = new ArrayList<>();
+		for (int step = 0; step < 3 && (dx != 0 || dy != 0); step++)
+		{
+			int tx = nearX + step * dx;
+			int ty = nearY + step * dy;
+			for (int i = 0; i < others.size() && hit.size() < OBLIGATOR_EXTRA_TARGETS; i++)
+			{
+				int[] o = others.get(i);
+				if (!hit.contains(i) && tx >= o[0] && tx < o[0] + o[2] && ty >= o[1] && ty < o[1] + o[2])
+				{
+					hit.add(i);
+				}
+			}
+		}
+		return hit;
 	}
 
 	/** The Obligator's Smash style, by its name in Combat Options. */

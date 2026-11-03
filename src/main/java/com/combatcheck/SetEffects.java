@@ -128,6 +128,74 @@ final class SetEffects
 		return itemName.equalsIgnoreCase("Tome of " + c.autocastElement);
 	}
 
+	/**
+	 * The element of the tome in the shield slot, when it is that of the spell on autocast and is charged (the calculator
+	 * counts only the "Charged" version: "Tome of fire (empty)" adds nothing), or null.
+	 */
+	static String tomeElement(String shieldName, int spell)
+	{
+		String element = autocastElement(spell);
+		return element != null && shieldName != null && shieldName.equalsIgnoreCase("Tome of " + element) ? element : null;
+	}
+
+	/**
+	 * The Elemental amulet, or the amulet of the element on autocast, while a staff casts it: 2 more on the spell's base
+	 * (the calculator's hasMatchingElementalAmulet), more than the Occult necklace's 5% magic damage on any elemental
+	 * spell, which the bonuses alone would rank first. So on an elemental spell, never the Occult.
+	 */
+	static boolean elementalAmuletInUse(String itemName, Context c)
+	{
+		if (itemName == null || c == null || !c.castingStaff || c.autocastElement == null)
+		{
+			return false;
+		}
+		String element = elementalAmulet(java.util.Collections.singletonList(itemName));
+		return "all".equals(element) || c.autocastElement.equals(element);
+	}
+
+	/**
+	 * The varbits that turn 1 when an elemental fragment of the Fractured Archive is broken, as recorded fights saw
+	 * them (2026-10-24, fire; 2026-10-25, earth). Water's and air's were not recorded: they are known by the game's
+	 * message or by the plugin's option.
+	 */
+	static final int FRAGMENT_FIRE_VARBIT = 16436;
+	static final int FRAGMENT_EARTH_VARBIT = 16434;
+
+	/**
+	 * The element of the fragment the game says was broken ("You break open the fragment of burning fire and consume its
+	 * power. Fire spells will have an increased max hit of +2."), or null for any other message.
+	 */
+	static String brokenFragment(String message)
+	{
+		if (message == null || !message.contains("spells will have an increased max hit"))
+		{
+			return null;
+		}
+		for (String element : new String[]{"fire", "water", "earth", "air"})
+		{
+			if (message.toLowerCase(java.util.Locale.ROOT).contains(element + " spells will have"))
+			{
+				return element;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Whether the game says the Tome of Fire holds searing pages (TRUE) or burnt pages (FALSE), on charging it ("Your
+	 * tome has been charged with Searing Pages. It currently holds 7,147 charges.") or checking it (it names the pages
+	 * since 2024-04-24, OSRS Wiki); null for any other message.
+	 */
+	static Boolean searingPages(String message)
+	{
+		String m = message == null ? "" : message.toLowerCase(java.util.Locale.ROOT);
+		if (!m.contains("tome"))
+		{
+			return null;
+		}
+		return m.contains("searing page") ? Boolean.TRUE : m.contains("burnt page") ? Boolean.FALSE : null;
+	}
+
 	/** The element of a spell by its number in the game's autocast setting (OSRS Wiki, varbit 276), or null. */
 	static String autocastElement(int spell)
 	{
@@ -172,6 +240,10 @@ final class SetEffects
 		if (isVoidOf(itemName, c))
 		{
 			return VOID_PIECE;
+		}
+		if (elementalAmuletInUse(itemName, c))
+		{
+			return TASK_PIECE;
 		}
 		if (isBarrowsSetPiece(itemName, c))
 		{
@@ -221,10 +293,10 @@ final class SetEffects
 	/** True for a blessing: the one thing worn in the ammunition slot that is not ammunition. */
 	/**
 	 * Weapons held for their special attack and put away again, by a part of their name in lower case:
-	 * with one of them in hand, the weapon it was taken out for is not the one to go back to yet.
+	 * with one of them in hand, the weapon it was taken out for is not the one to go back to yet. First those held for
+	 * the damage, then ({@link #SPECIAL_ATTACK_WEAPONS}) the others.
 	 */
-	private static final String[] SPECIAL_ATTACK_WEAPONS = {
-		// damage
+	private static final String[] DAMAGE_SPECIAL_ATTACK_WEAPONS = {
 		"dragon claws", "burning claws", "voidwaker", "armadyl godsword", "crimson kisten", "dragon dagger", "abyssal dagger",
 		"granite maul", "dark bow", "magic shortbow", "dragon thrownaxe", "dragon knife", "dragon halberd", "crystal halberd",
 		"dragon mace", "dragon longsword", "dragon sword", "dragon 2h sword", "saradomin sword", "saradomin's blessed sword",
@@ -233,7 +305,10 @@ final class SetEffects
 		"eldritch nightmare staff", "rune claws", "brine sabre",
 		// Zorya's tome: "Its primary purpose is for its Special Attack" (the post "Out Today" of 2026-10-20); its spec's
 		// three faster attacks after it are still the tome's
-		"zorya's tome",
+		"zorya's tome"};
+
+	/** The weapons held for a special attack that is not for its damage. */
+	private static final String[] SPECIAL_ATTACK_WEAPONS = {
 		// the Tonalztics of Ralos: its special attack lowers the monster's defence (DefenceDrains), like the hammers below
 		"tonalztics",
 		// the monster's defence or other levels
@@ -246,8 +321,19 @@ final class SetEffects
 	/** Whether the weapon is one held for its special attack rather than to fight with. */
 	static boolean isSpecialAttackWeapon(String weaponName)
 	{
+		return isDamageSpecialAttackWeapon(weaponName) || has(SPECIAL_ATTACK_WEAPONS, weaponName);
+	}
+
+	/** Whether the weapon is one held for its special attack's damage (not for lowering the monster's levels). */
+	static boolean isDamageSpecialAttackWeapon(String weaponName)
+	{
+		return has(DAMAGE_SPECIAL_ATTACK_WEAPONS, weaponName);
+	}
+
+	private static boolean has(String[] parts, String weaponName)
+	{
 		String n = weaponName == null ? "" : weaponName.toLowerCase(java.util.Locale.ROOT);
-		for (String part : SPECIAL_ATTACK_WEAPONS)
+		for (String part : parts)
 		{
 			if (n.contains(part))
 			{
@@ -442,7 +528,7 @@ final class SetEffects
 		{
 			return c == null || !Boolean.FALSE.equals(c.undead);
 		}
-		if (tomeInUse(itemName, c))
+		if (tomeInUse(itemName, c) || elementalAmuletInUse(itemName, c))
 		{
 			return true;
 		}
@@ -578,9 +664,37 @@ final class SetEffects
 		l.berserkerNecklace = berserkerNecklace(names);
 		l.dizanaQuiver = dizanaQuiver(names);
 		l.conflictionGauntlets = names != null && names.stream().anyMatch(n -> n != null && n.equalsIgnoreCase("Confliction gauntlets"));
+		l.elementalAmulet = elementalAmulet(names);
 		// the calculator's isWearingBloodMoonSet: the Dual macuahuitl with the helm, the chestplate and the tassets
 		l.bloodMoonSet = hasStart(names, "Dual macuahuitl") && hasStart(names, "Blood moon helm")
 			&& hasStart(names, "Blood moon chestplate") && hasStart(names, "Blood moon tassets");
+	}
+
+	/**
+	 * The element of the amulet worn that adds 2 to a spell of its element: "all" for the Elemental amulet, "air",
+	 * "water", "earth" or "fire" for the Amulet of that element, null for none (the calculator's hasMatchingElementalAmulet).
+	 */
+	static String elementalAmulet(Collection<String> names)
+	{
+		if (names == null)
+		{
+			return null;
+		}
+		for (String name : names)
+		{
+			if ("Elemental amulet".equalsIgnoreCase(name))
+			{
+				return "all";
+			}
+			for (String element : new String[]{"air", "water", "earth", "fire"})
+			{
+				if (("Amulet of " + element).equalsIgnoreCase(name))
+				{
+					return element;
+				}
+			}
+		}
+		return null;
 	}
 
 	private static boolean hasStart(Collection<String> names, String prefix)

@@ -82,6 +82,8 @@ final class SetCalc
 		int spell;
 		/** The element of the charged tome in the shield slot ("fire", "water", "earth"), or null. */
 		String tome;
+		/** The Tome of Fire is charged with searing pages: a fire spell's least hit is a tenth of its max before the tome. */
+		boolean searingPages;
 		/** Dharok's whole set is worn: the max hit grows with the hitpoints the player has lost. */
 		boolean dharokSet;
 		/** Ahrim's whole set with the Amulet of the damned: a quarter of the spells deal 30% more. */
@@ -107,6 +109,11 @@ final class SetCalc
 		boolean efaritay;
 		/** The Confliction gauntlets worn: with a weapon of one hand, magic rolls its accuracy their way. */
 		boolean conflictionGauntlets;
+		/**
+		 * The element of the amulet worn that adds 2 to the base max hit of a spell of its element ("fire" for the Amulet
+		 * of fire), "all" for the Elemental amulet, null for none (the calculator's hasMatchingElementalAmulet).
+		 */
+		String elementalAmulet;
 		/** The weapon takes both hands (the game's item data). */
 		boolean twoHanded;
 		/** The Blood moon set with the Dual macuahuitl: its attacks come sooner, which this class does not count. */
@@ -150,6 +157,8 @@ final class SetCalc
 		boolean vigour = true;
 		/** The boosted Mining level: a pickaxe's damage on the Guardians of the Chambers of Xeric grows with it. */
 		int mining = 99;
+		/** The elements ("fire", "water", "earth", "air") whose fragment of the Fractured Archive the player broke. */
+		final java.util.Set<String> fragments = new java.util.HashSet<>();
 	}
 
 	static final class Target
@@ -730,6 +739,24 @@ final class SetCalc
 		{
 			l.styles = all;
 		}
+	}
+
+	/**
+	 * {@link #styleFigure} with the other monsters the Obligator's Thrust reaches too ({@link ArchiveItems#obligatorReach}),
+	 * each by its own rules: the Thrust's figure is the sum on all of them, the Smash's the one fought's alone ("only
+	 * being able to hit one target", OSRS Wiki, Obligator).
+	 */
+	static double styleFigure(Loadout l, Player p, Target t, List<Target> alsoHit, StyleData.Style style)
+	{
+		double figure = styleFigure(l, p, t, style);
+		if (!ArchiveItems.smash(style.name))
+		{
+			for (Target other : alsoHit)
+			{
+				figure += styleFigure(l, p, other, style);
+			}
+		}
+		return figure;
 	}
 
 	/**
@@ -1827,6 +1854,18 @@ final class SetCalc
 				base = 30; // a nominal spell
 			}
 		}
+		if (element != null && ("all".equals(l.elementalAmulet) || element.equals(l.elementalAmulet)))
+		{
+			// the Elemental amulet, or the amulet of the spell's element: 2 more on the spell's base, before the weakness
+			// takes its share of it (the calculator's, 2026-10-26)
+			base += 2;
+		}
+		if (element != null && p.fragments.contains(element))
+		{
+			// an elemental fragment the player broke: 2 more on the base of the spells of its element, everywhere, before
+			// the magic damage and the weakness (OSRS Wiki, Elemental fragments)
+			base += 2;
+		}
 		boolean weak = element != null && element.equals(t.weakness) && t.weaknessSeverity > 0;
 		int bonus = l.magic;
 		double damage = l.magicDamage;
@@ -1876,6 +1915,9 @@ final class SetCalc
 			roll += effective * (bonus + 64) * t.weaknessSeverity / 100;
 			max += base * t.weaknessSeverity / 100;
 		}
+		// the Tome of Fire charged with searing pages: a fire spell's least hit is a tenth of its max before the tome's
+		// tenth (OSRS Wiki, Searing page; the calculator's sunfire runes)
+		long least = "fire".equals(element) && "fire".equals(l.tome) && l.searingPages ? max / 10 : 0;
 		if (element != null && element.equals(l.tome))
 		{
 			max = max * 11 / 10;
@@ -1922,7 +1964,7 @@ final class SetCalc
 		}
 		// the Wardens of the second phase: every cast lands, between a part of the max and that part plus a fifth
 		// the Respiratory systems: every hit at least half the max
-		long[] range = t.wardenP2 ? wardenP2Range(max, roll, defenceRoll) : new long[]{t.leastHalfMax ? max / 2 : 0, max};
+		long[] range = t.wardenP2 ? wardenP2Range(max, roll, defenceRoll) : new long[]{least + (t.leastHalfMax ? max / 2 : 0), max};
 		long low = range[0];
 		long high = range[1];
 		double average = landed(low, high, noArmour, perHit, limit, false);

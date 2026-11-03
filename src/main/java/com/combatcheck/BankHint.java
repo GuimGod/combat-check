@@ -118,10 +118,32 @@ final class BankHint
 	static Result best(double current, List<Candidate> candidates, SetCalc.Player stats, SetCalc.Target target,
 		double minimum)
 	{
+		return best(current, candidates, stats, target, minimum, null);
+	}
+
+	/**
+	 * {@link #best}, first among the weapons of {@code classFirst} (the class in hand) and only when none of them is
+	 * pointed at among the others, as the weapon notice; null for all at
+	 * once.
+	 */
+	static Result best(double current, List<Candidate> candidates, SetCalc.Player stats, SetCalc.Target target,
+		double minimum, String classFirst)
+	{
 		if (current < 0)
 		{
 			return null;
 		}
+		Result best = null;
+		for (int pass = 0; pass < (classFirst == null ? 1 : 2) && best == null; pass++)
+		{
+			best = best(current, candidates, stats, target, minimum, classFirst, pass);
+		}
+		return best;
+	}
+
+	private static Result best(double current, List<Candidate> candidates, SetCalc.Player stats, SetCalc.Target target,
+		double minimum, String classFirst, int pass)
+	{
 		Result best = null;
 		for (Candidate c : candidates)
 		{
@@ -130,6 +152,10 @@ final class BankHint
 				continue;
 			}
 			String cls = SetCalc.combatClass(c.loadout);
+			if (classFirst != null && !CombatCheckPlugin.inPass(pass, cls, classFirst))
+			{
+				continue;
+			}
 			c.perTick = SetCalc.perTick(c.loadout, SetCalc.withPrayerOf(stats, cls), target, false);
 			if (c.perTick < 0)
 			{

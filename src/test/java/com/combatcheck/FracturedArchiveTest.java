@@ -108,11 +108,22 @@ public class FracturedArchiveTest
 		assertFalse(data.monster(16675).demon);
 		assertEquals(250, data.monster(16677).level);
 		assertTrue(data.monster(16677).demon);
-		// the Dagon'hai have no numbers: no row
+		// the Dagon'hai, each with its two ids: the wiki's numbers, the same for the three, and the Archive's
 		for (int id : new int[]{16643, 16644, 16645, 16646, 16647, 16648})
 		{
-			assertNull(data.monster(id));
+			StyleData.Monster m = data.monster(id);
+			assertEquals(100, m.level);
+			assertEquals(290, m.magicLevel);
+			assertEquals(640, m.hitpoints);
+			assertArrayEquals(new int[]{50, 50, 50, 100, 80, 80, 80},
+				new int[]{m.stab, m.slash, m.crush, m.magic, m.light, m.standard, m.heavy});
+			assertTrue(m.fracturedArchive);
+			assertFalse(m.demon);
 		}
+		assertEquals("Dagon'hai Elder", data.monster(16644).name);
+		assertEquals("Dagon'hai Monk", data.monster(16646).name);
+		// Moia's Undead binders have no row
+		assertNull(data.monster(16670));
 		// a monster outside the raid is not one of it
 		assertFalse(data.monster(8061).fracturedArchive);
 	}
@@ -411,6 +422,59 @@ public class FracturedArchiveTest
 	}
 
 	/**
+	 * The order by class, the class in hand first: with a whip in hand the Scythe is named, though a ranged weapon
+	 * deals more; with the Scythe in hand (the best melee) the ranged one; the minimum gain counts in each step.
+	 */
+	@Test
+	public void aBetterWeaponOfTheClassInHandIsNamedFirst() throws IOException
+	{
+		StyleData data = new StyleData();
+		SetCalc.Target vorkath = data.monster(8061).target();
+		SetCalc.Player p = new SetCalc.Player();
+		p.attack = 118;
+		p.strength = 118;
+		p.ranged = 112;
+		p.prayerAttack = 120;
+		p.prayerStrength = 123;
+		SetCalc.Loadout whip = melee(data, 4151, "Abyssal whip", "Whip", 4, 0, 82, 0, 82);
+		SetCalc.Loadout scythe = melee(data, 22325, "Scythe of vitur", "Scythe", 5, 70, 125, 30, 75);
+		SetCalc.Loadout bow = new SetCalc.Loadout();
+		bow.weaponName = "Armadyl crossbow";
+		bow.category = "Crossbow";
+		bow.speed = 5;
+		bow.ranged = 400;
+		bow.rangedStrength = 300;
+		bow.ammo = "Dragon bolts";
+		bow.ammoWorn = "Dragon bolts";
+		double withWhip = SetCalc.perTick(whip, p, vorkath, false);
+		double withScythe = SetCalc.perTick(scythe, p, vorkath, false);
+		double ranged = SetCalc.perTick(bow, SetCalc.withPrayerOf(p, StyleCalc.RANGED), vorkath, false);
+		assertTrue(withScythe > withWhip);
+		assertTrue("the ranged one deals more than the Scythe", ranged > withScythe);
+		List<BankHint.Candidate> carried = new ArrayList<>();
+		carried.add(new BankHint.Candidate(9185, "Armadyl crossbow", bow));
+		carried.add(new BankHint.Candidate(22325, "Scythe of vitur", scythe));
+		carried.add(new BankHint.Candidate(4151, "Abyssal whip", whip));
+
+		// 1st step: the whip in hand, the Scythe first
+		BankHint.Result first = BankHint.best(withWhip, carried, p, vorkath, 2, StyleCalc.MELEE);
+		assertEquals(22325, first.itemId);
+		// all at once (the old way), the ranged one
+		assertEquals(9185, BankHint.best(withWhip, carried, p, vorkath, 2).itemId);
+		// 2nd step: the Scythe in hand is the best melee, so the ranged one
+		assertEquals(9185, BankHint.best(withScythe, carried, p, vorkath, 2, StyleCalc.MELEE).itemId);
+		// the Scythe over the whip under the minimum: the whip counts as the best melee, and the ranged one is named
+		double scytheGain = SetCalc.gain(withWhip, withScythe);
+		assertEquals(9185, BankHint.best(withWhip, carried, p, vorkath, scytheGain + 1, StyleCalc.MELEE).itemId);
+		// the same rule for the weapon notice: which class each step looks at
+		assertTrue(CombatCheckPlugin.inPass(0, StyleCalc.MELEE, StyleCalc.MELEE));
+		assertFalse(CombatCheckPlugin.inPass(0, StyleCalc.RANGED, StyleCalc.MELEE));
+		assertTrue(CombatCheckPlugin.inPass(1, StyleCalc.RANGED, StyleCalc.MELEE));
+		assertTrue(CombatCheckPlugin.inPass(1, StyleCalc.MAGIC, StyleCalc.MELEE));
+		assertFalse(CombatCheckPlugin.inPass(1, StyleCalc.MELEE, StyleCalc.MELEE));
+	}
+
+	/**
 	 * Hard case 13 and the rule of the line: the best weapon of the bank over what is worn, when it deals at
 	 * least the minimum more; worked out again only when the monster, what is worn or the bank changes, and quick with 60
 	 * weapons in the bank.
@@ -545,12 +609,15 @@ public class FracturedArchiveTest
 		StyleData data = new StyleData();
 		assertEquals(0, defenceAfter(data, 16665, everything()));
 		assertEquals(0, defenceAfter(data, 16641, everything()));
-		// The Blade (Ocellus's second phase) and the Dagon'hai have no numbers and no row: no floor either
-		for (int id : new int[]{16676, 16643, 16644, 16645, 16646, 16647, 16648})
+		// the Dagon'hai, each of the six ids: Defence 100 to 0
+		for (int id : new int[]{16643, 16644, 16645, 16646, 16647, 16648})
 		{
-			assertEquals(0, DefenceDrains.floor(id, 200));
+			assertEquals(0, DefenceDrains.floor(id, 100));
+			assertEquals("drained to 0: " + id, 0, defenceAfter(data, id, everything()));
 		}
-		assertNull(data.monster(16676));
+		// The Blade (Ocellus's second phase, the wiki's "Phase 2" since 2026-11-01): Defence 250 to 0, no floor
+		assertEquals(0, DefenceDrains.floor(16676, 250));
+		assertEquals(0, defenceAfter(data, 16676, everything()));
 	}
 
 	/**
@@ -720,9 +787,9 @@ public class FracturedArchiveTest
 
 	/**
 	 * The hitpoints by the size of the team (the OSRS Wiki's tables, each boss's "Hitpoints", 2026-10-26), for when the
-	 * boss health bar does not show the monster fought: the bar wins where it does. A solo raid as a duo, the base;
-	 * more than 8 as 8; no team, no table (Moia, The Blade) or a monster outside the raid: nothing. Every number is the
-	 * rule measured in recorded fights: the base x 1.45 for 3 and 0.42 more for each player after, to the nearest ten,
+	 * boss health bar does not show the monster fought: the bar wins where it does. A solo raid as a duo, the base; more
+	 * than 8 as 8; no team, no table (the Dagon'hai, The Blade) or a monster outside the raid: nothing. Every number is the rule
+	 * measured in recorded fights: the base x 1.45 for 3 and 0.42 more for each player after, to the nearest ten,
 	 * the two the wiki leaves empty (Dreadnoth with 7, Ezekiel with 8) included.
 	 */
 	@Test
@@ -743,7 +810,15 @@ public class FracturedArchiveTest
 		assertEquals(4860, ArchiveScaling.hitpoints(16684, 4));
 		assertEquals(4680, ArchiveScaling.hitpoints(16674, 4));
 		assertEquals(16430, ArchiveScaling.hitpoints(16677, 7));
-		for (int id : new int[]{16667, 16675, 16676, 16643, 8061})
+		// Moia by the rule from her measured base: 1,900 in a duo, 2,760 in a trio (recordings of 2026-10-31)
+		int moia = 1900;
+		for (int team = 1; team <= 8; team++)
+		{
+			int percent = team <= 2 ? 100 : 145 + 42 * (team - 3);
+			assertEquals("Moia with " + team, ((moia * percent + 500) / 1000) * 10, ArchiveScaling.hitpoints(16667, team));
+		}
+		assertEquals(2760, ArchiveScaling.hitpoints(16667, 3));
+		for (int id : new int[]{16675, 16676, 16643, 16645, 16647, 8061})
 		{
 			assertEquals("no table for " + id, 0, ArchiveScaling.hitpoints(id, 4));
 		}
@@ -771,7 +846,8 @@ public class FracturedArchiveTest
 		assertEquals(2166, CombatCheckPlugin.raidHitpoints(2166, 16640, 3));
 		assertEquals(3440, CombatCheckPlugin.raidHitpoints(0, 16640, 5));
 		assertEquals(0, CombatCheckPlugin.raidHitpoints(0, 16640, 0));
-		assertEquals(0, CombatCheckPlugin.raidHitpoints(0, 16667, 4));
+		assertEquals(3550, CombatCheckPlugin.raidHitpoints(0, 16667, 4));
+		assertEquals(0, CombatCheckPlugin.raidHitpoints(0, 16643, 4));
 		StyleData.Monster bork = data.monster(16640);
 		DefenceDrains.Levels full = MonsterLevels.scaled(bork, null, null, null);
 		assertEquals(3440, MonsterLevels.fromBar(bork, full, CombatCheckPlugin.raidHitpoints(0, 16640, 5)).hitpoints);

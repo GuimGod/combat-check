@@ -85,10 +85,15 @@ final class SpecEstimate
 		 */
 		final int hit;
 		final boolean tekton;
-		/** The tick after its hitsplat: when the Special Attack Counter's message of it would come. */
+		/**
+		 * The tick after its hitsplat: by then the Special Attack Counter's message of it has come (an Elder maul's on the
+		 * tick of the hitsplat, any other weapon's the tick after: CombatCheckPlugin.partyHitTick).
+		 */
 		final int tick;
+		/** The tick its hitsplat landed: the drains count it by this one, as a party member's message and the player's own. */
+		final int hitTick;
 
-		Landed(int playerId, int npcIndex, Object npc, SpecialWeapon weapon, int hit, boolean tekton, int tick)
+		Landed(int playerId, int npcIndex, Object npc, SpecialWeapon weapon, int hit, boolean tekton, int hitTick)
 		{
 			this.playerId = playerId;
 			this.npcIndex = npcIndex;
@@ -96,7 +101,8 @@ final class SpecEstimate
 			this.weapon = weapon;
 			this.hit = hit;
 			this.tekton = tekton;
-			this.tick = tick;
+			this.hitTick = hitTick;
+			this.tick = hitTick + 1;
 		}
 	}
 
@@ -414,7 +420,7 @@ final class SpecEstimate
 				boolean tektonMiss = p.weapon == SpecialWeapon.BANDOS_GODSWORD && p.tekton && p.hits.size() == 1;
 				if (damage > 0 || tektonMiss)
 				{
-					out.add(new Landed(p.playerId, p.npcIndex, p.npc, p.weapon, damage, p.tekton, p.hitTick + 1));
+					out.add(new Landed(p.playerId, p.npcIndex, p.npc, p.weapon, damage, p.tekton, p.hitTick));
 				}
 				continue;
 			}
@@ -422,7 +428,7 @@ final class SpecEstimate
 			int landed = (int) Math.max(0, p.splats - zeros);
 			if (landed > 0 || (allMissed && p.tekton && missLowers(p.weapon)))
 			{
-				out.add(new Landed(p.playerId, p.npcIndex, p.npc, p.weapon, landed, p.tekton, p.hitTick + 1));
+				out.add(new Landed(p.playerId, p.npcIndex, p.npc, p.weapon, landed, p.tekton, p.hitTick));
 			}
 		}
 		return out;

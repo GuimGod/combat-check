@@ -26,7 +26,7 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "styleReminder",
 		name = "Combat check",
-		description = "Point at the best melee style of the weapon in your hand against the monster you are fighting. Off: nothing about attack styles is shown",
+		description = "Point at the best melee style of the weapon in your hand against the monster you are fighting (the Obligator's Thrust counted on the monsters behind it too). Off: nothing about attack styles is shown",
 		position = 1,
 		section = master
 	)
@@ -282,7 +282,7 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "prayerLeftOn",
 		name = "Prayer left on reminder",
-		description = "Out of combat, remind you that a prayer is still on and draining. Preserve, Rapid Heal and Rapid Restore are left alone",
+		description = "Out of combat, remind you that a prayer is still on and draining. Preserve, Rapid Heal and Rapid Restore are left alone. A hit of yours on a monster, or an attack on you, is combat for 6 seconds (a stunned monster: the game shows no target)",
 		position = 9,
 		section = master
 	)
@@ -420,6 +420,103 @@ public interface CombatCheckConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		keyName = "specExplosions",
+		name = "Spec in Ocellus's explosions",
+		description = "After you use a damage special attack on Ocellus's last stage while its explosions go off on the "
+			+ "floor, where it takes half the damage, a few seconds of \"Spec in the explosions: half damage\". Off by default",
+		position = 19,
+		section = master
+	)
+	default boolean specExplosions()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "specUnused",
+		name = "Spec bar left unused",
+		description = "In the Fractured Archive, with a melee weapon in hand against a boss melee reaches and the Crimson "
+			+ "kisten in your inventory: your special attack bar at 50% or more for 30 seconds without a special attack "
+			+ "(\"Spec 70% unused\", with the kisten's icon)",
+		position = 21,
+		section = master
+	)
+	default boolean specUnused()
+	{
+		return true;
+	}
+
+	@ConfigSection(
+		name = "Elemental magic",
+		description = "What adds to your fire, water, earth and air spells and is not on the items: ticked on its own when "
+			+ "the game says so, and you can tick it yourself",
+		position = 15,
+		closedByDefault = true
+	)
+	String elemental = "elemental";
+
+	@ConfigItem(
+		keyName = "fragmentFire",
+		name = "Fragment of burning fire",
+		description = "You broke it (the Fractured Archive): fire spells have 2 more on their base max hit, everywhere",
+		position = 1,
+		section = elemental
+	)
+	default boolean fragmentFire()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "fragmentWater",
+		name = "Fragment of deep water",
+		description = "You broke it (the Fractured Archive): water spells have 2 more on their base max hit, everywhere",
+		position = 2,
+		section = elemental
+	)
+	default boolean fragmentWater()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "fragmentEarth",
+		name = "Fragment of living earth",
+		description = "You broke it (the Fractured Archive): earth spells have 2 more on their base max hit, everywhere",
+		position = 3,
+		section = elemental
+	)
+	default boolean fragmentEarth()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "fragmentAir",
+		name = "Fragment of whispering wind",
+		description = "You broke it (the Fractured Archive): air spells have 2 more on their base max hit, everywhere",
+		position = 4,
+		section = elemental
+	)
+	default boolean fragmentAir()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "searingPages",
+		name = "Tome of Fire: searing pages",
+		description = "Your Tome of Fire is charged with searing pages: a fire spell's least hit is a tenth of its max hit. "
+			+ "Ticked or unticked when the game says which pages you charged it with or when you check it",
+		position = 5,
+		section = elemental
+	)
+	default boolean searingPages()
+	{
+		return false;
+	}
+
 	@ConfigSection(
 		name = "Gear switch",
 		description = "The pieces that go with the weapon in your hand and are still in your inventory",
@@ -430,7 +527,7 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "weaponNotice",
 		name = "Better weapon in the inventory",
-		description = "When a weapon you are carrying, with the pieces that go with it, would deal much more to the monster you are fighting than what you have on, show its icon and how much more. Only weapons and monsters the plugin can work out; see the README",
+		description = "When a weapon you are carrying, with the pieces that go with it, would deal much more to the monster you are fighting than what you have on, show its icon and how much more. Ocellus out of melee's reach: the best ranged or magic weapon, at once. Only weapons and monsters the plugin can work out; see the README",
 		position = 4,
 		section = master
 	)

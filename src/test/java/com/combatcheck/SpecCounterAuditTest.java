@@ -286,7 +286,7 @@ public class SpecCounterAuditTest
 		assertEquals(Integer.valueOf(2), CombatCheckPlugin.landedHits(Arrays.asList(31, 12), 2));
 		assertEquals(Integer.valueOf(1), CombatCheckPlugin.landedHits(Arrays.asList(31, 0), 2));
 		assertEquals(Integer.valueOf(0), CombatCheckPlugin.landedHits(Arrays.asList(0, 0), 2));
-		// a thrall's hitsplat first on the same tick: the weapon's two come last
+		// a thrall's hitsplat on the same tick comes after the weapon's two (a delayed hit's come first)
 		assertEquals(Integer.valueOf(1), CombatCheckPlugin.landedHits(Arrays.asList(4, 0, 25), 2));
 		assertNull(CombatCheckPlugin.landedHits(Collections.singletonList(25), 2));
 		assertEquals(2, CombatCheckPlugin.specialHits(ItemID.TONALZTICS_OF_RALOS_CHARGED));
@@ -379,8 +379,8 @@ public class SpecCounterAuditTest
 	}
 
 	/**
-	 * The message before the estimate is decided (the Special Attack Counter sends an Elder maul's on the tick of the
-	 * attack, before its hit): nothing is estimated, one maul; and the player is never estimated again.
+	 * The message before the estimate is decided (an Elder maul's comes on the tick of its hit, before that tick's
+	 * hitsplats are read): nothing is estimated, one maul; and the player is never estimated again.
 	 */
 	@Test
 	public void theMessageBeforeTheEstimate()
@@ -473,30 +473,32 @@ public class SpecCounterAuditTest
 	}
 
 	/**
-	 * In the order the hits landed: an Elder maul's message comes on the tick of the attack, 2 ticks before its hit, so a
-	 * godsword landing in between is counted first (Xarpus: godsword 50 then maul = 130, not 113); one landing after it,
-	 * after it. The player's own Elder maul goes by the tick of its hit too (CombatCheckPlugin.landSpecialAttack).
+	 * In the order the hits landed: an Elder maul's message comes on the tick of its hit, any other weapon's the tick after
+	 * its hit (measured 2026-11-02: maul 77 of 77 two ticks after the animation, Ralos 116 of 118 three), so a godsword
+	 * landing before an Elder maul's hit is counted first, though both messages come on the same tick (Xarpus: godsword 50
+	 * then maul = 130, not 113); one landing after it, after it. The player's own goes by the tick of its hit too
+	 * (CombatCheckPlugin.landSpecialAttack).
 	 */
 	@Test
 	public void theOrderTheHitsLanded()
 	{
-		assertEquals(102, CombatCheckPlugin.partyHitTick(SpecialWeapon.ELDER_MAUL, 100));
-		assertEquals(101, CombatCheckPlugin.partyHitTick(SpecialWeapon.BANDOS_GODSWORD, 101));
+		assertEquals(102, CombatCheckPlugin.partyHitTick(SpecialWeapon.ELDER_MAUL, 102));
+		assertEquals(101, CombatCheckPlugin.partyHitTick(SpecialWeapon.BANDOS_GODSWORD, 102));
 		SpecEstimate e = new SpecEstimate();
 		DrainTracker between = new DrainTracker();
-		// maul attack on 100 (message 100, hit 102), godsword hit on 101
-		message(e, between, 7, SpecialWeapon.ELDER_MAUL, 1, 100);
-		message(e, between, 8, SpecialWeapon.BANDOS_GODSWORD, 50, 101);
+		// maul attack on 100 (hit and message 102), godsword hit on 101 (message 102), the maul's message first
+		message(e, between, 7, SpecialWeapon.ELDER_MAUL, 1, 102);
+		message(e, between, 8, SpecialWeapon.BANDOS_GODSWORD, 50, 102);
 		assertEquals(130, xarpus(between));
 		DrainTracker after = new DrainTracker();
-		message(e, after, 7, SpecialWeapon.ELDER_MAUL, 1, 100);
-		message(e, after, 8, SpecialWeapon.BANDOS_GODSWORD, 50, 103);
+		message(e, after, 7, SpecialWeapon.ELDER_MAUL, 1, 102);
+		message(e, after, 8, SpecialWeapon.BANDOS_GODSWORD, 50, 104);
 		assertEquals(113, xarpus(after));
 		// two on the same tick: in the order they came (the game's order on a tick is the players' processing order, which
 		// the client does not show); two hammers differ by the rounding only
 		DrainTracker same = new DrainTracker();
 		message(e, same, 7, SpecialWeapon.DRAGON_WARHAMMER, 1, 101);
-		message(e, same, 8, SpecialWeapon.ELDER_MAUL, 1, 99);
+		message(e, same, 8, SpecialWeapon.ELDER_MAUL, 1, 100);
 		assertEquals(2, same.counted(INDEX, NPC));
 		assertEquals(defence(250, 220, "dwh", "maul"), xarpus(same));
 	}

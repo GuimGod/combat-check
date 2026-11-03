@@ -544,4 +544,266 @@ public class ArchiveWeaponsTest
 		assertTrue(SetCalc.plain(obligator(data)));
 		assertFalse(SetEffects.isSpecialAttackWeapon("Obligator"));
 	}
+
+	/**
+	 * The Thrust reaches the monsters on the tile of the one fought nearest the player and on the two tiles behind it, two
+	 * at most, nearest first. The cases are recorded fights (2026-10-27 and 28): in the second phase of Xarth (south-west
+	 * tile 4190,5534), the player at 4188,5536 on a Corpse at 4189,5536 hit Xarth too; on Xarth from the next tile, a
+	 * Corpse on the tile behind him was not hit; five Jellies on one tile, three hit.
+	 */
+	@Test
+	public void theThrustReachesTheMonstersOnOrBehindTheOneFought()
+	{
+		int[] xarth = {4190, 5534, 3};
+		// a Corpse fought with Xarth on the tile behind it, from the west and from the north
+		assertEquals(java.util.Arrays.asList(0), ArchiveItems.obligatorReach(4188, 5536, 4189, 5536, 1,
+			java.util.Arrays.asList(xarth)));
+		assertEquals(java.util.Arrays.asList(0), ArchiveItems.obligatorReach(4192, 5538, 4192, 5537, 1,
+			java.util.Arrays.asList(xarth)));
+		// nothing else around: the one fought only
+		assertTrue(ArchiveItems.obligatorReach(4188, 5536, 4189, 5536, 1, java.util.Collections.emptyList()).isEmpty());
+		// on its tile, one behind and two behind: hit; three behind, or beside the line: not
+		assertEquals(java.util.Arrays.asList(0, 1), ArchiveItems.obligatorReach(0, 0, 1, 0, 1,
+			java.util.Arrays.asList(new int[]{1, 0, 1}, new int[]{2, 0, 1})));
+		assertEquals(java.util.Arrays.asList(0), ArchiveItems.obligatorReach(0, 0, 1, 0, 1,
+			java.util.Arrays.asList(new int[]{3, 0, 1})));
+		assertTrue(ArchiveItems.obligatorReach(0, 0, 1, 0, 1, java.util.Arrays.asList(new int[]{4, 0, 1},
+			new int[]{2, 1, 1}, new int[]{1, -1, 1})).isEmpty());
+		// nearest first, whatever the order they come in
+		assertEquals(java.util.Arrays.asList(1, 0), ArchiveItems.obligatorReach(0, 0, 1, 0, 1,
+			java.util.Arrays.asList(new int[]{3, 0, 1}, new int[]{1, 0, 1})));
+		// two at most: five Jellies on the tile fought, the one fought and two more
+		java.util.List<int[]> jellies = new java.util.ArrayList<>();
+		for (int i = 0; i < 4; i++)
+		{
+			jellies.add(new int[]{4195, 5661, 1});
+		}
+		assertEquals(java.util.Arrays.asList(0, 1), ArchiveItems.obligatorReach(4195, 5660, 4195, 5661, 1, jellies));
+		// Xarth fought from the tile next to him: his three tiles are the reach, a Corpse behind him or beside him is not hit
+		assertTrue(ArchiveItems.obligatorReach(4189, 5536, 4190, 5534, 3, java.util.Arrays.asList(
+			new int[]{4193, 5536, 1}, new int[]{4191, 5537, 1}, new int[]{4189, 5537, 1})).isEmpty());
+		// a monster standing on Xarth's line inside his tiles is: a 2x2 fought from the next tile, one behind it is too
+		assertEquals(java.util.Arrays.asList(0), ArchiveItems.obligatorReach(4189, 5536, 4190, 5534, 3,
+			java.util.Arrays.asList(new int[]{4192, 5536, 1})));
+		assertEquals(java.util.Arrays.asList(0), ArchiveItems.obligatorReach(0, 0, 1, 0, 2,
+			java.util.Arrays.asList(new int[]{3, 0, 1})));
+		// the player on the monster's tiles: no line, the one fought only
+		assertTrue(ArchiveItems.obligatorReach(4191, 5535, 4190, 5534, 3, java.util.Arrays.asList(
+			new int[]{4191, 5535, 1})).isEmpty());
+	}
+
+	/**
+	 * The attack style notice with the Obligator counts the Thrust on the monsters it reaches too, each by its own rules,
+	 * and the Smash on the one fought alone. A Corpse of Xarth (Defence 100 in every melee style: two rolls, no size) on its
+	 * own: the Smash deals more per tick. With Xarth on the tile behind it (4 rolls, 40% more): the Thrust, by far.
+	 */
+	@Test
+	public void theStyleNoticeCountsTheThrustOnTheMonstersItReaches() throws IOException
+	{
+		StyleData data = new StyleData();
+		SetCalc.Player p = melee(true);
+		SetCalc.Loadout l = obligator(data);
+		java.util.List<StyleData.Style> styles = l.styles;
+		StyleData.Style thrust = styles.get(1);
+		StyleData.Style smash = styles.get(2);
+		SetCalc.Target corpse = data.monster(16687).target();
+		SetCalc.Target xarth = data.monster(16684).target();
+		assertEquals(1, corpse.size);
+		assertEquals(2, ArchiveItems.obligatorRolls(corpse.stab, corpse.slash, corpse.crush));
+		java.util.List<SetCalc.Target> none = java.util.Collections.emptyList();
+		java.util.List<SetCalc.Target> behind = java.util.Collections.singletonList(xarth);
+		// alone: the Smash
+		assertEquals(SetCalc.styleFigure(l, p, corpse, thrust), SetCalc.styleFigure(l, p, corpse, none, thrust), 0);
+		assertTrue(SetCalc.styleFigure(l, p, corpse, none, smash) > SetCalc.styleFigure(l, p, corpse, none, thrust));
+		// Xarth behind: the Thrust is the sum on the two, the Smash still the Corpse's alone
+		double both = SetCalc.styleFigure(l, p, corpse, behind, thrust);
+		assertEquals(SetCalc.styleFigure(l, p, corpse, thrust) + SetCalc.styleFigure(l, p, xarth, thrust), both, 1e-12);
+		assertEquals(SetCalc.styleFigure(l, p, corpse, smash), SetCalc.styleFigure(l, p, corpse, behind, smash), 0);
+		assertTrue(both > 2 * SetCalc.styleFigure(l, p, corpse, behind, smash));
+		// the doused Corpse (-20 in every melee style), its own row: the Smash on it alone too
+		SetCalc.Target doused = data.monster(16688).target();
+		assertEquals(-20, doused.crush);
+		assertTrue(SetCalc.styleFigure(l, p, doused, none, smash) > SetCalc.styleFigure(l, p, doused, none, thrust));
+	}
+
+	/**
+	 * Ocellus out of melee's reach, as anyone sees it: while he flies from tile to tile, a tick he stands still in the middle of it included; not the ticks after he
+	 * stops, not after "Death... awaits..." (no one sees those), not after the jump into the middle, nor another monster.
+	 */
+	@Test
+	public void ocellusOutOfMeleeReachIsReadFromTheGame()
+	{
+		OcellusReach reach = new OcellusReach();
+		Object ocellus = new Object();
+		assertFalse(reach.outOfReach(ocellus, 100));
+		reach.at(ocellus, OcellusReach.FIRST_ANOTHER, 4120, 5678, 100);
+		assertFalse("standing at a corner", reach.outOfReach(ocellus, 100));
+		reach.at(ocellus, OcellusReach.FIRST_ANOTHER, 4120, 5677, 101);
+		assertTrue("flying", reach.outOfReach(ocellus, 101));
+		reach.at(ocellus, OcellusReach.FIRST_ANOTHER, 4120, 5677, 102);
+		assertTrue("a tick still in the middle of it", reach.outOfReach(ocellus, 102));
+		reach.at(ocellus, OcellusReach.FIRST_ANOTHER, 4120, 5676, 103);
+		assertTrue(reach.outOfReach(ocellus, 103));
+		reach.at(ocellus, OcellusReach.FIRST_ANOTHER, 4120, 5676, 104);
+		reach.at(ocellus, OcellusReach.FIRST_ANOTHER, 4120, 5676, 105);
+		assertFalse("stopped at the corner: what the game does then is not seen", reach.outOfReach(ocellus, 105));
+		// the jump into the middle, six tiles in one tick, is no walk
+		reach.at(ocellus, OcellusReach.FIRST_ANOTHER, 4126, 5672, 120);
+		assertFalse(reach.outOfReach(ocellus, 120));
+		assertFalse(reach.outOfReach(ocellus, 121));
+		// another monster that walks, or Ocellus's third phase, is never out of reach this way
+		Object bork = new Object();
+		reach.at(bork, 16640, 4187, 5601, 300);
+		reach.at(bork, 16640, 4188, 5601, 301);
+		assertFalse(reach.outOfReach(bork, 301));
+		Object third = new Object();
+		reach.at(third, 16677, 4120, 5678, 300);
+		reach.at(third, 16677, 4120, 5677, 301);
+		assertFalse(reach.outOfReach(third, 301));
+		// one seen again after a long while (another raid) starts over
+		reach.at(ocellus, OcellusReach.FIRST, 4120, 5677, 600);
+		reach.at(new Object(), OcellusReach.FIRST, 4000, 5000, 900);
+		reach.at(ocellus, OcellusReach.FIRST, 4120, 5678, 1000);
+		assertFalse(reach.outOfReach(ocellus, 1000));
+	}
+
+	/**
+	 * Out of reach, melee deals Ocellus nothing ("M") and a ranged weapon "can hit": the weapon notice points at it (the
+	 * strongest of the ones that can, not the first in the inventory), and never at a melee one.
+	 */
+	@Test
+	public void outOfReachOcellusIsPointedAtARangedWeapon() throws IOException
+	{
+		StyleData data = new StyleData();
+		SetCalc.Target near = data.monster(16674).target();
+		SetCalc.Target flying = data.monster(16674).target();
+		flying.immune = (flying.immune == null ? "" : flying.immune) + "M";
+		SetCalc.Loadout obligator = obligator(data);
+		SetCalc.Player meleePlayer = melee(true);
+		assertTrue(SetCalc.perTick(obligator, meleePlayer, near, false) > 0);
+		assertEquals(0, SetCalc.perTick(obligator, meleePlayer, flying, false), 0);
+		SetCalc.Loadout crossbows = ascension("Diamond dragon bolts (e)", 122);
+		double ranged = SetCalc.perTick(crossbows, rigour(), flying, false);
+		assertEquals(SetCalc.perTick(crossbows, rigour(), near, false), ranged, 0);
+		assertTrue(ranged > 0);
+
+		// nothing lands with the melee weapon in hand: every ranged one "can hit", and the strongest is the one named
+		CombatCheckPlugin.WeaponAdvice first = new CombatCheckPlugin.WeaponAdvice();
+		first.gain = Double.POSITIVE_INFINITY;
+		first.figure = ranged / 2;
+		assertTrue(CombatCheckPlugin.beats(Double.POSITIVE_INFINITY, ranged, first));
+		assertFalse(CombatCheckPlugin.beats(Double.POSITIVE_INFINITY, ranged / 4, first));
+		assertTrue(CombatCheckPlugin.beats(Double.POSITIVE_INFINITY, ranged, null));
+		// a finite gain still goes by the gain, as before
+		CombatCheckPlugin.WeaponAdvice some = new CombatCheckPlugin.WeaponAdvice();
+		some.gain = 10;
+		some.figure = 100;
+		assertTrue(CombatCheckPlugin.beats(12, 1, some));
+		assertFalse(CombatCheckPlugin.beats(8, 1000, some));
+	}
+
+	/**
+	 * Bork stunned (recorded 2026-10-29 07:43, ticks 40117 to 40134): the player hits him every 5 ticks while the game
+	 * shows no target of his and Bork none either. "Prayer still on" (10 ticks out of combat, the setting) came on the 10th tick
+	 * of it; his own hitsplats now keep him in the fight.
+	 */
+	@Test
+	public void hittingAStunnedMonsterIsAFight()
+	{
+		int[] ownHits = {40118, 40123, 40128, 40133};
+		int before = 0;
+		int now = 0;
+		boolean shownBefore = false;
+		boolean shownNow = false;
+		int ownHit = Integer.MIN_VALUE / 2;
+		for (int tick = 40117; tick <= 40134; tick++)
+		{
+			for (int h : ownHits)
+			{
+				ownHit = h == tick ? tick : ownHit;
+			}
+			before++;
+			now = CombatCheckPlugin.hitLately(tick, ownHit, Integer.MIN_VALUE / 2) ? 0 : now + 1;
+			shownBefore |= CombatCheckPlugin.leftOn(true, before, 10);
+			shownNow |= CombatCheckPlugin.leftOn(true, now, 10);
+		}
+		assertTrue("the old reading: no target, no attacker", shownBefore);
+		assertFalse(shownNow);
+		// an attack on the player is a fight too, for the same ticks; after them the reminder may come as before
+		assertTrue(CombatCheckPlugin.hitLately(110, Integer.MIN_VALUE / 2, 100));
+		assertFalse(CombatCheckPlugin.hitLately(111, Integer.MIN_VALUE / 2, 100));
+		assertFalse(CombatCheckPlugin.hitLately(111, 100, Integer.MIN_VALUE / 2));
+	}
+
+	/**
+	 * The Archive Guardian in flight (16659) is out of melee's reach but for a polearm (the wiki), on the ground (16660) not: no attack style notice for the Obligator in flight, and the
+	 * weapon notice may name a ranged or magic weapon though he changes form. Ocellus flying the same ("M").
+	 */
+	@Test
+	public void meleeThatDoesNotReachIsNotPointedAt() throws IOException
+	{
+		StyleData data = new StyleData();
+		String flying = data.monster(16659).target().immune;
+		String ground = data.monster(16660).target().immune;
+		assertTrue(CombatCheckPlugin.meleeOut(flying));
+		assertFalse(CombatCheckPlugin.meleeReaches(flying, "Extending Chain Mace"));
+		assertFalse(CombatCheckPlugin.meleeReaches(flying, "Scythe"));
+		assertTrue("a halberd reaches it", CombatCheckPlugin.meleeReaches(flying, "Polearm"));
+		assertFalse(CombatCheckPlugin.meleeOut(ground));
+		assertTrue(CombatCheckPlugin.meleeReaches(ground, "Extending Chain Mace"));
+		assertEquals(0, SetCalc.perTick(obligator(data), melee(true), data.monster(16659).target(), false), 0);
+		assertTrue(SetCalc.perTick(obligator(data), melee(true), data.monster(16660).target(), false) > 0);
+		assertTrue(CombatCheckPlugin.meleeOut("M"));
+		assertFalse(CombatCheckPlugin.meleeReaches("M", "Polearm"));
+		assertFalse(CombatCheckPlugin.meleeOut(""));
+		assertTrue(CombatCheckPlugin.meleeReaches(null, "Scythe"));
+	}
+
+	/**
+	 * Moia: out of melee's reach on the four
+	 * tiles outside her arena, in reach in the middle (her south-west tiles recorded in 13 fights of 2026-10-20 to 31, read
+	 * by her centre). Outside, melee deals her nothing ("M", as Ocellus flying); in the middle her row as it is.
+	 */
+	@Test
+	public void moiaIsInMeleesReachOnlyInTheMiddle() throws IOException
+	{
+		// the centre is the south-west tile plus one: 4055,5662, 4062,5669, 4069,5662 and 4062,5655 outside, 4062,5662
+		// in the middle
+		int[][] outside = {{4056, 5663}, {4063, 5670}, {4070, 5663}, {4063, 5656}};
+		for (int[] o : outside)
+		{
+			assertTrue(o[0] + "," + o[1], MoiaReach.outOfReach(o[0], o[1]));
+		}
+		assertFalse(MoiaReach.outOfReach(4063, 5663));
+		assertFalse(MoiaReach.outOfReach(4064, 5662));
+
+		StyleData data = new StyleData();
+		SetCalc.Target middle = data.monster(MoiaReach.MOIA).target();
+		assertTrue(CombatCheckPlugin.meleeReaches(middle.immune, "Extending Chain Mace"));
+		assertTrue(SetCalc.perTick(obligator(data), melee(true), middle, false) > 0);
+		SetCalc.Target away = data.monster(MoiaReach.MOIA).target();
+		away.immune = (away.immune == null ? "" : away.immune) + "M";
+		assertTrue(CombatCheckPlugin.meleeOut(away.immune));
+		assertFalse("not a halberd either", CombatCheckPlugin.meleeReaches(away.immune, "Polearm"));
+		assertEquals(0, SetCalc.perTick(obligator(data), melee(true), away, false), 0);
+		SetCalc.Loadout crossbows = ascension("Diamond dragon bolts (e)", 122);
+		assertEquals(SetCalc.perTick(crossbows, rigour(), middle, false), SetCalc.perTick(crossbows, rigour(), away, false), 0);
+	}
+
+	/**
+	 * The Dagon'hai (the Elder and the two Monks, each with its two ids) have rows: melee reaches them, and the notices
+	 * have a figure for each.
+	 */
+	@Test
+	public void theDagonhaiHaveAFigure() throws IOException
+	{
+		StyleData data = new StyleData();
+		for (int id : new int[]{16643, 16644, 16645, 16646, 16647, 16648})
+		{
+			SetCalc.Target t = data.monster(id).target();
+			assertTrue("melee reaches " + id, CombatCheckPlugin.meleeReaches(t.immune, "Extending Chain Mace"));
+			assertTrue("Obligator on " + id, SetCalc.perTick(obligator(data), melee(true), t, false) > 0);
+			assertTrue("crossbows on " + id, SetCalc.perTick(ascension("Diamond dragon bolts (e)", 122), rigour(), t, false) > 0);
+		}
+	}
 }
