@@ -70,7 +70,7 @@ public class HitsplatOrderTest
 	/**
 	 * A party member's Elder maul is counted on the tick its message comes, which is the tick its hit lands (77 of 77
 	 * messages 2 ticks after the animation); a Tonalztics of Ralos', or any other weapon's, the tick before its message (116
-	 * of 118 Ralos messages 3 ticks after the animation, the hit 2 after). The Blade of 19:52: Stylei's maul (animation
+	 * of 118 Ralos messages 3 ticks after the animation, the hit 2 after). The Blade, recorded: a party member's maul (animation
 	 * 13368, message and hit 13370) then the player's own Ralos (animation 13369, hit 13371, [0, 14, 2], 1 hit): Defence 136
 	 * as in the game; with the maul counted 2 ticks after its message it went after the Ralos, 145.
 	 */
