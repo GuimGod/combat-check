@@ -1018,7 +1018,10 @@ public class CombatCheckPlugin extends Plugin
 		List<Integer> weapons = new ArrayList<>();
 		for (Item item : event.getItemContainer().getItems())
 		{
-			if (item == null || item.getId() <= 0)
+			// a placeholder is no weapon in the bank, though RuneLite's canonicalize turns it into its item: a weapon taken
+			// out left one behind and was named as a weapon of the bank while it was in the inventory
+			if (item == null || item.getId() <= 0 || BankHint.placeholder(item.getQuantity(),
+				itemManager.getItemComposition(item.getId()).getPlaceholderTemplateId()))
 			{
 				continue;
 			}
@@ -1043,7 +1046,7 @@ public class CombatCheckPlugin extends Plugin
 	 * setting changes.
 	 */
 	private WeaponAdvice bankWeaponNow(StyleData.Monster monster, ItemContainer worn, int weaponId, SwitchSet.Piece[] on,
-		boolean sameClassOnly)
+		List<SwitchSet.Piece> carried, boolean sameClassOnly)
 	{
 		List<Integer> weapons = bank.weapons();
 		if (!config.bankWeapon() || monster == null || weapons == null
@@ -1059,9 +1062,11 @@ public class CombatCheckPlugin extends Plugin
 		{
 			wornIds.add(p == null ? 0 : p.itemId);
 		}
+		// a weapon in the inventory is not a weapon of the bank, though the bank last seen had it: the weapon notice names it
+		List<Integer> carriedIds = BankHint.carriedWeapons(carried);
 		double minimum = minimumGain(config.bankMinimumGain());
-		List<Object> key = java.util.Arrays.asList(monster.id, npc == null ? -1 : npc.getIndex(), wornIds, bank.version(),
-			minimum, sameClassOnly);
+		List<Object> key = java.util.Arrays.asList(monster.id, npc == null ? -1 : npc.getIndex(), wornIds, carriedIds,
+			bank.version(), minimum, sameClassOnly);
 		if (!bank.changed(key))
 		{
 			return advice(bank.last());
@@ -1085,7 +1090,8 @@ public class CombatCheckPlugin extends Plugin
 					SetCalc.Loadout bare = new SetCalc.Loadout();
 					bare.category = category;
 					String cls = SetCalc.combatClass(bare);
-					if (id == weaponId || cls == null || sameClassOnly && !cls.equals(classNow) || !classAllowed(npcId, cls))
+					if (id == weaponId || carriedIds.contains(id) || cls == null || sameClassOnly && !cls.equals(classNow)
+						|| !classAllowed(npcId, cls))
 					{
 						continue;
 					}
@@ -2628,7 +2634,8 @@ public class CombatCheckPlugin extends Plugin
 		boolean wait = !weaponTimer.due(tick, better != null, handOut ? 0 : WEAPON_DELAY_FLOOR);
 		weaponAdvice = wait ? null : better;
 		// 3a. the best weapon of the bank last seen open, outside the raids
-		bankAdvice = bankWeaponNow(monster, worn, weaponId, on, monster != null && changesForm(monster.name) && !meleeOut);
+		bankAdvice = bankWeaponNow(monster, worn, weaponId, on, carried,
+			monster != null && changesForm(monster.name) && !meleeOut);
 
 		// 3b. the other of ruby and diamond bolts (e), when it deals more at the monster's current health
 		boltAdvice = monster != null && targetTicks <= afterAttackTicks(config.boltsAfterAttack()) && config.boltReminder() && !boltPluginOn()
@@ -3417,8 +3424,8 @@ public class CombatCheckPlugin extends Plugin
 		{
 			return slot;
 		}
-		return quiverShoots(category, weapon == null ? null : weapon.name, slot == null ? null : slot.name, quiverAmmo.name)
-			? quiverAmmo : slot;
+		return quiverShoots(category, weapon == null ? 0 : weapon.itemId, weapon == null ? null : weapon.name,
+			slot == null ? 0 : slot.itemId, slot == null ? null : slot.name, quiverAmmo.itemId, quiverAmmo.name) ? quiverAmmo : slot;
 	}
 
 	/**
@@ -3442,11 +3449,29 @@ public class CombatCheckPlugin extends Plugin
 
 	private static final int CAPE_SLOT = EquipmentInventorySlot.CAPE.getSlotIdx();
 
-	/** Whether a weapon of this category shoots the quiver's ammunition instead of what is in the slot. */
+	/** {@link #quiverShoots(String, int, String, int, String, int, String)} by the names alone. */
 	static boolean quiverShoots(String category, String weaponName, String slotName, String quiverName)
 	{
-		String kind = Weapons.ammoKind(category, weaponName);
-		return kind != null && Weapons.has(quiverName, kind) && !Weapons.has(slotName, kind);
+		return quiverShoots(category, 0, weaponName, 0, slotName, 0, quiverName);
+	}
+
+	/**
+	 * Whether the weapon shoots the quiver's ammunition instead of what is in the slot: it fires the quiver's and not the
+	 * slot's ({@link Weapons#canFire}, by the item where the calculator lists it). Ammunition of the right word that the
+	 * weapon cannot fire does not hold the quiver back: the Ascension crossbows with Ruby dragon bolts (e) in the slot
+	 * shoot the Diamond ascension bolts (e) of the quiver (seen in the game at the Leviathan: a shot every 2 ticks on
+	 * Rapid with the rubies on; before, the crossbows were counted with no bolts and the plugin pointed at the Zaryte
+	 * crossbow, +49%, and at the quiver's "Diamond +73%").
+	 */
+	static boolean quiverShoots(String category, int weaponId, String weaponName, int slotId, String slotName, int quiverId,
+		String quiverName)
+	{
+		if (Weapons.ammoKind(category, weaponName) == null || quiverName == null)
+		{
+			return false;
+		}
+		return Weapons.canFire(weaponId, category, weaponName, quiverId, quiverName)
+			&& (slotName == null || !Weapons.canFire(weaponId, category, weaponName, slotId, slotName));
 	}
 
 	/** The crossbow in hand fires these bolts (no ruby bolts in the Ascension crossbows, no Ascension bolts in another). */

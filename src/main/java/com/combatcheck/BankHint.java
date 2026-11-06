@@ -45,6 +45,32 @@ final class BankHint
 			|| monster.toa);
 	}
 
+	/**
+	 * The weapons among the carried pieces, by item. A weapon in the inventory is left out of the bank's line: it is a
+	 * switch the weapon notice already names, not a trip to the bank.
+	 */
+	static List<Integer> carriedWeapons(List<SwitchSet.Piece> carried)
+	{
+		List<Integer> ids = new ArrayList<>();
+		if (carried != null)
+		{
+			for (SwitchSet.Piece p : carried)
+			{
+				if (p != null && p.slot == SwitchSet.WEAPON && p.itemId > 0 && !ids.contains(p.itemId))
+				{
+					ids.add(p.itemId);
+				}
+			}
+		}
+		return ids;
+	}
+
+	/** True for a bank placeholder: none of it (the game shows it with 0) or the placeholder's own item. */
+	static boolean placeholder(int quantity, int placeholderTemplateId)
+	{
+		return quantity <= 0 || placeholderTemplateId != -1;
+	}
+
 	/** True for a weapon of the bank that may be counted: not one without its charges. */
 	static boolean usable(String weaponName)
 	{
