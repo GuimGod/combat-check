@@ -161,6 +161,27 @@ public class ElementalMagicTest
 	}
 
 	/**
+	 * The fragments stay with the player when the best prayer of another class is put on (withPrayerOf, withBestPrayer:
+	 * the weapon notice and the bank line compare a staff while a ranged prayer is on): the staff's figure is the one
+	 * with Augury and the fragment, not the one without it.
+	 */
+	@Test
+	public void theFragmentsStayWhenAnotherClassIsCompared() throws IOException
+	{
+		StyleData data = new StyleData();
+		SetCalc.Player ranging = rigour();
+		ranging.magic = 112;
+		ranging.prayerLevel = 99;
+		ranging.augury = true;
+		ranging.fragments.add("fire");
+		SetCalc.Player asMage = SetCalc.withPrayerOf(ranging, StyleCalc.MAGIC);
+		assertTrue(asMage.fragments.contains("fire"));
+		assertEquals(perSecond(harmonised(data), augury("fire"), dreadnoth(data, 125)),
+			perSecond(harmonised(data), asMage, dreadnoth(data, 125)), 1e-9);
+		assertTrue(SetCalc.withBestPrayer(ranging, StyleCalc.MELEE).fragments.contains("fire"));
+	}
+
+	/**
 	 * The tome of the spell's element counts only charged ("Tome of Fire (empty)" adds nothing; the item was renamed from
 	 * "Tome of fire" on 2026-08-19, both read), and the searing pages only in a charged Tome of Fire on a fire spell: the
 	 * least hit a tenth of the max before the tome's tenth (OSRS Wiki, Searing page).

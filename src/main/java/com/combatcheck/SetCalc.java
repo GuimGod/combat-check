@@ -582,6 +582,8 @@ final class SetCalc
 		q.augury = p.augury;
 		q.vigour = p.vigour;
 		q.mining = p.mining;
+		// the elemental fragments broken are the player's, whatever prayer is on: a spell keeps their 2
+		q.fragments.addAll(p.fragments);
 		int level = p.prayerLevel;
 		if (StyleCalc.MELEE.equals(combatClass))
 		{
