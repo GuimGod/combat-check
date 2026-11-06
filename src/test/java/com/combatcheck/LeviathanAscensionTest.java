@@ -63,6 +63,45 @@ public class LeviathanAscensionTest
 		assertFalse(CombatCheckPlugin.quiverShoots("Crossbow", "Ascension crossbows", null, null));
 	}
 
+	/**
+	 * Both directions of the pairing, by item and by name: the Ascension crossbows fire the ascension bolts and nothing
+	 * else; no other crossbow fires them. "Diamond ascension bolts (e)" is a diamond kind for the effect (halved with the
+	 * crossbows), but only the crossbows ever get it: the bolt notices and the quiver go by {@link Weapons#canFire}.
+	 */
+	@Test
+	public void ascensionBoltsGoWithTheAscensionCrossbowsOnly()
+	{
+		int crossbows = ArchiveItems.ASCENSION_CROSSBOWS;
+		int diamondAscension = ArchiveItems.DIAMOND_ASCENSION_BOLTS_E;
+		// the crossbows: their own bolts yes; ruby and diamond dragon bolts (e), ruby and diamond bolts (e) no
+		assertTrue(Weapons.canFire(crossbows, "Crossbow", "Ascension crossbows", diamondAscension, "Diamond ascension bolts (e)"));
+		for (Object[] gem : new Object[][]{{21944, "Ruby dragon bolts (e)"}, {21946, "Diamond dragon bolts (e)"},
+			{9242, "Ruby bolts (e)"}, {9243, "Diamond bolts (e)"}})
+		{
+			assertFalse("by item: " + gem[1], Weapons.canFire(crossbows, "Crossbow", "Ascension crossbows", (Integer) gem[0], (String) gem[1]));
+			assertFalse("by name: " + gem[1], Weapons.canFire(0, "Crossbow", "Ascension crossbows", 0, (String) gem[1]));
+			// and the Zaryte crossbow fires them
+			assertTrue(Weapons.canFire(ZARYTE_CROSSBOW, "Crossbow", "Zaryte crossbow", (Integer) gem[0], (String) gem[1]));
+		}
+		// the Zaryte crossbow and any other crossbow: no ascension bolts, by item or by name
+		assertFalse(Weapons.canFire(ZARYTE_CROSSBOW, "Crossbow", "Zaryte crossbow", diamondAscension, "Diamond ascension bolts (e)"));
+		assertFalse(Weapons.canFire(0, "Crossbow", "Zaryte crossbow", 0, "Diamond ascension bolts (e)"));
+		assertFalse(Weapons.canFire(0, "Crossbow", "Armadyl crossbow", 0, "Diamond ascension bolts (e)"));
+		// the name reads as diamond for the effect's figure, nothing more
+		assertEquals(SetCalc.DIAMOND, SetCalc.boltKind("Diamond ascension bolts (e)"));
+
+		// the quiver, the other way round: a Zaryte crossbow with the crossbows' bolts on shoots the quiver's rubies; the
+		// crossbows with their bolts on shoot those, whatever the quiver holds
+		SwitchSet.Piece rubies = piece(RUBY_DRAGON_BOLTS_E, "Ruby dragon bolts (e)", SwitchSet.AMMO);
+		SwitchSet.Piece diamonds = piece(diamondAscension, "Diamond ascension bolts (e)", SwitchSet.AMMO);
+		SwitchSet.Piece[] on = new SwitchSet.Piece[SwitchSet.SLOTS];
+		on[SwitchSet.WEAPON] = piece(ZARYTE_CROSSBOW, "Zaryte crossbow", SwitchSet.WEAPON);
+		on[SwitchSet.AMMO] = diamonds;
+		assertSame(rubies, CombatCheckPlugin.shotAmmo(on, "Crossbow", true, 6911, rubies));
+		on[SwitchSet.WEAPON] = piece(crossbows, "Ascension crossbows", SwitchSet.WEAPON);
+		assertSame(diamonds, CombatCheckPlugin.shotAmmo(on, "Crossbow", true, 6911, rubies));
+	}
+
 	/** The gear: Masori (f), Dizana's max cape, Necklace of rupture, Zaryte vambraces, Avernic treads (max), Lightbearer. */
 	private static int gearRanged()
 	{
