@@ -13,7 +13,8 @@ import org.junit.Test;
 
 /**
  * The "Defence left" line: the monster's Defence before the special attacks counted on it and the one the figures use
- * now, with how many were counted; not where the Defence cannot be lowered, nor with none counted.
+ * now (the special attacks are named under it, a row per weapon: DefenceRowsTest); not where the Defence cannot be
+ * lowered, nor with none counted.
  */
 public class DefenceLineTest
 {
@@ -21,15 +22,15 @@ public class DefenceLineTest
 	public void theLine()
 	{
 		CombatCheckConfig.Language en = CombatCheckConfig.Language.ENGLISH;
-		assertEquals("Def 246 -> 158 (3 specs)", CombatCheckPlugin.defenceText(en, 246, 158, 3, false));
-		assertEquals("Def 246 -> ~158 (3 specs)", CombatCheckPlugin.defenceText(en, 246, 158, 3, true));
-		assertEquals("Def 250 -> 162 (1 spec)", CombatCheckPlugin.defenceText(en, 250, 162, 1, false));
-		// every one missed: the Defence is whole, and the line says how many there were
-		assertEquals("Def 200 -> 200 (2 specs)", CombatCheckPlugin.defenceText(en, 200, 200, 2, false));
+		assertEquals("Def 246 -> 158", CombatCheckPlugin.defenceText(en, 246, 158, 3, false));
+		assertEquals("Def 246 -> ~158", CombatCheckPlugin.defenceText(en, 246, 158, 3, true));
+		assertEquals("Def 250 -> 162", CombatCheckPlugin.defenceText(en, 250, 162, 1, false));
+		// every one missed: the Defence is whole (the rows under it say how many there were)
+		assertEquals("Def 200 -> 200", CombatCheckPlugin.defenceText(en, 200, 200, 2, false));
 		assertNull(CombatCheckPlugin.defenceText(en, 250, 250, 0, false));
-		assertEquals("Def 246 -> 158 (3 specs)",
+		assertEquals("Def 246 -> 158",
 			CombatCheckPlugin.defenceText(CombatCheckConfig.Language.PORTUGUESE, 246, 158, 3, false));
-		assertEquals("Vert 246 -> 158 (3 Specs)",
+		assertEquals("Vert 246 -> 158",
 			CombatCheckPlugin.defenceText(CombatCheckConfig.Language.GERMAN, 246, 158, 3, false));
 	}
 
@@ -58,19 +59,19 @@ public class DefenceLineTest
 		DefenceDrains.Levels mauled = full.copy();
 		mauled.defence = 163;
 		// Xarpus after a maul: the Defence for melee and ranged; nothing for a staff, his Magic is whole
-		assertEquals("Def 250 -> 163 (1 spec)",
+		assertEquals("Def 250 -> 163",
 			CombatCheckPlugin.defenceTextFor(en, StyleCalc.MELEE, false, full, mauled, 1, false));
-		assertEquals("Def 250 -> 163 (1 spec)",
+		assertEquals("Def 250 -> 163",
 			CombatCheckPlugin.defenceTextFor(en, StyleCalc.RANGED, false, full, mauled, 1, false));
 		assertNull(CombatCheckPlugin.defenceTextFor(en, StyleCalc.MAGIC, false, full, mauled, 1, false));
 		// a monster whose magic defence is rolled with Defence (the Ice demon): the Defence line for magic too
-		assertEquals("Def 250 -> 163 (1 spec)",
+		assertEquals("Def 250 -> 163",
 			CombatCheckPlugin.defenceTextFor(en, StyleCalc.MAGIC, true, full, mauled, 1, false));
 		// a godsword whose damage went past the Defence down to Magic: the Magic level for a staff
 		DefenceDrains.Levels godsword = mauled.copy();
 		godsword.defence = 0;
 		godsword.magic = 200;
-		assertEquals("Magic 220 -> ~200 (2 specs)",
+		assertEquals("Magic 220 -> ~200",
 			CombatCheckPlugin.defenceTextFor(en, StyleCalc.MAGIC, false, full, godsword, 2, true));
 		// the table's rule "D" is what SetCalc rolls magic defence with: the Ice demon (7584) has it, Xarpus (8340) not
 		StyleData data;

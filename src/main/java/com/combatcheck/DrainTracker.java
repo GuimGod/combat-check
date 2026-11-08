@@ -55,6 +55,8 @@ final class DrainTracker
 		 * are not in {@link #records} any more, and the Defence left is not known while there are any.
 		 */
 		int unknown;
+		/** Those special attacks themselves, still named by weapon in the line ({@link #byWeapon}). */
+		final List<Record> carried = new ArrayList<>();
 
 		Entry(Object npc)
 		{
@@ -179,6 +181,7 @@ final class DrainTracker
 			return;
 		}
 		e.unknown += e.records.size();
+		e.carried.addAll(e.records);
 		e.records.clear();
 		e.drains = new DefenceDrains();
 	}
@@ -188,6 +191,72 @@ final class DrainTracker
 	{
 		Entry e = byIndex.get(index);
 		return e != null && e.npc == npc && e.unknown > 0;
+	}
+
+	/** The special attacks of one weapon counted on a monster: how many, and the hits of theirs that landed. */
+	static final class WeaponCount
+	{
+		final SpecialWeapon weapon;
+		int specs;
+		/** The hits that landed, for the weapons that hit more than once (the Tonalztics of Ralos); 0 for the others. */
+		int hits;
+		/** True when one of them was estimated from what the client shows. */
+		boolean estimated;
+
+		WeaponCount(SpecialWeapon weapon)
+		{
+			this.weapon = weapon;
+		}
+	}
+
+	/**
+	 * The special attacks counted on this monster by weapon, in the order each weapon was first counted, those carried over
+	 * a change not known included; a weapon that lowers nothing (Dinh's bulwark) is left out (one line per
+	 * weapon that lowered the Defence, "Ralos 1 spec (2hits)", "Maul x1").
+	 */
+	List<WeaponCount> byWeapon(int index, Object npc)
+	{
+		List<WeaponCount> out = new ArrayList<>();
+		Entry e = byIndex.get(index);
+		if (e == null || e.npc != npc)
+		{
+			return out;
+		}
+		List<Record> all = new ArrayList<>(e.carried);
+		all.addAll(e.records);
+		for (Record r : all)
+		{
+			if (r.weapon == null || r.weapon == SpecialWeapon.BULWARK)
+			{
+				continue;
+			}
+			WeaponCount c = null;
+			for (WeaponCount w : out)
+			{
+				if (w.weapon == r.weapon)
+				{
+					c = w;
+				}
+			}
+			if (c == null)
+			{
+				c = new WeaponCount(r.weapon);
+				out.add(c);
+			}
+			c.specs++;
+			if (multiHit(r.weapon))
+			{
+				c.hits += Math.max(0, Math.min(r.hit, 2));
+			}
+			c.estimated |= r.estimatedBy != EXACT;
+		}
+		return out;
+	}
+
+	/** The weapons whose special attack hits more than once, each hit lowering on its own (OSRS Wiki, Tonalztics of Ralos). */
+	static boolean multiHit(SpecialWeapon weapon)
+	{
+		return weapon == SpecialWeapon.TONALZTICS_OF_RALOS;
 	}
 
 	/** How many ticks ago, at tick {@code now}, the last special attack was counted on this monster; 0 for none. */

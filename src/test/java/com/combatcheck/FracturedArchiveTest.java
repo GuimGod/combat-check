@@ -227,7 +227,7 @@ public class FracturedArchiveTest
 		assertEquals(2, drains.counted(3, npc));
 		assertNull("the figures no longer count the first phase's drains", drains.of(3, npc));
 		assertTrue(CombatCheckPlugin.defenceUnknown(drains.unknown(3, npc), false, 2));
-		assertEquals("Def ? (2 specs)", CombatCheckPlugin.unknownDefenceText(CombatCheckConfig.Language.ENGLISH, 2));
+		assertEquals("Def ?", CombatCheckPlugin.unknownDefenceText(CombatCheckConfig.Language.ENGLISH, 2));
 		// a special attack in the third phase: counted from its full Defence, the line still "?"
 		drains.add(3, npc, SpecialWeapon.DRAGON_WARHAMMER, 30, false, 200);
 		StyleData.Monster third = data.monster(16677);
@@ -258,7 +258,7 @@ public class FracturedArchiveTest
 		assertTrue(CombatCheckPlugin.defenceUnknown(false, DefenceDrains.notConfirmed(16652), 1));
 		assertFalse(CombatCheckPlugin.defenceUnknown(false, DefenceDrains.notConfirmed(16652), 0));
 		assertFalse(DefenceDrains.notConfirmed(16640));
-		assertEquals("Def ? (1 spec)", CombatCheckPlugin.unknownDefenceText(CombatCheckConfig.Language.ENGLISH, 1));
+		assertEquals("Def ?", CombatCheckPlugin.unknownDefenceText(CombatCheckConfig.Language.ENGLISH, 1));
 	}
 
 	/**

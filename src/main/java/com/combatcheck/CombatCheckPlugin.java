@@ -1684,17 +1684,18 @@ public class CombatCheckPlugin extends Plugin
 			String.format(java.util.Locale.ROOT, "%.1f", sum / others.size()), (int) top);
 	}
 
-	/** The "Defence left" line to draw now ("Def 246 -> 158 (3 specs)"), or null. */
-	private volatile String defenceLine;
+	/** The "Defence left" line to draw now ("Def 246 -> 158" and a row per weapon), or null. */
+	private volatile DefenceLine defenceLine;
 
-	String defenceLine()
+	DefenceLine defenceLine()
 	{
 		return defenceLine;
 	}
 
 	/**
-	 * The "Defence left" line: the Defence before the special attacks and the one the figures use now, and how many
-	 * were counted, misses included; "~" before the Defence now when an estimated one is in it. Null with none counted.
+	 * The "Defence left" line: the Defence before the special attacks and the one the figures use now; "~" before the
+	 * Defence now when an estimated one is in it. Null with none counted. The special attacks are named under it, a row
+	 * per weapon ({@link DefenceLine}).
 	 */
 	static String defenceText(CombatCheckConfig.Language language, int full, int left, int specs, boolean estimated)
 	{
@@ -1708,9 +1709,7 @@ public class CombatCheckPlugin extends Plugin
 		{
 			return null;
 		}
-		String count = specs == 1 ? Words.of(language, Words.Key.ONE_SPEC)
-			: String.format(Words.of(language, Words.Key.SPECS), specs);
-		return String.format(Words.of(language, key), full, (estimated ? "~" : "") + left) + " (" + count + ")";
+		return String.format(Words.of(language, key), full, (estimated ? "~" : "") + left);
 	}
 
 	/**
@@ -1751,20 +1750,26 @@ public class CombatCheckPlugin extends Plugin
 		return carriedUnknown || notConfirmed && specs > 0;
 	}
 
-	/** The line of a Defence not known: "Def ?", with the special attacks counted when there are any. */
+	/** The line of a Defence not known: "Def ?" (the special attacks counted go in the rows under it). */
 	static String unknownDefenceText(CombatCheckConfig.Language language, int specs)
 	{
-		String text = Words.of(language, Words.Key.DEFENCE_UNKNOWN);
-		if (specs <= 0)
-		{
-			return text;
-		}
-		return text + " (" + (specs == 1 ? Words.of(language, Words.Key.ONE_SPEC)
-			: String.format(Words.of(language, Words.Key.SPECS), specs)) + ")";
+		return Words.of(language, Words.Key.DEFENCE_UNKNOWN);
 	}
 
-	/** Works out the "Defence left" line for the monster fought, or null. */
-	private String defenceLineNow(StyleData.Monster monster, String combatClass)
+	/** Works out the "Defence left" line for the monster fought, with a row per weapon under it, or null. */
+	private DefenceLine defenceLineNow(StyleData.Monster monster, String combatClass)
+	{
+		String head = defenceHeadNow(monster, combatClass);
+		NPC npc = targetNpc;
+		if (head == null || npc == null)
+		{
+			return DefenceLine.of(head);
+		}
+		return new DefenceLine(head, DefenceLine.rows(config.language(), drains.byWeapon(npc.getIndex(), npc),
+			marksEstimate(true, config.estimateSpecs())));
+	}
+
+	private String defenceHeadNow(StyleData.Monster monster, String combatClass)
 	{
 		NPC npc = targetNpc;
 		if (!config.showDefence() || monster == null || npc == null || tableMonster(npc) != monster)
@@ -2684,7 +2689,7 @@ public class CombatCheckPlugin extends Plugin
 			&& data.unmodelled(((NPC) interacting).getId()))
 		{
 			// a monster seen but never examined (Dreadnoth's Jellies): its Defence is not known, and no figure is given
-			defenceLine = unknownDefenceText(config.language(), 0);
+			defenceLine = DefenceLine.of(unknownDefenceText(config.language(), 0));
 		}
 		// 4c. what Dinh's bulwark's special attack would deal now
 		bulwarkSpecLine = config.showBulwarkSpec() ? bulwarkSpecLineNow(monster, on, weaponId, c.meleeType, me) : null;

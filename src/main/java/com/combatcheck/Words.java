@@ -14,7 +14,7 @@ final class Words
 	{
 		WRONG_PRAYER, PRAYER_OFF, PRAYER_STILL_ON, CHECK_BLOWPIPE, PIECES_LEFT, PIECES_OFF,
 		MELEE_PRAYER, RANGED_PRAYER, MAGIC_PRAYER, RUBY, DIAMOND, QUIVER, SPEC_ESTIMATED, DEFENCE_LEFT, SPECS, ONE_SPEC, MAGIC_LEFT, LOW_HP,
-		BASH_ONE, BASH_MANY, DEFENCE_UNKNOWN, BANK, JELLY_CHINCHOMPA, SPEC_EXPLOSIONS, SPEC_UNUSED
+		BASH_ONE, BASH_MANY, DEFENCE_UNKNOWN, BANK, JELLY_CHINCHOMPA, SPEC_EXPLOSIONS, SPEC_UNUSED, HITS, ONE_HIT
 	}
 
 	/** One row per key, in the order of {@link CombatCheckConfig.Language}: English, Portuguese, Spanish, German, French. */
@@ -60,6 +60,9 @@ final class Words
 			"Spec dans les explosions : moitié des dégâts"},
 		// the special attack bar left unused ("Spec 70% unused")
 		{"Spec %d%% unused", "Spec %d%% parada", "Spec %d%% sin usar", "Spec %d%% ungenutzt", "Spec %d%% inutilisée"},
+		// the hits that landed of a weapon that hits more than once ("Ralos 1 spec (2hits)")
+		{"(%dhits)", "(%dhits)", "(%dgolpes)", "(%dTreffer)", "(%dcoups)"},
+		{"(1hit)", "(1hit)", "(1golpe)", "(1Treffer)", "(1coup)"},
 	};
 
 	private Words()

@@ -394,7 +394,7 @@ public interface CombatCheckConfig extends Config
 		keyName = "showDefence",
 		name = "Show the Defence left",
 		description = "While a special attack that lowers Defence is counted on the monster you fight, a line with its "
-			+ "Defence before them and now, and how many were counted (\"Def 246 -> 158 (3 specs)\"): yours, your party's "
+			+ "Defence before them and now (\"Def 246 -> 158\"), and under it each weapon counted (\"Ralos 1 spec (2hits)\", \"Maul x1\"): yours, your party's "
 			+ "and the others' (with \"Mark estimated specs\" the figure gets ~). Not for a monster whose Defence cannot be "
 			+ "lowered. With a magic weapon it gives the Magic level instead, and only when it was lowered (except where magic "
 			+ "rolls against Defence). The Special Attack Counter shows each weapon's drain; this shows the level the figures use",

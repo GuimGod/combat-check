@@ -92,7 +92,7 @@ class CombatCheckOverlay extends Overlay
 		String prayer = plugin.prayerNotice();
 		String leftOn = plugin.leftOnNotice();
 		String blowpipe = plugin.blowpipeNotice();
-		String defence = plugin.defenceLine();
+		DefenceLine defence = plugin.defenceLine();
 		String bash = plugin.bulwarkSpecLine();
 		CombatCheckPlugin.WeaponAdvice bank = plugin.bankAdvice();
 		List<ArchiveNotices.Notice> archive = plugin.archiveNotices();
@@ -222,9 +222,17 @@ class CombatCheckOverlay extends Overlay
 			// carries its own "~" for an estimate, so the box does not mark it again
 			boolean marking = estimated;
 			estimated = false;
-			box(graphics, fm, 0, y, h, new BufferedImage[0], 0, defence, INFO_BACK, INFO_EDGE);
+			box(graphics, fm, 0, y, h, new BufferedImage[0], 0, defence.head, INFO_BACK, INFO_EDGE);
+			y += h + 1;
+			// under it, a row per weapon that lowered it, with the weapon's icon ("Ralos 1 spec (2hits)", "Maul x1")
+			for (DefenceLine.Row row : defence.rows)
+			{
+				box(graphics, fm, 0, y, h, row.itemId > 0 ? new BufferedImage[]{icon(row.itemId)} : new BufferedImage[0], 0,
+					row.text, INFO_BACK, INFO_EDGE);
+				y += h + 1;
+			}
 			estimated = marking;
-			y += h + 3;
+			y += 2;
 		}
 		if (bash != null)
 		{

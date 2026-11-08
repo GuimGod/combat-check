@@ -79,9 +79,9 @@ public class DrainTrackerTest
 		assertEquals(140, left);
 		boolean estimated = tracker.estimated(2, xarpus);
 		CombatCheckConfig.Language en = CombatCheckConfig.Language.ENGLISH;
-		assertEquals("Def 250 -> 140 (2 specs)",
+		assertEquals("Def 250 -> 140",
 			CombatCheckPlugin.defenceText(en, 250, left, 2, CombatCheckPlugin.marksEstimate(estimated, false)));
-		assertEquals("Def 250 -> ~140 (2 specs)",
+		assertEquals("Def 250 -> ~140",
 			CombatCheckPlugin.defenceText(en, 250, left, 2, CombatCheckPlugin.marksEstimate(estimated, true)));
 		// with no estimate in the Defence, nothing is marked whatever the option
 		assertTrue(!CombatCheckPlugin.marksEstimate(false, true));
