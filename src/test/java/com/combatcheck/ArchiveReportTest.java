@@ -341,23 +341,10 @@ public class ArchiveReportTest
 		assertTrue(SetCalc.gain(bow, crossbows) < 1);
 	}
 
-	/**
-	 * 8. A damage special attack on Ocellus's last stage while an explosion was seen this tick or up to 2 before; not a
-	 * special attack that lowers the Defence, not on another monster, not before the first or after the last.
-	 */
+	/** The weapons held for their special attack's damage are special attack weapons for the weapon notice. */
 	@Test
-	public void aDamageSpecInTheExplosionsIsToldAfterwards()
+	public void damageSpecialAttackWeaponsAreSpecialAttackWeapons()
 	{
-		int explosion = 1000;
-		assertTrue(ArchiveNotices.specIntoExplosions(16677, "Crimson kisten", explosion, 1000));
-		assertTrue(ArchiveNotices.specIntoExplosions(16677, "Dragon claws", explosion, 1002));
-		assertFalse("3 ticks after the last", ArchiveNotices.specIntoExplosions(16677, "Crimson kisten", explosion, 1003));
-		assertFalse("before it", ArchiveNotices.specIntoExplosions(16677, "Crimson kisten", explosion, 999));
-		assertFalse("none seen", ArchiveNotices.specIntoExplosions(16677, "Crimson kisten", -1, 1000));
-		assertFalse("the Elder maul lowers the Defence", ArchiveNotices.specIntoExplosions(16677, "Elder maul", explosion, 1000));
-		assertFalse(ArchiveNotices.specIntoExplosions(16677, "Tonalztics of ralos", explosion, 1000));
-		assertFalse("Ocellus's first phase", ArchiveNotices.specIntoExplosions(16674, "Crimson kisten", explosion, 1000));
-		// the damage ones are still special attack weapons for the weapon notice
 		assertTrue(SetEffects.isSpecialAttackWeapon("Crimson kisten"));
 		assertTrue(SetEffects.isSpecialAttackWeapon("Elder maul"));
 		assertFalse(SetEffects.isDamageSpecialAttackWeapon("Elder maul"));
@@ -394,7 +381,6 @@ public class ArchiveReportTest
 		for (CombatCheckConfig.Language language : CombatCheckConfig.Language.values())
 		{
 			assertTrue(Words.of(language, Words.Key.JELLY_CHINCHOMPA).startsWith("Jellies"));
-			assertTrue(Words.of(language, Words.Key.SPEC_EXPLOSIONS).startsWith("Spec"));
 			assertTrue(String.format(Words.of(language, Words.Key.SPEC_UNUSED), 70).startsWith("Spec 70%"));
 		}
 	}

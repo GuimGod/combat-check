@@ -14,7 +14,7 @@ final class Words
 	{
 		WRONG_PRAYER, PRAYER_OFF, PRAYER_STILL_ON, CHECK_BLOWPIPE, PIECES_LEFT, PIECES_OFF,
 		MELEE_PRAYER, RANGED_PRAYER, MAGIC_PRAYER, RUBY, DIAMOND, QUIVER, SPEC_ESTIMATED, DEFENCE_LEFT, SPECS, ONE_SPEC, MAGIC_LEFT, LOW_HP,
-		BASH_ONE, BASH_MANY, DEFENCE_UNKNOWN, BANK, JELLY_CHINCHOMPA, SPEC_EXPLOSIONS, SPEC_UNUSED, HITS, ONE_HIT
+		BASH_ONE, BASH_MANY, DEFENCE_UNKNOWN, BANK, JELLY_CHINCHOMPA, SPEC_UNUSED, HITS, ONE_HIT
 	}
 
 	/** One row per key, in the order of {@link CombatCheckConfig.Language}: English, Portuguese, Spanish, German, French. */
@@ -54,10 +54,6 @@ final class Words
 		{"Bank: %s %s", "Banco: %s %s", "Banco: %s %s", "Bank: %s %s", "Banque : %s %s"},
 		// the Fractured Archive (ArchiveNotices): the Ancient Magicks cast on Dreadnoth's Jellies
 		{"Jellies: chinchompa", "Jellies: chinchompa", "Jellies: chinchompa", "Jellies: Chinchompa", "Jellies : chinchompa"},
-		// a damage special attack in the explosions of Ocellus's last stage
-		{"Spec in the explosions: half damage", "Spec nas explosões: metade do dano",
-			"Spec en las explosiones: mitad del daño", "Spec in den Explosionen: halber Schaden",
-			"Spec dans les explosions : moitié des dégâts"},
 		// the special attack bar left unused ("Spec 70% unused")
 		{"Spec %d%% unused", "Spec %d%% parada", "Spec %d%% sin usar", "Spec %d%% ungenutzt", "Spec %d%% inutilisée"},
 		// the hits that landed of a weapon that hits more than once ("Ralos 1 spec (2hits)")

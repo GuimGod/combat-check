@@ -421,19 +421,6 @@ public interface CombatCheckConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "specExplosions",
-		name = "Spec in Ocellus's explosions",
-		description = "After you use a damage special attack on Ocellus's last stage while its explosions go off on the "
-			+ "floor, where it takes half the damage, a few seconds of \"Spec in the explosions: half damage\". Off by default",
-		position = 19,
-		section = master
-	)
-	default boolean specExplosions()
-	{
-		return false;
-	}
-
-	@ConfigItem(
 		keyName = "specUnused",
 		name = "Spec bar left unused",
 		description = "In the Fractured Archive, with a melee weapon in hand against a boss melee reaches and the Crimson "

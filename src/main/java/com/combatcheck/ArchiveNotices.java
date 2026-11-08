@@ -5,16 +5,13 @@
 package com.combatcheck;
 
 /**
- * Three reminders of the Fractured Archive, from a report of the raid (2026-11-01), each about
+ * Two reminders of the Fractured Archive, from a report of the raid (2026-11-01), each about
  * what the player himself does, told after he does it:
  * <ul>
  * <li>Dreadnoth's Jellies (no row: never examined): a chinchompa on Short fuse, where the Medium fuse is the one (a
  * simulator and recorded fights, 25.5 against 15.5 a second, +32.5%), and the Ancient Magicks cast on them, where a
  * chinchompa is the one (the rooms with chinchompas on 80% or more of the Jellies about 7% faster; who cast Barrage and
  * throws instead gains 6 to 9 seconds a wave).</li>
- * <li>Ocellus's last stage: a damage special attack used during its six explosions, where he takes half the damage (OSRS
- * Wiki). The explosions are the graphic everyone sees on the floor (4339,
- * every 2 ticks, six times: 447 of 490 runs in the recordings of 2026-10-20 to 11-01).</li>
  * <li>The special attack bar left unused: half of it or more for 50 ticks with a melee weapon in hand against a monster
  * of the raid melee reaches, and the Crimson kisten (50%) carried (the bar left at the end of the rooms, +0.22% of the
  * raid).</li>
@@ -24,13 +21,7 @@ final class ArchiveNotices
 {
 	/** Dreadnoth's Jelly. */
 	static final int JELLY = 16666;
-	/** Ocellus's third phase, where the last stage's explosions come. */
-	static final int OCELLUS_LAST = 16677;
-	/** The graphic of an explosion of Ocellus's last stage. */
-	static final int EXPLOSION_GRAPHIC = 4339;
-	/** An explosion seen this tick or up to 2 before: the explosions come every 2 ticks. */
-	static final int EXPLOSION_TICKS = 2;
-	/** How long a reminder told after the fact stays (a cast on a Jelly, a spec in the explosions): 8 ticks, about 5 s. */
+	/** How long a reminder told after the fact stays (a cast on a Jelly): 8 ticks, about 5 s. */
 	static final int NOTICE_TICKS = 8;
 	/** A Jelly attacked this tick or up to this many before: the game shows no target between two attacks in the raid. */
 	static final int JELLY_TICKS = 5;
@@ -91,18 +82,6 @@ final class ArchiveNotices
 	static boolean ancientsOnJelly(boolean onJelly, boolean ancientSpellbook, int animation, int autocastSpell)
 	{
 		return onJelly && (ancientSpellbook && castAnimation(animation) || SetEffects.isManyTargetSpell(autocastSpell));
-	}
-
-	/** True while an explosion of the last stage was seen this tick or up to 2 before. */
-	static boolean inExplosions(int lastExplosionTick, int tick)
-	{
-		return lastExplosionTick >= 0 && tick >= lastExplosionTick && tick - lastExplosionTick <= EXPLOSION_TICKS;
-	}
-
-	/** True for a damage special attack used on Ocellus's last stage during its explosions. */
-	static boolean specIntoExplosions(int npcId, String weaponName, int lastExplosionTick, int tick)
-	{
-		return npcId == OCELLUS_LAST && SetEffects.isDamageSpecialAttackWeapon(weaponName) && inExplosions(lastExplosionTick, tick);
 	}
 
 	/**

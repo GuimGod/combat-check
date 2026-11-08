@@ -967,10 +967,6 @@ public class CombatCheckPlugin extends Plugin
 	private final OcellusReach ocellus = new OcellusReach();
 	/** Xarth out of melee's reach until his first charge ({@link XarthShield}). */
 	private final XarthShield xarth = new XarthShield();
-	/** The tick an explosion of Ocellus's last stage was last seen ({@link ArchiveNotices}), -1 for none. */
-	private int lastExplosionTick = -1;
-	/** The last tick of the notice of a damage special attack used during those explosions. */
-	private int explosionSpecUntil = -1;
 	/** The tick a Jelly of Dreadnoth's was last attacked. */
 	private int lastJellyTick = Integer.MIN_VALUE / 2;
 	/** The tick the special attack bar has been at half or more without being used since, -1 under half. */
@@ -985,15 +981,6 @@ public class CombatCheckPlugin extends Plugin
 		return archiveNotices;
 	}
 
-	/** An explosion of Ocellus's last stage: the graphic on the floor that everyone sees. */
-	@Subscribe
-	public void onGraphicsObjectCreated(net.runelite.api.events.GraphicsObjectCreated event)
-	{
-		if (event.getGraphicsObject().getId() == ArchiveNotices.EXPLOSION_GRAPHIC)
-		{
-			lastExplosionTick = client.getTickCount();
-		}
-	}
 	/**
 	 * The game ticks of the player's own last hitsplat on a monster and of the last attack on the player (a block or a
 	 * hit): the game drops the player's target between attacks on a stunned monster (Bork stunned, 2026-10-29), so a
@@ -1191,14 +1178,6 @@ public class CombatCheckPlugin extends Plugin
 		clientThread.invokeLater(() ->
 		{
 			int item = weaponInHand();
-			// a damage special attack on Ocellus's last stage during its explosions, where he takes half the damage
-			Actor attacked = client.getLocalPlayer() == null ? null : client.getLocalPlayer().getInteracting();
-			if (config.specExplosions() && attacked instanceof NPC && item > 0
-				&& ArchiveNotices.specIntoExplosions(((NPC) attacked).getId(), itemManager.getItemComposition(item).getName(),
-				lastExplosionTick, serverTick))
-			{
-				explosionSpecUntil = serverTick + ArchiveNotices.NOTICE_TICKS;
-			}
 			specWeapon = specialWeapon(item);
 			specSplats = specialHits(item);
 			specHits.clear();
@@ -2225,8 +2204,6 @@ public class CombatCheckPlugin extends Plugin
 			borkArmour.clear();
 			ocellus.clear();
 			xarth.clear();
-			lastExplosionTick = -1;
-			explosionSpecUntil = -1;
 			lastJellyTick = Integer.MIN_VALUE / 2;
 			jellyMagicUntil = -1;
 			specUnusedSince = -1;
@@ -2703,10 +2680,6 @@ public class CombatCheckPlugin extends Plugin
 		{
 			notes.add(new ArchiveNotices.Notice(carriedOf("Chinchompas", null),
 				Words.of(config.language(), Words.Key.JELLY_CHINCHOMPA)));
-		}
-		if (explosionSpecUntil >= tick)
-		{
-			notes.add(new ArchiveNotices.Notice(0, Words.of(config.language(), Words.Key.SPEC_EXPLOSIONS)));
 		}
 		int kisten = carriedOf(null, ArchiveNotices.KISTEN);
 		int energy = client.getVarpValue(VarPlayerID.SA_ENERGY);
