@@ -1531,10 +1531,6 @@ public class CombatCheckPlugin extends Plugin
 		StyleData.Monster now = tableMonster(npc);
 		switch (formChange(before, now, event.getOld().getId(), npc.getId()))
 		{
-			case UNKNOWN:
-				// Ocellus's next phase: the drains go on, but how is not known (DefenceDrains.carriesUnknown)
-				drains.carryUnknown(npc.getIndex(), npc);
-				break;
 			case FORGET:
 				drains.forget(npc.getIndex(), npc);
 				break;
@@ -1549,18 +1545,12 @@ public class CombatCheckPlugin extends Plugin
 		/** They go on as they were: the same Defence (the Archive Guardian landing and rising). */
 		KEEP,
 		/** They are dropped: another Defence, or one the game gives back ({@link DefenceDrains#resets}). */
-		FORGET,
-		/** They go on in a way that is not known ({@link DefenceDrains#carriesUnknown}): the Defence left is "?". */
-		UNKNOWN
+		FORGET
 	}
 
 	/** What the change of the monster from {@code oldId} (row {@code before}) into {@code newId} (row {@code now}) does. */
 	static FormChange formChange(StyleData.Monster before, StyleData.Monster now, int oldId, int newId)
 	{
-		if (DefenceDrains.carriesUnknown(oldId, newId))
-		{
-			return FormChange.UNKNOWN;
-		}
 		return before == null || now == null || before.level != now.level || DefenceDrains.resets(oldId, newId)
 			? FormChange.FORGET : FormChange.KEEP;
 	}
@@ -1745,13 +1735,14 @@ public class CombatCheckPlugin extends Plugin
 	}
 
 	/**
-	 * Whether the monster's Defence is not known now (the line says "Def ?"): drains carried over a change nobody knows
-	 * the rule of (Ocellus's next phase), or a special attack counted on a monster no drain is confirmed on (Ezekiel).
-	 * Bork's stun is not one: it changes the figures (his flat armour), never the line, so nothing on screen marks it.
+	 * Whether the monster's Defence is not known now (the line says "Def ?"): a special attack counted on a monster no
+	 * drain is confirmed on (Ezekiel). Bork's stun is not one: it changes the figures (his flat armour), never the line, so
+	 * nothing on screen marks it. Ocellus's next phase is not one either: it starts from its full Defence
+	 * ({@link DefenceDrains#resets}).
 	 */
-	static boolean defenceUnknown(boolean carriedUnknown, boolean notConfirmed, int specs)
+	static boolean defenceUnknown(boolean notConfirmed, int specs)
 	{
-		return carriedUnknown || notConfirmed && specs > 0;
+		return notConfirmed && specs > 0;
 	}
 
 	/** The line of a Defence not known: "Def ?" (the special attacks counted go in the rows under it). */
@@ -1781,7 +1772,7 @@ public class CombatCheckPlugin extends Plugin
 			return null;
 		}
 		int specs = drains.counted(npc.getIndex(), npc);
-		if (defenceUnknown(drains.unknown(npc.getIndex(), npc), DefenceDrains.notConfirmed(npc.getId()), specs))
+		if (defenceUnknown(DefenceDrains.notConfirmed(npc.getId()), specs))
 		{
 			return unknownDefenceText(config.language(), specs);
 		}

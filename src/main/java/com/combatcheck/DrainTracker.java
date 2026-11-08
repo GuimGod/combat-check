@@ -50,13 +50,6 @@ final class DrainTracker
 		DefenceDrains drains = new DefenceDrains();
 		/** The game tick of the last special attack counted. */
 		int lastTick;
-		/**
-		 * The special attacks counted before a change the drains' carry over is not known for (Ocellus's phases): they
-		 * are not in {@link #records} any more, and the Defence left is not known while there are any.
-		 */
-		int unknown;
-		/** Those special attacks themselves, still named by weapon in the line ({@link #byWeapon}). */
-		final List<Record> carried = new ArrayList<>();
 
 		Entry(Object npc)
 		{
@@ -158,39 +151,12 @@ final class DrainTracker
 	}
 
 	/**
-	 * How many special attacks are counted on this monster, the ones that lowered nothing too, and the ones before a change
-	 * whose carry over is not known ({@link #carryUnknown}).
+	 * How many special attacks are counted on this monster, the ones that lowered nothing too.
 	 */
 	int counted(int index, Object npc)
 	{
 		Entry e = byIndex.get(index);
-		return e == null || e.npc != npc ? 0 : e.records.size() + e.unknown;
-	}
-
-	/**
-	 * The monster changed in a way that keeps its drains, but not in a way that is known (OSRS Wiki, Ocellus: "Defence
-	 * reduction works on all phases", not whether the levels or the share go on): the drains counted so far are dropped
-	 * from the figures and kept as not known, so the Defence left is shown as not known from here on. The ones counted
-	 * after it are counted from the new form's full Defence: all that is known of them is that they lowered it that much.
-	 */
-	void carryUnknown(int index, Object npc)
-	{
-		Entry e = byIndex.get(index);
-		if (e == null || e.npc != npc || e.records.isEmpty() && e.unknown == 0)
-		{
-			return;
-		}
-		e.unknown += e.records.size();
-		e.carried.addAll(e.records);
-		e.records.clear();
-		e.drains = new DefenceDrains();
-	}
-
-	/** True when drains whose carry over is not known were counted on this monster ({@link #carryUnknown}). */
-	boolean unknown(int index, Object npc)
-	{
-		Entry e = byIndex.get(index);
-		return e != null && e.npc == npc && e.unknown > 0;
+		return e == null || e.npc != npc ? 0 : e.records.size();
 	}
 
 	/** The special attacks of one weapon counted on a monster: how many, and the hits of theirs that landed. */
@@ -210,9 +176,9 @@ final class DrainTracker
 	}
 
 	/**
-	 * The special attacks counted on this monster by weapon, in the order each weapon was first counted, those carried over
-	 * a change not known included; a weapon that lowers nothing (Dinh's bulwark) is left out (one line per
-	 * weapon that lowered the Defence, "Ralos 1 spec (2hits)", "Maul x1").
+	 * The special attacks counted on this monster by weapon, in the order each weapon was first counted; a weapon that
+	 * lowers nothing (Dinh's bulwark) is left out (one line per weapon that lowered the Defence, "Ralos 1 spec (2hits)",
+	 * "Maul x1").
 	 */
 	List<WeaponCount> byWeapon(int index, Object npc)
 	{
@@ -222,9 +188,7 @@ final class DrainTracker
 		{
 			return out;
 		}
-		List<Record> all = new ArrayList<>(e.carried);
-		all.addAll(e.records);
-		for (Record r : all)
+		for (Record r : e.records)
 		{
 			if (r.weapon == null || r.weapon == SpecialWeapon.BULWARK)
 			{

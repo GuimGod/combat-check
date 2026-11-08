@@ -201,44 +201,58 @@ public class FracturedArchiveTest
 	}
 
 	/**
-	 * Hard case 2: Ocellus's next phase keeps the drains, but how is not known ("Defence reduction works on all
-	 * phases", OSRS Wiki): after a drain in the first phase, the second and third show "Def ?"; the special attacks of the
-	 * new phase lower the figures from its full Defence. Within the first phase (16673, 16674) the drains go on.
+	 * Ocellus's next phase starts from zero (the wiki says only that the Defence reduction "works on all phases"; before,
+	 * the Tonalztics of Ralos of the second phase were still listed in the first quadrant of the third). From the first phase (16673, 16674) to the second (16675) and from the second to
+	 * the third (16677) the drains and the rows by weapon are dropped, as for the Bloat's stomp and Sotetseg's maze, with
+	 * no "Def ?": the new phase's full Defence, and only its own special attacks from then on. Within the first phase the
+	 * drains go on.
 	 */
 	@Test
-	public void ocellusNextPhaseShowsTheDefenceAsNotKnown() throws IOException
+	public void ocellusNextPhaseStartsFromZero() throws IOException
 	{
 		StyleData data = new StyleData();
-		assertEquals(CombatCheckPlugin.FormChange.UNKNOWN,
-			CombatCheckPlugin.formChange(data.monster(16674), data.monster(16675), 16674, 16675));
-		assertEquals(CombatCheckPlugin.FormChange.UNKNOWN,
-			CombatCheckPlugin.formChange(data.monster(16675), data.monster(16677), 16675, 16677));
-		assertEquals(CombatCheckPlugin.FormChange.UNKNOWN,
-			CombatCheckPlugin.formChange(data.monster(16674), data.monster(16677), 16674, 16677));
+		StyleData.Monster second = data.monster(16675);
+		StyleData.Monster third = data.monster(16677);
+		assertEquals(CombatCheckPlugin.FormChange.FORGET,
+			CombatCheckPlugin.formChange(data.monster(16673), second, 16673, 16675));
+		assertEquals(CombatCheckPlugin.FormChange.FORGET,
+			CombatCheckPlugin.formChange(data.monster(16674), second, 16674, 16675));
+		assertEquals(CombatCheckPlugin.FormChange.FORGET, CombatCheckPlugin.formChange(second, third, 16675, 16677));
+		assertEquals(CombatCheckPlugin.FormChange.FORGET,
+			CombatCheckPlugin.formChange(data.monster(16674), third, 16674, 16677));
 		assertEquals(CombatCheckPlugin.FormChange.KEEP,
 			CombatCheckPlugin.formChange(data.monster(16673), data.monster(16674), 16673, 16674));
+		assertTrue(DefenceDrains.resets(16674, 16675));
+		assertTrue(DefenceDrains.resets(16675, 16677));
+		assertFalse(DefenceDrains.resets(16673, 16674));
+		assertFalse(DefenceDrains.resets(16677, 16677));
+
+		// 1 -> 2: a Tonalztics of Ralos with both hits in the first phase, then the change (onNpcChanged forgets them)
 		DrainTracker drains = new DrainTracker();
 		Object npc = new Object();
-		drains.add(3, npc, SpecialWeapon.DRAGON_WARHAMMER, 40, false, 10);
-		drains.add(3, npc, SpecialWeapon.DRAGON_WARHAMMER, 45, false, 12);
-		assertFalse(drains.unknown(3, npc));
-		drains.carryUnknown(3, npc);
-		assertTrue(drains.unknown(3, npc));
-		assertEquals(2, drains.counted(3, npc));
-		assertNull("the figures no longer count the first phase's drains", drains.of(3, npc));
-		assertTrue(CombatCheckPlugin.defenceUnknown(drains.unknown(3, npc), false, 2));
-		assertEquals("Def ?", CombatCheckPlugin.unknownDefenceText(CombatCheckConfig.Language.ENGLISH, 2));
-		// a special attack in the third phase: counted from its full Defence, the line still "?"
-		drains.add(3, npc, SpecialWeapon.DRAGON_WARHAMMER, 30, false, 200);
-		StyleData.Monster third = data.monster(16677);
+		drains.add(3, npc, SpecialWeapon.TONALZTICS_OF_RALOS, 2, false, 10);
+		assertEquals(1, drains.counted(3, npc));
+		drains.forget(3, npc);
+		assertEquals(0, drains.counted(3, npc));
+		assertNull(drains.of(3, npc));
+		assertTrue(drains.byWeapon(3, npc).isEmpty());
+		assertFalse("no \"Def ?\"", CombatCheckPlugin.defenceUnknown(DefenceDrains.notConfirmed(16675), 0));
+
+		// the second phase's own Ralos, then 2 -> 3: dropped too
+		drains.add(3, npc, SpecialWeapon.TONALZTICS_OF_RALOS, 2, false, 200);
+		assertEquals(1, drains.byWeapon(3, npc).size());
+		drains.forget(3, npc);
+		assertEquals(0, drains.counted(3, npc));
+		assertTrue(drains.byWeapon(3, npc).isEmpty());
+
+		// the third phase: a Dragon warhammer counted from its own full Defence (250 -> 175), the only row
+		drains.add(3, npc, SpecialWeapon.DRAGON_WARHAMMER, 30, false, 400);
 		assertEquals(175, DefenceDrains.left(third, 16677, MonsterLevels.scaled(third, null, null, null), drains.of(3, npc), 0)
 			.defence);
-		assertEquals(3, drains.counted(3, npc));
-		assertTrue(drains.unknown(3, npc));
-		// no drain before the change: nothing is unknown
-		DrainTracker none = new DrainTracker();
-		none.carryUnknown(4, npc);
-		assertFalse(none.unknown(4, npc));
+		assertEquals(1, drains.counted(3, npc));
+		assertEquals(1, drains.byWeapon(3, npc).size());
+		assertSame(SpecialWeapon.DRAGON_WARHAMMER, drains.byWeapon(3, npc).get(0).weapon);
+		assertFalse(CombatCheckPlugin.defenceUnknown(DefenceDrains.notConfirmed(16677), 1));
 	}
 
 	/**
@@ -255,8 +269,8 @@ public class FracturedArchiveTest
 		DefenceDrains drains = new DefenceDrains();
 		drains.add(SpecialWeapon.DRAGON_WARHAMMER, 40, false, 0);
 		assertEquals(140, DefenceDrains.left(ezekiel, 16652, MonsterLevels.scaled(ezekiel, null, null, null), drains, 0).defence);
-		assertTrue(CombatCheckPlugin.defenceUnknown(false, DefenceDrains.notConfirmed(16652), 1));
-		assertFalse(CombatCheckPlugin.defenceUnknown(false, DefenceDrains.notConfirmed(16652), 0));
+		assertTrue(CombatCheckPlugin.defenceUnknown(DefenceDrains.notConfirmed(16652), 1));
+		assertFalse(CombatCheckPlugin.defenceUnknown(DefenceDrains.notConfirmed(16652), 0));
 		assertFalse(DefenceDrains.notConfirmed(16640));
 		assertEquals("Def ?", CombatCheckPlugin.unknownDefenceText(CombatCheckConfig.Language.ENGLISH, 1));
 	}
@@ -289,7 +303,7 @@ public class FracturedArchiveTest
 		stun.says(smorks, 16641, "Oof.", 400);
 		assertFalse(stun.stunned(smorks, 401));
 		// the stun shows nothing of its own: only the figures change, the Defence line stays as it was
-		assertFalse(CombatCheckPlugin.defenceUnknown(false, false, 0));
+		assertFalse(CombatCheckPlugin.defenceUnknown(false, 0));
 
 		// the flat armour: 8 off every hit that lands outside the stun, nothing in it
 		StyleData data = new StyleData();
@@ -662,7 +676,6 @@ public class FracturedArchiveTest
 		drains.add(1, npc, SpecialWeapon.DRAGON_WARHAMMER, 30, false, 300);
 		drains.add(1, npc, SpecialWeapon.DRAGON_WARHAMMER, 30, false, 301);
 		assertEquals(150, defenceAfter(data, 16677, drains.of(1, npc)));
-		assertFalse(drains.unknown(1, npc));
 	}
 
 	/** Nex's crush defence, +60 to +35 in the same update (official post "The Fractured Archive - Out Today"). */

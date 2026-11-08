@@ -86,18 +86,16 @@ public class DefenceRowsTest
 		assertEquals(java.util.Arrays.asList("Ralos 2 specs (2hits)"), texts(DefenceLine.rows(EN, u.byWeapon(1, npc), false)));
 	}
 
-	/** Special attacks carried over a change not known (Ocellus's phases) are still named, with those after it. */
+	/** A change that gives the Defence back (Ocellus's next phase, the Bloat's stomp) drops the rows with the drains. */
 	@Test
-	public void carriedOnesAreStillNamed()
+	public void aResetDropsTheRows()
 	{
 		DrainTracker d = new DrainTracker();
 		Object npc = new Object();
 		d.add(7, npc, SpecialWeapon.TONALZTICS_OF_RALOS, 2, false, 10);
-		d.carryUnknown(7, npc);
+		d.forget(7, npc);
+		assertTrue(d.byWeapon(7, npc).isEmpty());
 		d.add(7, npc, SpecialWeapon.ELDER_MAUL, 1, false, 20);
-		d.add(7, npc, SpecialWeapon.TONALZTICS_OF_RALOS, 2, false, 30);
-		assertEquals(java.util.Arrays.asList("Ralos 2 specs (4hits)", "Maul x1"), texts(DefenceLine.rows(EN, d.byWeapon(7, npc), false)));
-		assertTrue(d.unknown(7, npc));
-		assertEquals("Def ?", CombatCheckPlugin.unknownDefenceText(EN, 3));
+		assertEquals(java.util.Arrays.asList("Maul x1"), texts(DefenceLine.rows(EN, d.byWeapon(7, npc), false)));
 	}
 }

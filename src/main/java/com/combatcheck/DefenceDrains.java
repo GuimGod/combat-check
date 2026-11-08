@@ -596,10 +596,19 @@ final class DefenceDrains
 	 * form (8387) and back twice a raid, and the table gives the two forms the same levels. And Kephri going into her last
 	 * phase (Kephri: "Her base defence level can be lowered by a maximum of 20 damage ... however the defence level is reset
 	 * for the final phase"; "After two phases of shields, Kephri will finally be vulnerable"), whose row has the same
-	 * Defence as her shielded one. And Vet'ion and Calvar'ion going into their second form ({@link #SECOND_FORM}).
+	 * Defence as her shielded one. And Vet'ion and Calvar'ion going into their second form ({@link #SECOND_FORM}). And
+	 * Ocellus going on to another phase ({@link #OCELLUS}): the wiki says the Defence reduction "works on all phases", not
+	 * how, so each phase is counted from its own full Defence, with its own special attacks only (before, the special
+	 * attacks of the phase before were still listed in the next one, under "Def ?").
 	 */
 	static boolean resets(int oldId, int newId)
 	{
+		int ocellusBefore = phase(OCELLUS, oldId);
+		int ocellusAfter = phase(OCELLUS, newId);
+		if (ocellusBefore >= 0 && ocellusAfter >= 0 && ocellusBefore != ocellusAfter)
+		{
+			return true;
+		}
 		if (newId == KEPHRI_LAST_PHASE && has(KEPHRI_SHIELD_PHASES, oldId))
 		{
 			return true;
@@ -632,19 +641,6 @@ final class DefenceDrains
 	 * form between the first and the third in all nine fights recorded; the wiki gives it no id) and the third (16677).
 	 */
 	private static final int[][] OCELLUS = {{16673, 16674}, {16675}, {16677}};
-
-	/**
-	 * True when a monster that changes from {@code oldId} into {@code newId} keeps its drains in a way that is not known:
-	 * Ocellus going on to another phase ("Defence reduction works on all phases", OSRS Wiki, Ocellus; whether the levels
-	 * lowered or the share of them carry over to a phase with another Defence, and whether the four stages of the third
-	 * reset them, is not known). The Defence left is then shown as not known ({@link DrainTracker#carryUnknown}).
-	 */
-	static boolean carriesUnknown(int oldId, int newId)
-	{
-		int before = phase(OCELLUS, oldId);
-		int after = phase(OCELLUS, newId);
-		return before >= 0 && after >= 0 && before != after;
-	}
 
 	/**
 	 * True for an NPC id whose drains are counted for nothing because it is not known that it takes them
