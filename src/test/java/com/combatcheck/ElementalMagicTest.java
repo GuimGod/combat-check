@@ -158,6 +158,16 @@ public class ElementalMagicTest
 		assertNull(SetEffects.brokenFragment("Untradeable drop: Fragment of burning fire"));
 		assertEquals(16436, SetEffects.FRAGMENT_FIRE_VARBIT);
 		assertEquals(16434, SetEffects.FRAGMENT_EARTH_VARBIT);
+		// RuneLite's game values: TFA_MOTE_FIRE/WATER/EARTH/AIR_UNLOCKED
+		assertEquals(net.runelite.api.gameval.VarbitID.TFA_MOTE_FIRE_UNLOCKED, SetEffects.FRAGMENT_FIRE_VARBIT);
+		assertEquals(net.runelite.api.gameval.VarbitID.TFA_MOTE_WATER_UNLOCKED, SetEffects.FRAGMENT_WATER_VARBIT);
+		assertEquals(net.runelite.api.gameval.VarbitID.TFA_MOTE_EARTH_UNLOCKED, SetEffects.FRAGMENT_EARTH_VARBIT);
+		assertEquals(net.runelite.api.gameval.VarbitID.TFA_MOTE_AIR_UNLOCKED, SetEffects.FRAGMENT_AIR_VARBIT);
+		// all four broken read as all four; none as none
+		assertEquals(new java.util.HashSet<>(Arrays.asList("fire", "water", "earth", "air")),
+			SetEffects.brokenFragments(id -> id >= 16434 && id <= 16437 ? 1 : 0));
+		assertTrue(SetEffects.brokenFragments(id -> 0).isEmpty());
+		assertEquals(java.util.Collections.singleton("water"), SetEffects.brokenFragments(id -> id == 16437 ? 1 : 0));
 	}
 
 	/**

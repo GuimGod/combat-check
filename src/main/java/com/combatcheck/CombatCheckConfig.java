@@ -449,8 +449,8 @@ public interface CombatCheckConfig extends Config
 
 	@ConfigSection(
 		name = "Elemental magic",
-		description = "What adds to your fire, water, earth and air spells and is not on the items: ticked on its own when "
-			+ "the game says so, and you can tick it yourself",
+		description = "What adds to your fire, water, earth and air spells and is not on the items. The fragments are read "
+			+ "from the game; these options are a fallback, ticked on their own when the game says so",
 		position = 15,
 		closedByDefault = true
 	)
@@ -459,7 +459,8 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "fragmentFire",
 		name = "Fragment of burning fire",
-		description = "You broke it (the Fractured Archive): fire spells have 2 more on their base max hit, everywhere",
+		description = "You broke it (the Fractured Archive): fire spells have 2 more on their base max hit, everywhere. "
+			+ "Read from the game; tick it only if the plugin misses it",
 		position = 1,
 		section = elemental
 	)
@@ -471,7 +472,8 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "fragmentWater",
 		name = "Fragment of deep water",
-		description = "You broke it (the Fractured Archive): water spells have 2 more on their base max hit, everywhere",
+		description = "You broke it (the Fractured Archive): water spells have 2 more on their base max hit, everywhere. "
+			+ "Read from the game; tick it only if the plugin misses it",
 		position = 2,
 		section = elemental
 	)
@@ -483,7 +485,8 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "fragmentEarth",
 		name = "Fragment of living earth",
-		description = "You broke it (the Fractured Archive): earth spells have 2 more on their base max hit, everywhere",
+		description = "You broke it (the Fractured Archive): earth spells have 2 more on their base max hit, everywhere. "
+			+ "Read from the game; tick it only if the plugin misses it",
 		position = 3,
 		section = elemental
 	)
@@ -495,7 +498,8 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "fragmentAir",
 		name = "Fragment of whispering wind",
-		description = "You broke it (the Fractured Archive): air spells have 2 more on their base max hit, everywhere",
+		description = "You broke it (the Fractured Archive): air spells have 2 more on their base max hit, everywhere. "
+			+ "Read from the game; tick it only if the plugin misses it",
 		position = 4,
 		section = elemental
 	)

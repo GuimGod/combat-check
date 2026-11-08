@@ -409,11 +409,15 @@ public class CombatCheckPlugin extends Plugin
 		return "fragment" + Character.toUpperCase(element.charAt(0)) + element.substring(1);
 	}
 
-	/** The elemental fragments the player broke: the plugin's options, and the varbits recorded for fire and earth. */
+	/**
+	 * The elemental fragments the player broke: read from the game's varbits (all four); the plugin's options, ticked by
+	 * the game's message on breaking one or by hand, only add one the varbits do not show (logged out, or a varbit the
+	 * game moved).
+	 */
 	private java.util.Set<String> fragments()
 	{
-		java.util.Set<String> broken = new java.util.HashSet<>();
-		if (config.fragmentFire() || client.getVarbitValue(SetEffects.FRAGMENT_FIRE_VARBIT) == 1)
+		java.util.Set<String> broken = SetEffects.brokenFragments(client::getVarbitValue);
+		if (config.fragmentFire())
 		{
 			broken.add("fire");
 		}
@@ -421,7 +425,7 @@ public class CombatCheckPlugin extends Plugin
 		{
 			broken.add("water");
 		}
-		if (config.fragmentEarth() || client.getVarbitValue(SetEffects.FRAGMENT_EARTH_VARBIT) == 1)
+		if (config.fragmentEarth())
 		{
 			broken.add("earth");
 		}

@@ -154,12 +154,30 @@ final class SetEffects
 	}
 
 	/**
-	 * The varbits that turn 1 when an elemental fragment of the Fractured Archive is broken, as recorded fights saw
-	 * them (2026-10-24, fire; 2026-10-25, earth). Water's and air's were not recorded: they are known by the game's
-	 * message or by the plugin's option.
+	 * The varbits that turn 1 when an elemental fragment of the Fractured Archive is broken: RuneLite's game values name
+	 * them TFA_MOTE_EARTH_UNLOCKED (16434), TFA_MOTE_AIR_UNLOCKED (16435), TFA_MOTE_FIRE_UNLOCKED (16436) and
+	 * TFA_MOTE_WATER_UNLOCKED (16437); fire's and earth's were seen turning 1 in recorded fights when they were broken.
 	 */
-	static final int FRAGMENT_FIRE_VARBIT = 16436;
 	static final int FRAGMENT_EARTH_VARBIT = 16434;
+	static final int FRAGMENT_AIR_VARBIT = 16435;
+	static final int FRAGMENT_FIRE_VARBIT = 16436;
+	static final int FRAGMENT_WATER_VARBIT = 16437;
+
+	/** The elements whose fragment the game says is broken, by its varbits ({@code varbit} reads one). */
+	static java.util.Set<String> brokenFragments(java.util.function.IntUnaryOperator varbit)
+	{
+		java.util.Set<String> broken = new java.util.HashSet<>();
+		int[] ids = {FRAGMENT_FIRE_VARBIT, FRAGMENT_WATER_VARBIT, FRAGMENT_EARTH_VARBIT, FRAGMENT_AIR_VARBIT};
+		String[] elements = {"fire", "water", "earth", "air"};
+		for (int i = 0; i < ids.length; i++)
+		{
+			if (varbit.applyAsInt(ids[i]) == 1)
+			{
+				broken.add(elements[i]);
+			}
+		}
+		return broken;
+	}
 
 	/**
 	 * The element of the fragment the game says was broken ("You break open the fragment of burning fire and consume its
