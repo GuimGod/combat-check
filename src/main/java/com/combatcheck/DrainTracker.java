@@ -164,7 +164,10 @@ final class DrainTracker
 	{
 		final SpecialWeapon weapon;
 		int specs;
-		/** The hits that landed, for the weapons that hit more than once (the Tonalztics of Ralos); 0 for the others. */
+		/**
+		 * The hits that landed: for a weapon that hits more than once (the Tonalztics of Ralos) each of its hits, for the
+		 * others each special attack that dealt damage (a miss lowers nothing, but on Tekton).
+		 */
 		int hits;
 		/** True when one of them was estimated from what the client shows. */
 		boolean estimated;
@@ -208,10 +211,7 @@ final class DrainTracker
 				out.add(c);
 			}
 			c.specs++;
-			if (multiHit(r.weapon))
-			{
-				c.hits += Math.max(0, Math.min(r.hit, 2));
-			}
+			c.hits += multiHit(r.weapon) ? Math.max(0, Math.min(r.hit, 2)) : r.hit > 0 ? 1 : 0;
 			c.estimated |= r.estimatedBy != EXACT;
 		}
 		return out;

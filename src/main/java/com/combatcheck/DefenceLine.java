@@ -57,12 +57,14 @@ final class DefenceLine
 
 	/**
 	 * One weapon's words: its short name, then for a weapon that hits more than once its special attacks and the hits that
-	 * landed ("Ralos 1 spec (2hits)", "Ralos 2 specs (3hits)"), for the others how many ("Maul x1").
+	 * landed ("Ralos 1 spec (2hits)", "Ralos 2 specs (3hits)"), for the others how many ("Maul x1") when all of them
+	 * landed, and the special attacks and the hits that landed as for the Ralos when one missed ("Maul 2 specs (0hits)":
+	 * two Elder mauls that missed had read "Maul x2", though they lowered nothing).
 	 */
 	static String rowText(CombatCheckConfig.Language language, DrainTracker.WeaponCount c, boolean estimated)
 	{
 		String mark = estimated ? "~" : "";
-		if (DrainTracker.multiHit(c.weapon))
+		if (DrainTracker.multiHit(c.weapon) || c.hits < c.specs)
 		{
 			String specs = c.specs == 1 ? Words.of(language, Words.Key.ONE_SPEC)
 				: String.format(Words.of(language, Words.Key.SPECS), c.specs);
