@@ -186,7 +186,7 @@ public class ArchiveWeaponsTest
 		double[][] cases = {
 			{16640, 10.12, 9.43, 6.28}, // Bork
 			{16641, 6.64, 6.08, 7.60}, // the Smorks
-			{16652, 13.62, 12.89, 5.40}, // Ezekiel
+			{16652, 13.62, 12.89, 5.40}, // Ezekiel, at the Defence 140 the simulator was run with
 			{16667, 13.36, 12.64, 7.09}, // Moia
 			{16665, 14.67, 13.93, 10.94}, // Dreadnoth
 			{16684, 13.57, 12.84, 7.48}, // Xarth
@@ -198,6 +198,11 @@ public class ArchiveWeaponsTest
 		{
 			int npc = (int) c[0];
 			SetCalc.Target t = data.monster(npc).target();
+			if (npc == 16652)
+			{
+				// the table has the wiki's 200 now; the simulator's figures are for the first examine's 140
+				t.defenceLevel = 140;
+			}
 			if (Double.isNaN(c[1]))
 			{
 				assertEquals(0, perSecond(obligator(data), melee(true), t), 0);

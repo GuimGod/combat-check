@@ -482,14 +482,6 @@ final class DefenceDrains
 	 */
 	private static final int[] IMMUNE = {15628, 15629, 13011, 13012, 13013};
 	/**
-	 * The fights whose drains are not counted because it is not known what they do: the Fractured Archive's Ezekiel
-	 * (the official hotfix of 20 October gives him the 60% cap, so they lower him, but the game's Monster Examine read
-	 * Defence 159 after two Dragon warhammers that landed on him, above his first examine's 140, which no drain
-	 * explains: his buff may give the levels back; nothing not confirmed is modelled, the line says "Def ?"). Counted
-	 * as {@link #IMMUNE} until an examine before and after one shows what a drain does to him.
-	 */
-	private static final int[] NOT_CONFIRMED = {16652};
-	/**
 	 * The Fractured Archive's bosses whose Defence cannot be lowered below 60% of its base (official post "The Fractured
 	 * Archive - Out Today", 20 October 2026, its hotfix on Defence reduction: "The following NPCs should have a 60% cap on
 	 * their Defence Reduction, meaning an NPC with 100 Defence could have it reduced down to 60, but no further: Archive
@@ -579,10 +571,10 @@ final class DefenceDrains
 		return monster != null && (monster.awakened || immune(monster.id));
 	}
 
-	/** True for an NPC id of a fight that takes no drain at all ({@link #IMMUNE}), or none that is known ({@link #NOT_CONFIRMED}). */
+	/** True for an NPC id of a fight that takes no drain at all ({@link #IMMUNE}). */
 	static boolean immune(int npcId)
 	{
-		return has(IMMUNE, npcId) || has(NOT_CONFIRMED, npcId);
+		return has(IMMUNE, npcId);
 	}
 
 	/**
@@ -641,15 +633,6 @@ final class DefenceDrains
 	 * form between the first and the third in all nine fights recorded; the wiki gives it no id) and the third (16677).
 	 */
 	private static final int[][] OCELLUS = {{16673, 16674}, {16675}, {16677}};
-
-	/**
-	 * True for an NPC id whose drains are counted for nothing because it is not known that it takes them
-	 * ({@link #NOT_CONFIRMED}): the Defence left is shown as not known once one landed.
-	 */
-	static boolean notConfirmed(int npcId)
-	{
-		return has(NOT_CONFIRMED, npcId);
-	}
 
 	private static int phase(int[][] phases, int id)
 	{

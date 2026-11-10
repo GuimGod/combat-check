@@ -23,7 +23,7 @@ import org.junit.Test;
 /**
  * The Fractured Archive (Raids 4): the bosses' rows, which the calculator's data does not have yet
  * (tools/extra_monsters.json, archive_sets.tsv from tools/gen_archive.py), the drains across the Archive Guardian's
- * forms, "Def ?" where the Defence is not known (Ocellus's next phase, Ezekiel after a special attack, Dreadnoth's
+ * forms, "Def ?" where the Defence is not known (Ocellus's next phase, Ezekiel after he called on Saradomin, Dreadnoth's
  * Jellies, Bork stunned), Bork's stun, the hitpoints from the boss health bar; and the line of the best weapon in the
  * bank (hard cases 1 to 6 and 10 to 13).
  */
@@ -59,7 +59,7 @@ public class FracturedArchiveTest
 	/**
 	 * The rows: the wiki's numbers checked with in-game examines. The Archive Guardian with the
 	 * opening's Defence 260 and Magic 250 in both forms (the ground's own defence bonuses and fire weakness 40%), Ezekiel
-	 * as first examined (Defence 140), Bork with the wiki's Defence 300 and the examine's flat armour 8, the Smorks with
+	 * with the wiki's Defence 200 (the first examine read 140), Bork with the wiki's Defence 300 and the examine's flat armour 8, the Smorks with
 	 * flat armour 2, Dreadnoth a demon 25% more vulnerable to demonbane (the examine), Ocellus in his three phases.
 	 */
 	@Test
@@ -85,7 +85,7 @@ public class FracturedArchiveTest
 		assertEquals("fa", flying.immune);
 		assertEquals("a", ground.immune);
 		StyleData.Monster ezekiel = data.monster(16652);
-		assertEquals(140, ezekiel.level);
+		assertEquals(200, ezekiel.level);
 		assertEquals(200, ezekiel.magicLevel);
 		StyleData.Monster bork = data.monster(16640);
 		assertEquals(300, bork.level);
@@ -236,7 +236,7 @@ public class FracturedArchiveTest
 		assertEquals(0, drains.counted(3, npc));
 		assertNull(drains.of(3, npc));
 		assertTrue(drains.byWeapon(3, npc).isEmpty());
-		assertFalse("no \"Def ?\"", CombatCheckPlugin.defenceUnknown(DefenceDrains.notConfirmed(16675), 0));
+		assertFalse("no \"Def ?\"", CombatCheckPlugin.defenceUnknown(false, 0));
 
 		// the second phase's own Ralos, then 2 -> 3: dropped too
 		drains.add(3, npc, SpecialWeapon.TONALZTICS_OF_RALOS, 2, false, 200);
@@ -252,26 +252,42 @@ public class FracturedArchiveTest
 		assertEquals(1, drains.counted(3, npc));
 		assertEquals(1, drains.byWeapon(3, npc).size());
 		assertSame(SpecialWeapon.DRAGON_WARHAMMER, drains.byWeapon(3, npc).get(0).weapon);
-		assertFalse(CombatCheckPlugin.defenceUnknown(DefenceDrains.notConfirmed(16677), 1));
+		assertFalse(CombatCheckPlugin.defenceUnknown(false, 1));
 	}
 
 	/**
-	 * Hard case 4: no drain is confirmed on Ezekiel (an examine read Defence 159 after two Dragon warhammers):
-	 * the figures keep his full Defence and, once a special attack is counted on him, the line says "Def ?".
+	 * Ezekiel: the drains are counted on him, from the wiki's Defence 200 to its 60% floor, 120 (the official post of 21
+	 * October; the Obligator's hits recorded land more often after a special attack). After "Saradomin, give me
+	 * strength." his Defence is not known (it gives some back, how much the wiki does not say): "Def ?" once a special
+	 * attack is counted, to the end of the fight.
 	 */
 	@Test
-	public void ezekielShowsTheDefenceAsNotKnownAfterASpecialAttack() throws IOException
+	public void ezekielTakesTheDrainsUntilHeCallsOnSaradomin() throws IOException
 	{
 		StyleData data = new StyleData();
 		StyleData.Monster ezekiel = data.monster(16652);
-		assertTrue(DefenceDrains.immune(16652));
-		assertTrue(DefenceDrains.notConfirmed(16652));
+		assertFalse(DefenceDrains.immune(16652));
+		assertEquals(120, DefenceDrains.floor(16652, 200));
 		DefenceDrains drains = new DefenceDrains();
 		drains.add(SpecialWeapon.DRAGON_WARHAMMER, 40, false, 0);
 		assertEquals(140, DefenceDrains.left(ezekiel, 16652, MonsterLevels.scaled(ezekiel, null, null, null), drains, 0).defence);
-		assertTrue(CombatCheckPlugin.defenceUnknown(DefenceDrains.notConfirmed(16652), 1));
-		assertFalse(CombatCheckPlugin.defenceUnknown(DefenceDrains.notConfirmed(16652), 0));
-		assertFalse(DefenceDrains.notConfirmed(16640));
+		// a second one would take it to 98, under the floor: 120
+		drains.add(SpecialWeapon.DRAGON_WARHAMMER, 40, false, 0);
+		assertEquals(120, DefenceDrains.left(ezekiel, 16652, MonsterLevels.scaled(ezekiel, null, null, null), drains, 0).defence);
+
+		EzekielStrength strength = new EzekielStrength();
+		Object npc = new Object();
+		assertFalse("the figure, no \"Def ?\"", CombatCheckPlugin.defenceUnknown(strength.called(npc), 1));
+		strength.says(npc, 16640, "Saradomin, give me strength.");
+		strength.says(npc, EzekielStrength.EZEKIEL, "Divine judgement!");
+		assertFalse("another monster's words, or his other ones, change nothing", strength.called(npc));
+		strength.says(npc, EzekielStrength.EZEKIEL, "Saradomin, give me strength.");
+		assertTrue(strength.called(npc));
+		assertTrue(CombatCheckPlugin.defenceUnknown(strength.called(npc), 1));
+		assertFalse("no special attack counted, no line", CombatCheckPlugin.defenceUnknown(strength.called(npc), 0));
+		assertFalse("another Ezekiel is a fight of its own", strength.called(new Object()));
+		strength.forget(npc);
+		assertFalse(strength.called(npc));
 		assertEquals("Def ?", CombatCheckPlugin.unknownDefenceText(CombatCheckConfig.Language.ENGLISH, 1));
 	}
 
@@ -594,8 +610,8 @@ public class FracturedArchiveTest
 	public void theCappedBossesKeepSixtyPercentOfTheirDefence() throws IOException
 	{
 		StyleData data = new StyleData();
-		int[][] floors = {{16659, 260, 156}, {16660, 260, 156}, {16640, 300, 180}, {16667, 195, 117}, {16684, 170, 102},
-			{16673, 215, 129}, {16674, 215, 129}, {16677, 250, 150}};
+		int[][] floors = {{16659, 260, 156}, {16660, 260, 156}, {16652, 200, 120}, {16640, 300, 180}, {16667, 195, 117},
+			{16684, 170, 102}, {16673, 215, 129}, {16674, 215, 129}, {16677, 250, 150}};
 		for (int[] f : floors)
 		{
 			assertEquals("base of " + f[0], f[1], data.monster(f[0]).level);
@@ -611,9 +627,6 @@ public class FracturedArchiveTest
 		assertEquals(180, defenceAfter(data, 16640, dwh));
 		// the Archive Guardian on the ground: the old examine's 139 was before the cap; now no lower than 156
 		assertEquals(156, defenceAfter(data, 16660, everything()));
-		// Ezekiel has the cap too (60% of the examine's 140), though his drains are still not counted ("Def ?")
-		assertEquals(84, DefenceDrains.floor(16652, 140));
-		assertEquals(140, defenceAfter(data, 16652, everything()));
 	}
 
 	/** The hotfix's bosses with "no cap": Dreadnoth, the Smorks, the Dagon'hai and The Blade can be taken to 0. */

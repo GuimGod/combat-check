@@ -13,7 +13,7 @@ final class Words
 	enum Key
 	{
 		WRONG_PRAYER, PRAYER_OFF, PRAYER_STILL_ON, CHECK_BLOWPIPE, PIECES_LEFT, PIECES_OFF,
-		MELEE_PRAYER, RANGED_PRAYER, MAGIC_PRAYER, RUBY, DIAMOND, QUIVER, SPEC_ESTIMATED, DEFENCE_LEFT, SPECS, ONE_SPEC, MAGIC_LEFT, LOW_HP,
+		MELEE_PRAYER, RANGED_PRAYER, MAGIC_PRAYER, RUBY, DIAMOND, QUIVER, DEFENCE_LEFT, SPECS, ONE_SPEC, MAGIC_LEFT, LOW_HP,
 		BASH_ONE, BASH_MANY, DEFENCE_UNKNOWN, BANK, JELLY_CHINCHOMPA, SPEC_UNUSED, HITS, ONE_HIT
 	}
 
@@ -32,8 +32,6 @@ final class Words
 		{"Ruby", "Ruby", "Ruby", "Ruby", "Ruby"},
 		{"Diamond", "Diamond", "Diamond", "Diamond", "Diamond"},
 		{"quiver", "quiver", "quiver", "quiver", "quiver"},
-		// the note after the figures worked out with a special attack estimated ("spec" as players say it everywhere)
-		{"spec estimated", "spec estimada", "spec estimado", "Spec geschätzt", "spec estimé"},
 		// the monster's Defence before the special attacks and now ("Def 246 -> 158"); ASCII for the game's font
 		{"Def %d -> %s", "Def %d -> %s", "Def %d -> %s", "Vert %d -> %s", "Déf %d -> %s"},
 		{"%d specs", "%d specs", "%d specs", "%d Specs", "%d specs"},

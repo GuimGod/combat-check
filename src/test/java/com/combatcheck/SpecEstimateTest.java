@@ -565,14 +565,14 @@ public class SpecEstimateTest
 		assertEquals(SpecialWeapon.ELDER_MAUL, maul.get(0).weapon);
 	}
 
-	/** The overlay's one mark: "~" on each figure, the note once. */
+	/** The overlay's one mark: "~" on each figure, with no note after them. */
 	@Test
 	public void theFiguresAreMarked()
 	{
-		assertEquals("Slash ~+12% (spec estimated)", CombatCheckOverlay.marked("Slash +12%", "spec estimated"));
-		assertEquals("faltam 2 ~+0.4%", CombatCheckOverlay.marked("faltam 2 +0.4%", null));
-		assertEquals("Diamond ~+3% (quiver)", CombatCheckOverlay.marked("Diamond +3% (quiver)", null));
-		assertEquals("Crush", CombatCheckOverlay.marked("Crush", null));
-		assertEquals("spec estimada", Words.of(CombatCheckConfig.Language.PORTUGUESE, Words.Key.SPEC_ESTIMATED));
+		assertEquals("Slash ~+12%", CombatCheckOverlay.marked("Slash +12%"));
+		assertEquals("Augury desligado ~+10%", CombatCheckOverlay.marked("Augury desligado +10%"));
+		assertEquals("faltam 2 ~+0.4%", CombatCheckOverlay.marked("faltam 2 +0.4%"));
+		assertEquals("Diamond ~+3% (quiver)", CombatCheckOverlay.marked("Diamond +3% (quiver)"));
+		assertEquals("Crush", CombatCheckOverlay.marked("Crush"));
 	}
 }

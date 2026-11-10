@@ -799,6 +799,7 @@ public class CombatCheckPlugin extends Plugin
 		drainsEstimated = false;
 		hydra.clear();
 		bork.clear();
+		ezekiel.clear();
 		borkArmour.clear();
 		ocellus.clear();
 		specWeapon = null;
@@ -916,6 +917,7 @@ public class CombatCheckPlugin extends Plugin
 		drains.forget(event.getNpc().getIndex(), event.getNpc());
 		hydra.forget(event.getNpc());
 		bork.forget(event.getNpc());
+		ezekiel.forget(event.getNpc());
 		borkArmour.bork(event.getNpc().getId());
 		if (event.getNpc().getId() == XarthShield.XARTH && event.getNpc().isDead())
 		{
@@ -942,6 +944,7 @@ public class CombatCheckPlugin extends Plugin
 			NPC npc = (NPC) event.getActor();
 			hydra.says(npc, npc.getId(), event.getOverheadText(), client.getTickCount());
 			bork.says(npc, npc.getId(), event.getOverheadText(), client.getTickCount());
+			ezekiel.says(npc, npc.getId(), event.getOverheadText());
 			borkArmour.says(npc.getId(), event.getOverheadText());
 		}
 	}
@@ -961,6 +964,8 @@ public class CombatCheckPlugin extends Plugin
 	private final HydraShield hydra = new HydraShield();
 	/** Bork of the Fractured Archive stunned: his flat armour is 0 and his Defence is not known ({@link BorkStun}). */
 	private final BorkStun bork = new BorkStun();
+	/** Ezekiel of the Fractured Archive calling on Saradomin: his Defence is not known from then on ({@link EzekielStrength}). */
+	private final EzekielStrength ezekiel = new EzekielStrength();
 	/** Bork's flat armour and magic resistance by the Smorks' health ({@link BorkArmour}). */
 	private final BorkArmour borkArmour = new BorkArmour();
 	/** Ocellus's first phase out of melee's reach ({@link OcellusReach}). */
@@ -1548,6 +1553,12 @@ public class CombatCheckPlugin extends Plugin
 		{
 			return full;
 		}
+		if (ezekiel.called(npc))
+		{
+			// his Defence is not known after he called on Saradomin ("Def ?"): the figures keep his full one, as for a
+			// Defence never lowered, rather than drains from a Defence he no longer has
+			return full;
+		}
 		return DefenceDrains.left(monster, npc.getId(), full, drains.of(npc.getIndex(), npc),
 			drains.ticksSince(npc.getIndex(), npc, client.getTickCount()));
 	}
@@ -1714,14 +1725,15 @@ public class CombatCheckPlugin extends Plugin
 	}
 
 	/**
-	 * Whether the monster's Defence is not known now (the line says "Def ?"): a special attack counted on a monster no
-	 * drain is confirmed on (Ezekiel). Bork's stun is not one: it changes the figures (his flat armour), never the line, so
-	 * nothing on screen marks it. Ocellus's next phase is not one either: it starts from its full Defence
-	 * ({@link DefenceDrains#resets}).
+	 * Whether the monster's Defence is not known now (the line says "Def ?"): a special attack counted on Ezekiel after he
+	 * called on Saradomin, which gives him back Defence by an amount the wiki does not give ({@link EzekielStrength}). His
+	 * drains themselves are counted (from the wiki's Defence 200, to its 60% floor, 120). Bork's stun is not one: it
+	 * changes the figures (his flat armour), never the line, so nothing on screen marks it. Ocellus's next phase is not one
+	 * either: it starts from its full Defence ({@link DefenceDrains#resets}).
 	 */
-	static boolean defenceUnknown(boolean notConfirmed, int specs)
+	static boolean defenceUnknown(boolean notKnown, int specs)
 	{
-		return notConfirmed && specs > 0;
+		return notKnown && specs > 0;
 	}
 
 	/** The line of a Defence not known: "Def ?" (the special attacks counted go in the rows under it). */
@@ -1751,7 +1763,7 @@ public class CombatCheckPlugin extends Plugin
 			return null;
 		}
 		int specs = drains.counted(npc.getIndex(), npc);
-		if (defenceUnknown(DefenceDrains.notConfirmed(npc.getId()), specs))
+		if (defenceUnknown(ezekiel.called(npc), specs))
 		{
 			return unknownDefenceText(config.language(), specs);
 		}
@@ -2201,6 +2213,7 @@ public class CombatCheckPlugin extends Plugin
 			drainsEstimated = false;
 			hydra.clear();
 			bork.clear();
+			ezekiel.clear();
 			borkArmour.clear();
 			ocellus.clear();
 			xarth.clear();
