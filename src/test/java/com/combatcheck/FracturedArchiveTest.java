@@ -23,8 +23,8 @@ import org.junit.Test;
 /**
  * The Fractured Archive (Raids 4): the bosses' rows, which the calculator's data does not have yet
  * (tools/extra_monsters.json, archive_sets.tsv from tools/gen_archive.py), the drains across the Archive Guardian's
- * forms, "Def ?" where the Defence is not known (Ocellus's next phase, Ezekiel after he called on Saradomin, Dreadnoth's
- * Jellies, Bork stunned), Bork's stun, the hitpoints from the boss health bar; and the line of the best weapon in the
+ * forms, "Def ?" where the Defence is not known (Ezekiel after he called on Saradomin, Dreadnoth's Jellies), Bork
+ * stunned as the calculator counts him, the hitpoints from the boss health bar; and the line of the best weapon in the
  * bank (hard cases 1 to 6 and 10 to 13).
  */
 public class FracturedArchiveTest
@@ -322,7 +322,7 @@ public class FracturedArchiveTest
 	/**
 	 * Hard case 5: Bork's stun starts with its animation (14545) or his "Oof." and ends with the stomps' (14549)
 	 * or "Bork very angry!!", and never lasts more than the 14 ticks measured; while it lasts his flat armour is 0 (wiki)
-	 * and his Defence is "Def ?". Outside it his flat armour is the examine's 8.
+	 * and the Defence line is the usual one, with no "Def ?". Outside it his flat armour is the examine's 8.
 	 */
 	@Test
 	public void borksStunIsReadFromTheGame() throws IOException

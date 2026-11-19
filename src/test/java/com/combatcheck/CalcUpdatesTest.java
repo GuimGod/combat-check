@@ -93,6 +93,16 @@ public class CalcUpdatesTest
 		t.undead = true;
 		assertEquals(20, SetCalc.withBolt(SetCalc.ONYX, false, false, p, t, 40, 20, SetCalc.NO_SCALE, SetCalc.NO_SCALE, 0, 1),
 			0);
+		// with no bolts on, the gain shown is over the next best kind carried, not over the worst
+		boolean[] three = {false, true, true, true};
+		double[] top = CombatCheckPlugin.bestTwoKinds(new double[]{0, 5.0, 4.0, 5.5}, three);
+		assertEquals(SetCalc.ONYX, (int) top[0]);
+		assertEquals(5.5, top[1], 0);
+		assertEquals("the ruby's, not the diamond's", 5.0, top[2], 0);
+		double[] one = CombatCheckPlugin.bestTwoKinds(new double[]{0, 0, 4.0, 0}, new boolean[]{false, false, true, false});
+		assertEquals(2, (int) one[0]);
+		assertEquals("one kind: no next", -1, one[2], 0);
+		assertEquals(null, CombatCheckPlugin.bestTwoKinds(new double[4], new boolean[4]));
 		// with no monster yet: ruby, then diamond, then onyx, then any other bolts
 		assertEquals(2, CombatCheckPlugin.preferredBolts(new String[]{"Rune bolts", "Onyx bolts (e)", "Diamond bolts (e)"}));
 		assertEquals(1, CombatCheckPlugin.preferredBolts(new String[]{"Rune bolts", "Onyx bolts (e)"}));

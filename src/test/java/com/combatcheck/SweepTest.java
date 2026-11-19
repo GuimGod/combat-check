@@ -63,7 +63,7 @@ public class SweepTest
 			checked++;
 			// the Obligator's Thrust: its 20% or 40% more on a large monster taken off each damage roll here, off the max
 			// hit in the calculator, whose code marks the place as not known ("todo placement? ... is it post-roll?");
-			// half a percent apart at most (the approved plan of 2026-11-19 keeps the plugin's)
+			// half a percent apart at most (the plugin keeps its own placement)
 			double allowed = k.loadout.weaponName != null && k.loadout.weaponName.startsWith("Obligator") ? OBLIGATOR_THRUST
 				: FIGURE;
 			if (Math.abs(k.got - k.expected) > allowed * k.expected)

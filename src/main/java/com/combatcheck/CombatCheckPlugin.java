@@ -500,6 +500,37 @@ public class CombatCheckPlugin extends Plugin
 		return weaponAdvice;
 	}
 
+	/**
+	 * Of the bolt kinds seen (by {@link SetCalc#boltKind}), the best one, its damage and the next best kind's damage
+	 * (-1 when only one kind is carried): {kind, most, next}; null when none is seen. The gain shown with no bolts on is
+	 * over the next best kind, not over the worst.
+	 */
+	static double[] bestTwoKinds(double[] mostOfKind, boolean[] seen)
+	{
+		int best = 0;
+		double most = -1;
+		double next = -1;
+		for (int kind = 1; kind < seen.length; kind++)
+		{
+			if (!seen[kind])
+			{
+				continue;
+			}
+			double d = mostOfKind[kind];
+			if (best == 0 || d > most)
+			{
+				next = best == 0 ? -1 : most;
+				most = d;
+				best = kind;
+			}
+			else if (d > next)
+			{
+				next = d;
+			}
+		}
+		return best == 0 ? null : new double[]{best, most, next};
+	}
+
 	/** The ruby, diamond or onyx bolts (e) in the inventory that deal more right now ("Diamond +3%"), or null. */
 	WeaponAdvice boltAdvice()
 	{
@@ -2914,30 +2945,37 @@ public class CombatCheckPlugin extends Plugin
 			{
 				return null; // other bolts are on: their effect is not compared
 			}
-			SwitchSet.Piece best = null;
-			double most = -1;
-			double least = -1;
+			// the gain shown is over the next best kind carried (none: no gain)
+			SwitchSet.Piece[] bestOfKind = new SwitchSet.Piece[SetCalc.ONYX + 1];
+			double[] mostOfKind = new double[SetCalc.ONYX + 1];
 			for (SwitchSet.Piece p : carried)
 			{
-				if (SetCalc.boltKind(p.name) == 0 || !firesBolts(weaponId, inHand, p))
+				int kind = SetCalc.boltKind(p.name);
+				if (kind == 0 || !firesBolts(weaponId, inHand, p))
 				{
 					continue;
 				}
 				SwitchSet.Piece[] with = on.clone();
 				with[SwitchSet.AMMO] = p;
 				double d = SetCalc.perTick(loadout(with, weaponId), stats, target, true);
-				least = least < 0 ? d : Math.min(least, d);
-				if (d > most)
+				if (bestOfKind[kind] == null || d > mostOfKind[kind])
 				{
-					most = d;
-					best = p;
+					bestOfKind[kind] = p;
+					mostOfKind[kind] = d;
 				}
 			}
-			if (best == null)
+			boolean[] seen = new boolean[SetCalc.ONYX + 1];
+			for (int kind = 1; kind <= SetCalc.ONYX; kind++)
+			{
+				seen[kind] = bestOfKind[kind] != null;
+			}
+			double[] top = bestTwoKinds(mostOfKind, seen);
+			if (top == null)
 			{
 				return null;
 			}
-			double over = SetCalc.gain(least, most);
+			SwitchSet.Piece best = bestOfKind[(int) top[0]];
+			double over = top[2] < 0 ? 0 : SetCalc.gain(top[2], top[1]);
 			WeaponAdvice advice = new WeaponAdvice();
 			advice.itemId = best.itemId;
 			advice.gain = Double.isNaN(over) ? 0 : over;

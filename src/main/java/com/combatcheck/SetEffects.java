@@ -93,7 +93,8 @@ final class SetEffects
 		// diary and utility items carried for their teleports and perks; their +1 bonuses are not why they are there
 		"Karamja gloves", "Explorer's ring", "Slayer ring", "Ardougne cloak", "Desert amulet", "Morytania legs",
 		"Fremennik sea boots", "Kandarin headgear", "Falador shield", "Varrock armour", "Western banner", "Wilderness sword",
-		// worn for its healing when the player wants it, never for its bonuses: not asked for over a damage amulet (KEPT)
+		// worn for its healing when the player wants it, never for its bonuses: not asked for over a damage amulet (kept
+		// over the Amulet of rancour only: SetEffects.keptOver)
 		"Amulet of blood fury",
 	};
 
