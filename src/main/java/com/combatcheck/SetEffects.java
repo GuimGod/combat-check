@@ -77,8 +77,9 @@ final class SetEffects
 		// sets that work as a whole
 		"Void ", "Elite void ", "Obsidian helmet", "Obsidian platebody", "Obsidian platelegs", "Berserker necklace",
 		// a Barrows set is kept only with its own weapon in hand and all its pieces on the player: isBarrowsSetPiece
-		"Amulet of the damned",
-		"Blood moon ", "Blue moon ", "Eclipse moon ",
+		"Amulet of the Damned",
+		// the game's names since 2026-10 ("Blood Moon helm"; the calculator's 7e1dae8): matched with no regard to case
+		"Blood Moon ", "Blue Moon ", "Eclipse Moon ",
 		// worn for the special attack energy it restores; it has no bonuses to compare
 		"Lightbearer",
 		// Slayer bracelets: worn for what they do to the task, with no bonuses at all, so any glove "beats" them
@@ -92,6 +93,8 @@ final class SetEffects
 		// diary and utility items carried for their teleports and perks; their +1 bonuses are not why they are there
 		"Karamja gloves", "Explorer's ring", "Slayer ring", "Ardougne cloak", "Desert amulet", "Morytania legs",
 		"Fremennik sea boots", "Kandarin headgear", "Falador shield", "Varrock armour", "Western banner", "Wilderness sword",
+		// worn for its healing when the player wants it, never for its bonuses: not asked for over a damage amulet (KEPT)
+		"Amulet of blood fury",
 	};
 
 	private SetEffects()
@@ -556,12 +559,24 @@ final class SetEffects
 		}
 		for (String prefix : KEPT)
 		{
-			if (itemName.startsWith(prefix))
+			if (startsWith(itemName, prefix))
 			{
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * True when the worn piece stays over the one carried even though the carried one scores higher: the
+	 * Amulet of blood fury, worn for the hitpoints its hits heal back, is not swapped for the Amulet of rancour.
+	 * Only over the Rancour: with a bow or a staff the Anguish, the Occult and the rest are asked for over it as over
+	 * any amulet.
+	 */
+	static boolean keptOver(String wornName, String carriedName)
+	{
+		return wornName != null && carriedName != null
+			&& wornName.startsWith("Amulet of blood fury") && carriedName.startsWith("Amulet of rancour");
 	}
 
 	/** True for an item that is carried to be used (a teleport) and must never be listed as a switch piece. */
@@ -684,8 +699,8 @@ final class SetEffects
 		l.conflictionGauntlets = names != null && names.stream().anyMatch(n -> n != null && n.equalsIgnoreCase("Confliction gauntlets"));
 		l.elementalAmulet = elementalAmulet(names);
 		// the calculator's isWearingBloodMoonSet: the Dual macuahuitl with the helm, the chestplate and the tassets
-		l.bloodMoonSet = hasStart(names, "Dual macuahuitl") && hasStart(names, "Blood moon helm")
-			&& hasStart(names, "Blood moon chestplate") && hasStart(names, "Blood moon tassets");
+		l.bloodMoonSet = hasStart(names, "Dual macuahuitl") && hasStart(names, "Blood Moon helm")
+			&& hasStart(names, "Blood Moon chestplate") && hasStart(names, "Blood Moon tassets");
 	}
 
 	/**
@@ -885,8 +900,13 @@ final class SetEffects
 			|| itemName.startsWith("Elite void robe");
 	}
 
+	/**
+	 * Whether the item's name starts so, with no regard to case: the game renames items now and then by case alone
+	 * ("Blood moon helm" became "Blood Moon helm", "Amulet of the damned" "Amulet of the Damned"), which left the Blood Moon
+	 * set unseen until 2026-11-19.
+	 */
 	private static boolean startsWith(String s, String prefix)
 	{
-		return s != null && s.startsWith(prefix);
+		return s != null && s.regionMatches(true, 0, prefix, 0, prefix.length());
 	}
 }

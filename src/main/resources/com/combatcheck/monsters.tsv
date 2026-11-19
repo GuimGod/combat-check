@@ -1,4 +1,4 @@
-# npc id (its negative: the awakened fight of that id)	name	defence level	stab	slash	crush	magic level	magic defence	light	standard	heavy	size	magic for the twisted bow	flat armour	immune to (M melee, f melee but a polearm, r ranged, g magic, p all but melee with a pickaxe, b all but a demonbane weapon, i all but ranged with Ice arrows on, w magic but a water spell, a the Ancient Magicks)	slayer categories separated by ; (tools/gen_slayer.py)	attributes (u undead, d demon, r dragon, k kalphite, l leafy, x xerician, 1 2 3 a vampyre of that tier)	demonbane vulnerability in percent (empty for 100)	hitpoints	elemental weakness (air, water, earth, fire)	its size in percent	damage of each hit that lands divided by, for melee;ranged;magic (empty for none)	rules (D magic defence rolled with the Defence level, F no division for a fire spell or a demonbane weapon, 1 a divided hit that landed stays at least 1, P no division with a pickaxe, Z the ogres: half for Crumble Undead, no division for a Comp ogre bow with brutal arrows)	attack level	strength level	ranged level	magic attack bonus	Chambers of Xeric scaling (m the rooms, s the singles formula, H the Great Olm head, L its melee hand, R its mage hand; empty outside the raid)	its rules (d Magic counts with the defensive levels, t Tekton, c the Glowing crystal, g a Guardian)	Theatre of Blood and Tombs of Amascut (b the Theatre in normal or Hard Mode, e in Entry Mode; t the Tombs, with its path H Het, A Apmeken, S Scabaras, C Crondis, o no defence roll scaling, w the Warden's core; F the Fractured Archive: its hitpoints are read from the boss health bar; empty outside them)	each hit that lands multiplied by, for melee;ranged;magic (empty for none)	always hit at the max with (m melee, r ranged, g magic)	more rules (T the Hueycoatl's tail limits each hit, O no ranged figure: the Royal Titans' ranged accuracy depends on where they stand, X Araxxor enrages at a quarter of his hitpoints, V Verzik's first phase limits each hit to a random 0 to 10 for melee and 0 to 3 otherwise, E the Royal Titans' elementals: magic lands with the magic attack bonus / 100 + 0.3, W the Wardens of the second phase: every attack lands, ranged and magic deal 15% to 60% of the max by what is left of the attack roll, A every attack lands, K a hit that lands kills it)	Defence level when enraged (the calculator's Enraged version of the same id; empty for none)
+# npc id (its negative: the awakened fight of that id)	name	defence level	stab	slash	crush	magic level	magic defence	light	standard	heavy	size	magic for the twisted bow	flat armour	immune to (M melee, f melee but a polearm, r ranged, g magic, p all but melee with a pickaxe, s all but melee with Magic secateurs, b all but a demonbane weapon, i all but ranged with Ice arrows on, w magic but a water spell, a the Ancient Magicks)	slayer categories separated by ; (tools/gen_slayer.py)	attributes (u undead, d demon, r dragon, k kalphite, l leafy, x xerician, 1 2 3 a vampyre of that tier)	demonbane vulnerability in percent (empty for 100)	hitpoints	elemental weakness (air, water, earth, fire)	its size in percent	damage of each hit that lands divided by, for melee;ranged;magic (empty for none)	rules (D magic defence rolled with the Defence level, F no division for a fire spell or a demonbane weapon, 1 a divided hit that landed stays at least 1, P no division with a pickaxe, Z the ogres: half for Crumble Undead, no division for a Comp ogre bow with brutal arrows)	attack level	strength level	ranged level	magic attack bonus	Chambers of Xeric scaling (m the rooms, s the singles formula, H the Great Olm head, L its melee hand, R its mage hand; empty outside the raid)	its rules (d Magic counts with the defensive levels, t Tekton, c the Glowing crystal, g a Guardian)	Theatre of Blood and Tombs of Amascut (b the Theatre in normal or Hard Mode, e in Entry Mode; t the Tombs, with its path H Het, A Apmeken, S Scabaras, C Crondis, o no defence roll scaling, w the Warden's core; F the Fractured Archive: its hitpoints are read from the boss health bar; empty outside them)	each hit that lands multiplied by, for melee;ranged;magic (empty for none)	always hit at the max with (m melee, r ranged, g magic)	more rules (T the Hueycoatl's tail limits each hit, O no ranged figure: the Royal Titans' ranged accuracy depends on where they stand, X Araxxor enrages at a quarter of his hitpoints, V Verzik's first phase limits each hit to a random 0 to 10 for melee and 0 to 3 otherwise, E the Royal Titans' elementals: magic lands with the magic attack bonus / 100 + 0.3, W the Wardens of the second phase: every attack lands, ranged and magic deal 15% to 60% of the max by what is left of the attack roll, A every attack lands, K a hit that lands kills it)	Defence level when enraged (the calculator's Enraged version of the same id; empty for none)
 15165	A corpse	90	0	0	0	1	0	0	0	0	1	1	0		zombies			90	fire	50			90	90	1	0							
 3477	A Doubt	85	0	0	0	1	0	0	0	0	1	1	0					59					72	58	1	0							
 2	Aberrant spectre	90	20	20	20	105	0	15	-15	15	2	105	0		aberrant spectres	u		90	air	50			1	1	1	0							
@@ -166,7 +166,7 @@
 3182	Aviansie	115	0	0	0	1	0	-20	0	0	2	1	0	f	aviansie			79	air	45			1	1	101	0							
 7288	Awakened Altar	1	0	0	0	1	0	0	0	0	1	1	0			d		100					1	1	1	0							
 11778	Ba-Ba	80	80	160	240	100	280	200	200	120	5	100	0					380					150	160	0	0			tA				
-11781	Baboon	50	10	50	50	50	50	50	50	50	1	50	0					10					0	0	80	0							
+11781	Baboon	50	10	50	50	50	50	50	50	50	1	50	0					10					0	0	80	0			tR				
 11709	Baboon Brawler	12	900	900	900	40	-60	900	900	900	1	40	0					25				D	40	40	40	20			tR		g		
 11712	Baboon Brawler	20	900	900	900	60	-60	900	900	900	1	60	0					30				D	60	60	40	25			tR		g		
 11711	Baboon Mage	12	900	900	900	40	900	-50	-50	-50	1	40	0					20					40	40	40	20			tR		r		
@@ -192,8 +192,8 @@
 245	Baby red dragon	40	0	50	50	1	40	30	30	10	2	1	0		red dragons	r		50	water	50			40	40	1	0							
 246	Baby red dragon	40	0	50	50	1	40	30	30	10	2	1	0		red dragons	r		50	water	50			40	40	1	0							
 762	Baby Roc	70	0	0	0	1	150	0	0	0	1	1	0		birds			50	air	30			70	70	1	0							
-5854	Baby tanglefoot	40	0	0	0	1	0	0	0	0	1	1	0					40	fire	20			40	38	1	0							
-5853	Baby tanglefoot	40	0	0	0	1	0	0	0	0	1	1	0					40	fire	20			40	38	1	0							
+5854	Baby tanglefoot	40	0	0	0	1	0	0	0	0	1	1	0	s				40	fire	20			40	38	1	0							
+5853	Baby tanglefoot	40	0	0	0	1	0	0	0	0	1	1	0	s				40	fire	20			40	38	1	0							
 13530	Balance Elemental	275	5	0	-40	275	-40	5	0	-40	3	275	0					750					275	286	275	0							
 13529	Balance Elemental	275	5	0	-40	275	-40	5	0	-40	3	275	0					750					275	286	275	0							
 13528	Balance Elemental	275	5	0	-40	275	-40	5	0	-40	3	275	0					750					275	286	275	0							
@@ -796,7 +796,7 @@
 5641	Feral Vampyre	30	0	0	0	0	0	0	0	0	1	0	0		vampyres	1		135					105	76	0	0							
 5642	Feral Vampyre	30	0	0	0	0	0	0	0	0	1	0	0		vampyres	1		185					120	116	0	0							
 3237	Feral Vampyre	55	0	0	0	40	0	0	0	0	1	40	0		vampyres	1		40					55	60	1	0							
-3707	Feral Vampyre	60	0	0	0	1	0	0	0	0	1	1	0		vampyres	1		80					55	30	1	0							
+3707	Feral Vampyre	30	0	0	0	1	0	0	0	0	1	1	0		vampyres	1		80					55	60	0	0							
 5640	Feral Vampyre	30	0	0	0	0	0	0	0	0	1	0	0		vampyres	1		75					90	46	0	0							
 3234	Feral Vampyre	65	0	0	0	50	0	0	0	0	1	50	0		vampyres	1		50					65	70	1	0							
 3137	Feral Vampyre	81	0	0	0	1	0	0	0	0	1	1	0		vampyres	1		60					65	66	1	0							
@@ -1004,7 +1004,7 @@
 2025	Greater demon	81	0	0	0	1	-10	0	0	0	3	1	0		greater demons	d		87	water	40			76	78	1	0							
 7278	Greater Nechryael	85	50	50	50	1	0	50	50	50	1	1	0		nechryael	d		205					197	197	1	0							
 11240	Greater Nechryael	85	50	50	50	1	0	50	50	50	1	1	0		nechryael	d		205					197	197	1	0							
-12108	Greater Skeleton Hellhound (Calvar'ion)	110	95	101	15	1	156	184	184	184	0	1	0		hellhounds;skeletons	u		30	earth	40			150	170	1	0							
+12108	Greater Skeleton Hellhound (Calvar'ion)	110	95	101	15	1	156	184	184	184	2	1	0		hellhounds;skeletons	u		30	earth	40			150	170	1	0							
 6614	Greater Skeleton Hellhound (Vet'ion)	180	150	163	20	1	210	275	275	275	2	1	0		hellhounds;skeletons	u		30	earth	40			228	295	1	0							
 260	Green dragon	68	0	40	40	68	30	50	50	10	4	68	0		green dragons	r		75	water	50			68	68	1	0							
 7868	Green dragon	68	0	40	40	75	30	50	50	10	4	75	0		green dragons	r		100	water	50			68	75	1	0							
@@ -1055,10 +1055,10 @@
 4522	Guard (H.A.M. Storerooms)	12	7	7	0	1	0	7	7	7	1	1	0					30					16	20	1	0							
 397	Guard (Hosidius)	16	5	5	5	1	-4	5	5	5	1	1	0					22					15	15	26	0							
 399	Guard (Hosidius)	16	5	5	5	1	-4	5	5	5	1	1	0					22					15	15	1	0							
-14887	Guard (Port Roberts)	14	18	25	19	0	-4	0	0	0	1	0	0					22					19	0	0	0							
-14888	Guard (Port Roberts)	14	18	25	19	0	-4	0	0	0	1	0	0					22					19	0	0	0							
-14889	Guard (Port Roberts)	14	18	25	19	0	-4	0	0	0	1	0	0					22					19	0	0	0							
-14890	Guard (Port Roberts)	14	18	25	19	0	-4	0	0	0	1	0	0					22					19	0	0	0							
+14887	Guard (Port Roberts)	14	18	25	19	1	-4	20	20	20	1	1	0					22					19	18	1	0							
+14888	Guard (Port Roberts)	14	18	25	19	1	-4	20	20	20	1	1	0					22					19	18	1	0							
+14889	Guard (Port Roberts)	14	18	25	19	1	-4	20	20	20	1	1	0					22					19	18	1	0							
+14890	Guard (Port Roberts)	14	18	25	19	1	-4	20	20	20	1	1	0					22					19	18	1	0							
 1546	Guard (Port Sarim jail)	14	18	25	19	1	-4	20	20	20	1	1	0					22					19	18	1	0							
 1547	Guard (Port Sarim jail)	14	18	25	19	1	-4	20	20	20	1	1	0					22					19	18	1	0							
 1548	Guard (Port Sarim jail)	14	18	25	19	1	-4	20	20	20	1	1	0					22					19	18	1	0							
@@ -2090,7 +2090,7 @@
 130	Skeleton guard	17	9	11	-2	1	1	4	4	4	1	1	0					29	air	35			15	18	1	0							
 1540	Skeleton heavy	110	0	3	2	1	-3	2	2	2	1	1	1		skeletons	u		114	earth	35			115	114	1	0							
 5054	Skeleton Hellhound	100	0	0	0	1	0	0	0	0	2	1	0		hellhounds	d		55	earth	35			70	110	1	0							
-12107	Skeleton Hellhound (Calvar'ion)	95	76	73	10	1	126	155	155	155	0	1	0		hellhounds;skeletons	u		30	earth	30			110	150	1	0							
+12107	Skeleton Hellhound (Calvar'ion)	95	76	73	10	1	126	155	155	155	2	1	0		hellhounds;skeletons	u		30	earth	30			110	150	1	0							
 6326	Skeleton Hellhound (Nightmare Zone)	100	0	0	0	1	0	0	0	0	2	1	0			d		132	earth	35			168	264	1	0							
 6387	Skeleton Hellhound (Nightmare Zone)	100	0	0	0	1	0	0	0	0	2	1	0			d		55	earth	35			70	110	1	0							
 6613	Skeleton Hellhound (Vet'ion)	150	101	103	10	1	180	266	266	266	2	1	0		hellhounds;skeletons	u		30	earth	30			210	250	1	0							
@@ -2229,9 +2229,9 @@
 8065	Stone Guardian	138	10	10	0	118	55	25	25	25	1	118	0					62	earth	40			1	1	128	0							
 14706	Strange creature (Shadows of Custodia)	45	30	-10	50	25	35	-10	5	30	1	25	0		custodian stalker			100	fire	30			95	55	1	5							
 12063	Strange Creature	200	110	90	80	150	-10	160	160	160	5	150	0					550					280	280	280	90							
-12076	Strange Creature	200	110	90	80	179	280	0	0	0	5	179	0					550					280	280	335	90							
-12073	Strange Creature	200	110	90	80	150	280	0	0	0	5	150	0					550					280	280	280	90							
-12075	Strange Creature	200	110	90	80	180	280	0	0	0	5	180	0					75					280	280	336	90							
+12076	Phantom Muspah	200	110	90	80	179	280	0	0	0	5	179	0					550					280	280	335	90							
+12073	Phantom Muspah	200	110	90	80	150	280	0	0	0	5	150	0					550					280	280	280	90							
+12075	Phantom Muspah	200	110	90	80	180	280	0	0	0	5	180	0					75					280	280	336	90							
 685	Stranger	80	81	93	98	1	1	82	82	82	1	1	0					80					90	80	1	1							
 12288	Strangled Bear	40	30	20	30	60	10	0	0	0	3	60	0					100					190	70	0	0							
 12289	Strangled Boar	40	30	20	30	60	10	0	0	0	1	60	0					40					190	70	0	0							
@@ -2268,9 +2268,9 @@
 5615	Swamp snake	70	0	0	0	30	0	0	0	0	3	30	0					120					50	50	30	0							
 3603	Swordchick	45	0	0	0	1	0	0	0	0	1	1	0					35					41	42	1	0							
 7793	Taloned Wyvern	90	50	70	70	90	140	120	70	120	3	90	0		fossil island wyverns	r		200	air	35			120	110	90	0							
-5848	Tanglefoot	91	0	0	0	1	0	0	0	0	1	1	0					102					97	97	1	0							
-6291	Tanglefoot (Nightmare Zone)	91	0	0	0	1	0	0	0	0	1	1	0					204	fire	35			194	194	1	0							
-6353	Tanglefoot (Nightmare Zone)	91	0	0	0	1	0	0	0	0	1	1	0					102	fire	35			97	97	1	0							
+5848	Tanglefoot	91	0	0	0	1	0	0	0	0	1	1	0	s				102					97	97	1	0							
+6291	Tanglefoot (Nightmare Zone)	91	0	0	0	1	0	0	0	0	1	1	0	s				204	fire	35			194	194	1	0							
+6353	Tanglefoot (Nightmare Zone)	91	0	0	0	1	0	0	0	0	1	1	0	s				102	fire	35			97	97	1	0							
 7804	Tar Monster	70	0	0	0	1	0	0	0	0	2	1	0					200					120	80	100	0							
 4764	Target	1	0	0	0	1	0	0	0	0	1	1	0					1					1	1	1	0							
 4763	Target	1	0	0	0	1	0	0	0	0	1	1	0					1					1	1	1	0							
@@ -2377,8 +2377,8 @@
 7150	Tortured gorilla	95	0	0	0	95	25	0	0	0	2	95	0		monkeys			210					105	95	95	20							
 7095	Tortured gorilla	110	0	0	0	110	0	0	0	0	2	110	0		monkeys			110					180	90	1	0							
 2999	Tortured soul	38	0	0	0	1	0	0	0	0	1	1	0		ghosts	u		51					52	62	1	0							
-9435	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
-9436	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200					1	1	1	0							
+9435	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
+9436	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200					1	1	1	0							
 3551	Tough Guy	50	9	8	10	80	0	0	0	0	1	80	0					75					85	50	0	0							
 6066	Tower Archer	10	0	0	0	1	24	40	40	40	1	1	0					50					10	10	40	0							
 6065	Tower Archer	10	0	0	0	1	6	12	12	12	1	1	0					30					10	10	20	0							
@@ -2847,13 +2847,13 @@
 8373	Verzik Vitur	200	100	60	100	400	70	250	250	250	3	400	0					3500				D	400	400	400	80			b				
 8375	Verzik Vitur	150	70	30	70	300	100	230	230	230	7	300	0					3500	fire	50			400	400	300	80							
 8388	Sotetseg	200	70	70	70	250	30	150	150	150	5	250	0					4000					250	250	250	-10			b				
-9434	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
-9437	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
-9438	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
-9440	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
-9441	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
-9443	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
-9444	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
+9434	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
+9437	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
+9438	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
+9440	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
+9441	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
+9443	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
+9444	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0				1;1;2			
 10766	Xarpus	100	0	0	0	80	0	100	100	100	5	80	0					3400	air	50			1	1	50	0			e				
 10767	Xarpus	100	0	0	0	80	0	100	100	100	5	80	0					3400	air	50			1	1	50	0			e				
 10769	Xarpus	100	0	0	0	80	0	100	100	100	5	80	0					3400	air	50			1	1	50	0			e				
@@ -3232,7 +3232,7 @@
 3697	Vampyre Juvenile	30	0	0	0	1	0	0	0	0	1	1	0		vampyres	1		60					40	30	1	0							
 3698	Vampyre Juvinate	30	0	0	0	1	0	0	0	0	1	1	0		vampyres	2		85					40	40	1	0							
 3699	Vampyre Juvinate	30	0	0	0	1	0	0	0	0	1	1	0		vampyres	2		85					40	40	1	0							
-3708	Feral Vampyre	60	0	0	0	1	0	0	0	0	1	1	0		vampyres	1		80					55	30	1	0							
+3708	Feral Vampyre	30	0	0	0	1	0	0	0	0	1	1	0		vampyres	1		80					55	60	1	0							
 3713	Vyrewatch	85	0	0	0	105	0	0	0	0	1	105	0		vampyres	3		90					105	86	105	0							
 3714	Vyrewatch	85	0	0	0	110	0	0	0	0	1	110	0		vampyres	3		90					110	96	110	0							
 3715	Vyrewatch	85	0	0	0	120	0	0	0	0	1	120	0		vampyres	3		105					120	106	120	0							
@@ -3714,9 +3714,9 @@
 9431	The Nightmare	150	120	180	40	150	600	600	600	600	5	150	0					2400					150	150	150	140							
 9432	The Nightmare	150	120	180	40	150	600	600	600	600	5	150	0					2400					150	150	150	140							
 9433	The Nightmare	150	120	180	40	150	600	600	600	600	5	150	0					2400					150	150	150	140							
-9439	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0							
-9442	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0							
-9445	Totem (Phosani's Nightmare)	0	0	0	0	1	0	0	0	0	3	1	0					200	fire	70			1	1	1	0							
+9439	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0							
+9442	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0							
+9445	Totem (Phosani's Nightmare)	0	-100	-100	-100	1	-100	0	0	0	3	1	0					200	fire	70			1	1	1	0							
 9460	The Nightmare	150	120	180	40	150	600	600	600	600	5	150	0					2400					150	150	150	140							
 9488	Chicken	1	-42	-42	-42	1	-42	-42	-42	-42	1	1	0		birds			3					1	1	1	0							
 9503	Iorwerth Warrior	80	50	70	70	1	60	50	50	50	1	1	0		elves			105					95	95	0	0							
@@ -3843,8 +3843,8 @@
 12057	General Khazard	80	0	0	0	1	0	0	0	0	2	1	0					170					75	78	1	0							
 12058	General Khazard	80	0	0	0	1	0	0	0	0	2	1	0					170					75	78	1	0							
 12059	General Khazard	80	0	0	0	1	0	0	0	0	2	1	0					170					75	78	1	0							
-12074	Strange Creature	200	110	90	80	150	-10	160	160	160	5	150	0					550					280	280	280	90							
-12081	Strange Creature	200	110	90	80	150	280	0	0	0	5	150	0					550					280	280	280	90							
+12074	Phantom Muspah	200	110	90	80	150	-10	160	160	160	5	150	0					550					280	280	280	90							
+12081	Phantom Muspah	200	110	90	80	150	280	0	0	0	5	150	0					550					280	280	280	90							
 12084	Snake (desert)	3	0	0	0	1	0	0	0	0	1	1	0					6					4	5	1	0							
 12095	Clivet	4	5	6	8	1	0	0	0	0	1	1	0					25					10	10	1	0							
 12205	The Whisperer	250	180	300	220	180	10	300	300	300	3	190	0		bosses			900	earth	60			280	280	180	190							
@@ -3968,7 +3968,7 @@
 15232	Mogre (sea)	40	0	0	0	1	0	0	0	0	2	1	0		mogres;ogres			59					40	50	60	0							
 15440	Giant mosquito	45	2	2	5	1	2	0	0	0	1	1	0					3	fire	40			5	1	1	0							
 15441	Leech	35	0	0	0	1	0	0	0	0	1	1	0					45					80	20	1	0							
-15627	Brutus	10	-7	-7	-7	8	-3	-7	-7	-7	3	8	0		cows			58	earth	25			12	25	1	0							
+15627	Brutus	10	-7	-7	-7	0	-3	-7	-7	-7	3	0	0		cows			60	earth	25			12	25	1	0							
 16224	Sanguidae	30	10	5	10	30	5	10	10	10	1	30	0					10	fire	40			200	90	1	0							
 16229	Ancient feral vyre	88	0	20	20	1	0	0	0	0	1	1	0			3		81					144	88	1	0							
 16271	Monk of Zamorak (Paterdomus)	22	0	0	0	25	0	0	0	0	1	25	0					20					18	18	1	0							
@@ -3979,28 +3979,35 @@
 16330	Mountain troll	40	0	0	10	0	200	200	40	200	1	0	0		trolls			90	fire	50			40	75	0	0							
 16331	Mountain troll	40	0	0	10	0	200	200	40	200	1	0	0		trolls			90	fire	50			40	75	0	0							
 16332	Mountain troll	40	0	0	10	0	200	200	40	200	1	0	0		trolls			90	fire	50			40	75	0	0							
-16659	Archive Guardian	260	120	110	20	250	130	75	120	50	5	350	0	fa				550	fire	80			250	240	280	350			F				
-16660	Archive Guardian	260	120	90	20	250	130	50	115	50	5	350	0	a				550	fire	40			250	240	280	350			F				
+16659	Archive Guardian	260	120	110	20	250	130	55	120	50	5	350	0	fa				550	fire	80			250	240	280	350			F				
+16660	Archive Guardian	260	120	90	20	250	50	50	115	50	5	350	0	a				550	fire	80			250	240	280	350			F				
 16652	Ezekiel	200	150	90	35	200	200	445	370	320	3	250	0					3000	earth	25			250	150	80	250			F				
-16640	Bork	300	140	130	10	90	300	80	50	5	4	90	8					1500	earth	40			200	200	200	0			F				
-16641	The Smorks	220	220	170	160	185	400	80	150	80	3	185	2					600	earth	85			1	1	185	185			F				
+16640	Bork	300	140	130	10	90	300	80	50	5	4	90	8					1650	earth	40			200	200	200	0			F				
+16641	The Smorks	220	220	170	160	185	400	80	150	80	3	185	2					650	earth	85			1	1	185	185			F				
 16667	Moia	195	20	110	15	350	30	60	120	140	3	350	0					785					1	1	200	300			F				
-16665	Dreadnoth the Jellied	125	15	20	5	220	20	100	80	80	5	220	0			d	125	2100	fire	85			280	285	250	0			F				
+16665	Dreadnoth the Jellied	125	15	20	5	220	20	100	80	80	5	220	0			d	25	2100	fire	85			280	285	250	0			F				
 16666	Jelly																																
-16684	Xarth	170	115	105	20	350	205	125	230	155	3	350	0			d		2600	water	85			250	225	220	250			F				
+16684	Xarth	170	60	105	20	350	205	125	230	155	3	350	0			d	80	2450	water	85			250	225	220	250			F				
 16687	Corpse	100	100	100	100	100	0	-20	80	80	1	100	0			u		62	water	40			50	40	1	0			F				
 16688	Corpse	100	-20	-20	-20	100	0	-20	80	80	1	100	0			u		62	fire	100			50	40	1	0			F				
-16673	Ocellus	215	150	95	60	350	100	50	135	50	3	350	0			d		2500					1	1	250	150			F				
-16674	Ocellus	215	150	95	60	350	100	50	135	50	3	350	0			d		2500					1	1	250	150			F				
+16673	Ocellus	215	150	95	60	350	100	50	135	50	3	350	0			d	80	2500					1	1	250	150			F				
+16674	Ocellus	215	150	95	60	350	100	50	135	50	3	350	0			d	80	2500					1	1	250	150			F				
 16675	Ocellus	250	150	120	10	220	100	100	110	80	3	220	0										1	1	1	0			F				
 16676	The Blade	250	150	120	10	220	100	100	110	80	3	220	0										1	1	1	0			F				
-16677	Ocellus	250	150	100	30	300	200	250	250	250	3	350	0			d		5250					325	250	300	350			F				
+16677	Ocellus	250	150	100	30	300	200	250	250	250	3	350	0			d	80	5250					325	250	300	350			F				
 16643	Dagon'hai Elder	100	50	50	50	290	100	80	80	80	2	290	0					640					1	1	260	1			F				
 16644	Dagon'hai Elder	100	50	50	50	290	100	80	80	80	2	290	0					640					1	1	260	1			F				
 16645	Dagon'hai Monk	100	50	50	50	290	100	80	80	80	2	290	0					640					1	1	260	1			F				
 16646	Dagon'hai Monk	100	50	50	50	290	100	80	80	80	2	290	0					640					1	1	260	1			F				
 16647	Dagon'hai Monk	100	50	50	50	290	100	80	80	80	2	290	0					640					1	1	260	1			F				
 16648	Dagon'hai Monk	100	50	50	50	290	100	80	80	80	2	290	0					640					1	1	260	1			F				
+4431	Feral Vampyre	30	0	0	0	1	0	0	0	0	1	1	0		vampyres	1		80					55	60	1	0							
+8381	Nylocas Ischyros	0	0	0	0	0	0	0	0	0	2	0	0					25	fire	15			0	0	0	0			b				
+8382	Nylocas Toxobolos	0	0	0	0	0	0	0	0	0	2	0	0					25	fire	15			0	0	0	0			b				
+8383	Nylocas Hagios	0	0	0	0	0	0	0	0	0	2	0	0					25	fire	15			0	0	0	0			b				
+10841	Nylocas Ischyros	0	0	0	0	0	0	0	0	0	2	0	0					3	fire	15			0	0	0	0			e				
+10842	Nylocas Toxobolos	0	0	0	0	0	0	0	0	0	2	0	0					3	fire	15			0	0	0	0			e				
+10843	Nylocas Hagios	0	0	0	0	0	0	0	0	0	2	0	0					3	fire	15			0	0	0	0			e				
 -12191	Duke Sucellus	316	255	65	190	465	440	320	320	320	7	465	0		bosses	d	70	1697					435	500	0	150							
 -12204	The Whisperer	300	180	300	220	225	10	300	300	300	3	225	0		bosses			2700	earth	60			378	378	243	190							
 -12205	The Whisperer	300	180	300	220	225	10	300	300	300	3	225	0		bosses			2700	earth	60			378	378	243	190							

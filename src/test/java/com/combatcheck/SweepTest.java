@@ -22,6 +22,8 @@ import org.junit.Test;
 public class SweepTest
 {
 	private static final double FIGURE = 0.001;
+	/** The Obligator's Thrust, where the plugin and the calculator place its size bonus apart (below). */
+	private static final double OBLIGATOR_THRUST = 0.005;
 	/**
 	 * Where the OSRS Wiki decides against the calculator and the plugin follows the wiki (README, "Other fights with a
 	 * rule of their own"; MonsterTableTest checks each in the table): the monster, and the class whose figures differ
@@ -59,7 +61,12 @@ public class SweepTest
 				continue;
 			}
 			checked++;
-			if (Math.abs(k.got - k.expected) > FIGURE * k.expected)
+			// the Obligator's Thrust: its 20% or 40% more on a large monster taken off each damage roll here, off the max
+			// hit in the calculator, whose code marks the place as not known ("todo placement? ... is it post-roll?");
+			// half a percent apart at most (the approved plan of 2026-11-19 keeps the plugin's)
+			double allowed = k.loadout.weaponName != null && k.loadout.weaponName.startsWith("Obligator") ? OBLIGATOR_THRUST
+				: FIGURE;
+			if (Math.abs(k.got - k.expected) > allowed * k.expected)
 			{
 				off.add(String.format("%s on %d: %.5f, calculator %.5f", k.set, k.npc, k.got, k.expected));
 			}

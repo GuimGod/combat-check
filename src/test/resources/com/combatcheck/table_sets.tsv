@@ -164,9 +164,9 @@ hallowed-flail	melee	33718	Hallowed flail	Flail	4	9756	Vyrewatch Sentinel	109	18
 hallowed-flail	melee	33718	Hallowed flail	Flail	4	3709	Vyrewatch	109	182	75	-50	-67	117	0	0.0	6.34304	0	0	0	0	0	0	0	0		0	0		-1	0	0	90	118;118;99;99	0	0		0		0
 hallowed-flail	melee	33718	Hallowed flail	Flail	4	9561	Damien Leucurte	109	182	75	-50	-67	117	0	0.0	5.61182	0	0	0	0	0	0	0	0		0	0		-1	0	0	217	118;118;99;99	0	0		0		0
 hallowed-flail	melee	33718	Hallowed flail	Flail	4	15765	Venator	109	182	75	-50	-67	117	0	0.0	5.98595	0	0	0	0	0	0	0	0		0	0		-1	0	0	345	118;118;99;99	0	0		0		0
-hallowed-flail	melee	33718	Hallowed flail	Flail	4	3694	Vampyre Juvinate	109	182	75	-50	-67	117	0	0.0	2.17786	0	0	0	0	0	0	0	0		0	0		-1	0	0	85	118;118;99;99	0	0		0		0
+hallowed-flail	melee	33718	Hallowed flail	Flail	4	3694	Vampyre Juvinate	109	182	75	-50	-67	117	0	0.0	6.60382	0	0	0	0	0	0	0	0		0	0		-1	0	0	85	118;118;99;99	0	0		0		0
 hallowed-flail	melee	33718	Hallowed flail	Flail	4	3237	Feral Vampyre	109	182	75	-50	-67	117	0	0.0	6.48529	0	0	0	0	0	0	0	0		0	0		-1	0	0	40	118;118;99;99	0	0		0		0
-hallowed-flail	melee	33718	Hallowed flail	Flail	4	5635	Vampyre Juvinate	109	182	75	-50	-67	117	0	0.0	2.13876	0	0	0	0	0	0	0	0		0	0		-1	0	0	100	118;118;99;99	0	0		0		0
+hallowed-flail	melee	33718	Hallowed flail	Flail	4	5635	Vampyre Juvinate	109	182	75	-50	-67	117	0	0.0	6.48529	0	0	0	0	0	0	0	0		0	0		-1	0	0	100	118;118;99;99	0	0		0		0
 hallowed-flail	melee	33718	Hallowed flail	Flail	4	3692	Vampyre Juvenile	109	182	75	-50	-67	117	0	0.0	6.60382	0	0	0	0	0	0	0	0		0	0		-1	0	0	60	118;118;99;99	0	0		0		0
 silverlight	melee	2402	Silverlight	Slash Sword	5	9756	Vyrewatch Sentinel	86	128	73	-60	-67	83	0	0.0	0.00000	0	0	0	0	0	0	0	0		0	0		-1	0	0	150	118;118;99;99	0	0		0		0
 silverlight	melee	2402	Silverlight	Slash Sword	5	3709	Vyrewatch	86	128	73	-60	-67	83	0	0.0	0.00000	0	0	0	0	0	0	0	0		0	0		-1	0	0	90	118;118;99;99	0	0		0		0
@@ -196,9 +196,9 @@ hallowed-flail-efaritay	melee	33718	Hallowed flail	Flail	4	9756	Vyrewatch Sentin
 hallowed-flail-efaritay	melee	33718	Hallowed flail	Flail	4	3709	Vyrewatch	109	182	75	-50	-67	105	0	0.0	6.43749	0	0	0	0	0	0	0	0		0	0		-1	0	0	90	118;118;99;99	0	0		0		1
 hallowed-flail-efaritay	melee	33718	Hallowed flail	Flail	4	9561	Damien Leucurte	109	182	75	-50	-67	105	0	0.0	5.79803	0	0	0	0	0	0	0	0		0	0		-1	0	0	217	118;118;99;99	0	0		0		1
 hallowed-flail-efaritay	melee	33718	Hallowed flail	Flail	4	15765	Venator	109	182	75	-50	-67	105	0	0.0	6.12521	0	0	0	0	0	0	0	0		0	0		-1	0	0	345	118;118;99;99	0	0		0		1
-hallowed-flail-efaritay	melee	33718	Hallowed flail	Flail	4	3694	Vampyre Juvinate	109	182	75	-50	-67	105	0	0.0	2.16761	0	0	0	0	0	0	0	0		0	0		-1	0	0	85	118;118;99;99	0	0		0		1
+hallowed-flail-efaritay	melee	33718	Hallowed flail	Flail	4	3694	Vampyre Juvinate	109	182	75	-50	-67	105	0	0.0	6.66554	0	0	0	0	0	0	0	0		0	0		-1	0	0	85	118;118;99;99	0	0		0		1
 hallowed-flail-efaritay	melee	33718	Hallowed flail	Flail	4	3237	Feral Vampyre	109	182	75	-50	-67	105	0	0.0	6.56188	0	0	0	0	0	0	0	0		0	0		-1	0	0	40	118;118;99;99	0	0		0		1
-hallowed-flail-efaritay	melee	33718	Hallowed flail	Flail	4	5635	Vampyre Juvinate	109	182	75	-50	-67	105	0	0.0	2.13390	0	0	0	0	0	0	0	0		0	0		-1	0	0	100	118;118;99;99	0	0		0		1
+hallowed-flail-efaritay	melee	33718	Hallowed flail	Flail	4	5635	Vampyre Juvinate	109	182	75	-50	-67	105	0	0.0	6.56188	0	0	0	0	0	0	0	0		0	0		-1	0	0	100	118;118;99;99	0	0		0		1
 hallowed-flail-efaritay	melee	33718	Hallowed flail	Flail	4	3692	Vampyre Juvenile	109	182	75	-50	-67	105	0	0.0	6.66554	0	0	0	0	0	0	0	0		0	0		-1	0	0	60	118;118;99;99	0	0		0		1
 silverlight-efaritay	melee	2402	Silverlight	Slash Sword	5	9756	Vyrewatch Sentinel	86	128	73	-60	-67	71	0	0.0	0.00000	0	0	0	0	0	0	0	0		0	0		-1	0	0	150	118;118;99;99	0	0		0		1
 silverlight-efaritay	melee	2402	Silverlight	Slash Sword	5	3709	Vyrewatch	86	128	73	-60	-67	71	0	0.0	0.00000	0	0	0	0	0	0	0	0		0	0		-1	0	0	90	118;118;99;99	0	0		0		1

@@ -203,6 +203,10 @@ final class SwitchSet
 			{
 				continue; // worn for an effect its bonuses do not show; only the set in use replaces it
 			}
+			if (on != null && SetEffects.keptOver(on.name, p.name))
+			{
+				continue; // the Amulet of blood fury, worn to heal, is not swapped for the Rancour (and only for it)
+			}
 			double current = on == null ? 0 : on.score(combatClass, meleeType);
 			double offered = p.score(combatClass, meleeType);
 			if (offered <= 0)

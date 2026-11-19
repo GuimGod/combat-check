@@ -94,7 +94,8 @@ public class FightRulesTest
 
 	/**
 	 * Every attack of a class lands at the max hit on some monsters: magic on the Royal Titans' elementals (the
-	 * Sanguinesti staff's 8 more included: the staff over Tumeken's shadow, the other way before).
+	 * Sanguinesti staff's 8 more on one cast in five, as the calculator counts it since d20a3d9: Tumeken's shadow over the
+	 * staff, 13.2 to 12.15 a tick; when every cast took the 8 more, the staff was first).
 	 */
 	@Test
 	public void theElementalsTakeTheMaxHitOfMagic() throws IOException
@@ -105,7 +106,8 @@ public class FightRulesTest
 		for (int id : new int[]{14150, 14151})
 		{
 			Map<String, SetCalcTest.Case> elemental = on(id, 0);
-			first(elemental, "sang", "shadow");
+			first(elemental, "shadow", "sang");
+			assertEquals(12.15, elemental.get("sang").got, 0.001);
 			first(elemental, "shadow", "scythe");
 		}
 		// with a low magic attack bonus a cast lands less often: bonus / 100 + 0.3, 45% more in the Void mage set

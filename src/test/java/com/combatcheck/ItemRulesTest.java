@@ -238,7 +238,8 @@ public class ItemRulesTest
 	{
 		List<Integer> every = new ArrayList<>();
 		Map<Integer, Set<Integer>> fires = ammoLists(every);
-		assertEquals(69, fires.size());
+		// 70 since the calculator of 2026-11-18: the Ascension crossbows and their bolts (ammo.tsv)
+		assertEquals(70, fires.size());
 		List<String> off = new ArrayList<>();
 		for (Map.Entry<Integer, Set<Integer>> w : fires.entrySet())
 		{

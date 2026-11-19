@@ -500,7 +500,7 @@ public class CombatCheckPlugin extends Plugin
 		return weaponAdvice;
 	}
 
-	/** The ruby or diamond bolts (e) in the inventory that deal more right now ("Diamond +3%"), or null. */
+	/** The ruby, diamond or onyx bolts (e) in the inventory that deal more right now ("Diamond +3%"), or null. */
 	WeaponAdvice boltAdvice()
 	{
 		return boltAdvice;
@@ -962,7 +962,7 @@ public class CombatCheckPlugin extends Plugin
 	static final int ESTIMATE_REPLACED_TICKS = 10;
 	/** Whether each Alchemical Hydra around has its damage reduction up: its hitsplats are a quarter of the damage. */
 	private final HydraShield hydra = new HydraShield();
-	/** Bork of the Fractured Archive stunned: his flat armour is 0 and his Defence is not known ({@link BorkStun}). */
+	/** Bork of the Fractured Archive stunned: every melee attack lands, as the calculator counts him ({@link BorkStun}). */
 	private final BorkStun bork = new BorkStun();
 	/** Ezekiel of the Fractured Archive calling on Saradomin: his Defence is not known from then on ({@link EzekielStrength}). */
 	private final EzekielStrength ezekiel = new EzekielStrength();
@@ -1559,8 +1559,10 @@ public class CombatCheckPlugin extends Plugin
 			// Defence never lowered, rather than drains from a Defence he no longer has
 			return full;
 		}
-		return DefenceDrains.left(monster, npc.getId(), full, drains.of(npc.getIndex(), npc),
+		DefenceDrains.Levels left = DefenceDrains.left(monster, npc.getId(), full, drains.of(npc.getIndex(), npc),
 			drains.ticksSince(npc.getIndex(), npc, client.getTickCount()));
+		// Bork stunned keeps his Defence level (BorkStun, as the calculator counts him)
+		return left;
 	}
 
 	/**
@@ -1728,8 +1730,8 @@ public class CombatCheckPlugin extends Plugin
 	 * Whether the monster's Defence is not known now (the line says "Def ?"): a special attack counted on Ezekiel after he
 	 * called on Saradomin, which gives him back Defence by an amount the wiki does not give ({@link EzekielStrength}). His
 	 * drains themselves are counted (from the wiki's Defence 200, to its 60% floor, 120). Bork's stun is not one: it
-	 * changes the figures (his flat armour), never the line, so nothing on screen marks it. Ocellus's next phase is not one
-	 * either: it starts from its full Defence ({@link DefenceDrains#resets}).
+	 * changes the figures, never the line, so nothing on screen marks it ({@link BorkStun}). Ocellus's next phase is not
+	 * one either: it starts from its full Defence ({@link DefenceDrains#resets}).
 	 */
 	static boolean defenceUnknown(boolean notKnown, int specs)
 	{
@@ -2829,9 +2831,14 @@ public class CombatCheckPlugin extends Plugin
 		}
 		if (monster.id == BorkStun.BORK && monster.fracturedArchive)
 		{
-			// Bork's flat armour and magic resistance by the Smorks' health; stunned by the Smorks' heavy cannonball, his
-			// flat armour 0 (OSRS Wiki, Bork)
-			BorkArmour.apply(t, monster.flatArmour, borkArmour.quarters(), borkStunned(monster));
+			// Bork's flat armour and magic resistance by the Smorks' health; stunned by the Smorks' heavy cannonball, as the
+			// calculator counts him (BorkStun#stun)
+			boolean stunned = borkStunned(monster);
+			BorkArmour.apply(t, monster.flatArmour, borkArmour.quarters(), stunned);
+			if (stunned)
+			{
+				BorkStun.stun(t);
+			}
 		}
 		return t;
 	}
@@ -2886,8 +2893,9 @@ public class CombatCheckPlugin extends Plugin
 	}
 
 	/**
-	 * The ruby or diamond bolts (e) in the inventory that would deal more than the ones in the ammunition
-	 * slot, to the monster at the health it has now; null when there are none or the worn ones are as good.
+	 * The ruby, diamond or onyx bolts (e) in the inventory that would deal more than the ones in the ammunition
+	 * slot, to the monster at the health it has now (the best of them); null when there are none or the worn ones are as
+	 * good.
 	 */
 	private WeaponAdvice betterBolts(SwitchSet.Piece[] on, List<SwitchSet.Piece> carried, int weaponId, SetCalc.Target target)
 	{
@@ -2901,7 +2909,7 @@ public class CombatCheckPlugin extends Plugin
 		SetCalc.Player stats = stats();
 		if (worn == 0)
 		{
-			// no bolts on at all (an empty slot, a blessing, arrows): the better of the carried ruby and diamond bolts
+			// no bolts on at all (an empty slot, a blessing, arrows): the best of the carried ruby, diamond and onyx bolts
 			if (ammo != null && isBolts(ammo.name))
 			{
 				return null; // other bolts are on: their effect is not compared
@@ -2933,7 +2941,7 @@ public class CombatCheckPlugin extends Plugin
 			WeaponAdvice advice = new WeaponAdvice();
 			advice.itemId = best.itemId;
 			advice.gain = Double.isNaN(over) ? 0 : over;
-			advice.text = (SetCalc.boltKind(best.name) == SetCalc.DIAMOND ? "Diamond" : "Ruby")
+			advice.text = SetCalc.boltName(SetCalc.boltKind(best.name))
 				+ (Double.isNaN(over) || over < 0.1 ? "" : " " + gainText(over));
 			return advice;
 		}
@@ -2948,10 +2956,14 @@ public class CombatCheckPlugin extends Plugin
 			others.add(quiver);
 		}
 		others.addAll(carried);
+		// the best of the other kinds carried (ruby, diamond, onyx), each kind once (the first of it, the quiver's first)
+		SwitchSet.Piece best = null;
+		double bestGain = Double.NaN;
+		java.util.Set<Integer> tried = new java.util.HashSet<>();
 		for (SwitchSet.Piece p : others)
 		{
 			int kind = SetCalc.boltKind(p.name);
-			if (kind == 0 || kind == worn || !firesBolts(weaponId, inHand, p))
+			if (kind == 0 || kind == worn || !firesBolts(weaponId, inHand, p) || !tried.add(kind))
 			{
 				continue;
 			}
@@ -2959,19 +2971,24 @@ public class CombatCheckPlugin extends Plugin
 			with[SwitchSet.AMMO] = p;
 			double then = SetCalc.perTick(loadout(with, weaponId), stats, target, true);
 			double gain = SetCalc.gain(now, then);
-			if (Double.isNaN(gain) || (gain < 0.1 && !config.boltAlwaysShow()))
+			if (!Double.isNaN(gain) && (best == null || gain > bestGain))
 			{
-				return null;
+				best = p;
+				bestGain = gain;
 			}
-			WeaponAdvice advice = new WeaponAdvice();
-			advice.itemId = p.itemId;
-			advice.gain = gain;
-			// with "all the time" on, the other bolts are shown while they are still the worse ones, in red
-			advice.worse = gain < 0.1;
-			advice.text = (kind == SetCalc.DIAMOND ? "Diamond " : "Ruby ") + differenceText(gain) + (p == quiver ? " (quiver)" : "");
-			return advice;
 		}
-		return null;
+		if (best == null || (bestGain < 0.1 && !config.boltAlwaysShow()))
+		{
+			return null;
+		}
+		WeaponAdvice advice = new WeaponAdvice();
+		advice.itemId = best.itemId;
+		advice.gain = bestGain;
+		// with "all the time" on, the other bolts are shown while they are still the worse ones, in red
+		advice.worse = bestGain < 0.1;
+		advice.text = SetCalc.boltName(SetCalc.boltKind(best.name)) + " " + differenceText(bestGain)
+			+ (best == quiver ? " (quiver)" : "");
+		return advice;
 	}
 
 	/**
@@ -3499,14 +3516,18 @@ public class CombatCheckPlugin extends Plugin
 		int kind = SetCalc.boltKind(names[at]);
 		WeaponAdvice advice = new WeaponAdvice();
 		advice.itemId = carried.get(at).itemId;
-		advice.text = kind == SetCalc.RUBY ? "Ruby" : kind == SetCalc.DIAMOND ? "Diamond" : "";
+		advice.text = SetCalc.boltName(kind);
 		return advice;
 	}
 
-	/** The index of the bolts to put on among these item names: ruby (e), then diamond (e), then any other bolts; -1 for none. */
+	/**
+	 * The index of the bolts to put on among these item names: ruby (e), then diamond (e), then onyx (e), then any other
+	 * bolts; -1 for none.
+	 */
 	static int preferredBolts(String[] names)
 	{
 		int diamond = -1;
+		int onyx = -1;
 		int other = -1;
 		for (int i = 0; i < names.length; i++)
 		{
@@ -3519,12 +3540,16 @@ public class CombatCheckPlugin extends Plugin
 			{
 				diamond = i;
 			}
+			else if (kind == SetCalc.ONYX && onyx < 0)
+			{
+				onyx = i;
+			}
 			else if (kind == 0 && other < 0 && isBolts(names[i]) && !names[i].contains("(unf)"))
 			{
 				other = i;
 			}
 		}
-		return diamond >= 0 ? diamond : other;
+		return diamond >= 0 ? diamond : onyx >= 0 ? onyx : other;
 	}
 
 	/**
@@ -3815,8 +3840,21 @@ public class CombatCheckPlugin extends Plugin
 		in.defenceStab = monster.stab;
 		in.defenceSlash = monster.slash;
 		in.defenceCrush = monster.crush;
+		// Bork stunned, as the figures count him (BorkStun#stun): every melee attack lands, his defence bonuses lower
+		boolean borkStunned = borkStunned(monster);
+		if (borkStunned)
+		{
+			SetCalc.Target stunned = new SetCalc.Target();
+			stunned.stab = monster.stab;
+			stunned.slash = monster.slash;
+			stunned.crush = monster.crush;
+			BorkStun.stun(stunned);
+			in.defenceStab = stunned.stab;
+			in.defenceSlash = stunned.slash;
+			in.defenceCrush = stunned.crush;
+		}
 		in.corporealBeast = "Corporeal Beast".equals(monster.name);
-		in.alwaysHit = monster.wardenP2 || monster.everyAttackLands;
+		in.alwaysHit = monster.wardenP2 || monster.everyAttackLands || borkStunned;
 		in.defencelessShare = defencelessShare(monster);
 		in.alwaysMax = monster.alwaysMaxMelee;
 		in.oneHit = monster.oneHit;

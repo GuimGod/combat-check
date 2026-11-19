@@ -53,7 +53,9 @@ public class ToaRoomsTest
 	{
 		SetCalcTest.Case shadow = of("shadow", 11709);
 		assertNotNull(shadow);
-		double outside = shadow.got;
+		// the case is the calculator's, which counts Ba-Ba's baboons inside the Tombs since cc149e9: outside, by hand
+		shadow.target.toa = false;
+		double outside = SetCalc.perTick(shadow.loadout, shadow.player, shadow.target, false);
 		shadow.target.toa = true;
 		double inside = SetCalc.perTick(shadow.loadout, shadow.player, shadow.target, false);
 		assertTrue("inside " + inside + ", outside " + outside, inside > outside * 1.05);

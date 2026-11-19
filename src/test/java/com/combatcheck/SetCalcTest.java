@@ -26,6 +26,10 @@ import org.junit.Test;
  */
 public class SetCalcTest
 {
+	/** Ba-Ba's room's baboons, Tombs monsters for the calculator too (its BABA_MONKEY_ROOM_IDS since cc149e9). */
+	static final java.util.Set<Integer> BABA_ROOM = new java.util.HashSet<>(java.util.Arrays.asList(11781, 11709, 11710,
+		11711, 11712, 11713, 11714, 11715, 11716, 11717, 11718));
+
 	/** How far a figure may be from the calculator's, as a fraction of it. */
 	private static final double FIGURE = 0.001;
 	/** How far the gain of one set over another may be from the calculator's, in percentage points. */
@@ -216,10 +220,10 @@ public class SetCalcTest
 					k.toaLevel = toaLevel;
 					k.party = party;
 				}
-				if (monster.toaRoom)
+				if (monster.toaRoom && !BABA_ROOM.contains(monster.id))
 				{
-					// the calculator counts the Tombs' rooms' monsters as outside the raid (its lists have the bosses only);
-					// the plugin counts them inside (ToaRoomsTest)
+					// the calculator counts the Tombs' rooms' monsters as outside the raid (its lists have the bosses and,
+					// since cc149e9 of 2026-11-13, Ba-Ba's baboons only); the plugin counts them all inside (ToaRoomsTest)
 					target.toa = false;
 					target.toaInvocation = 0;
 				}

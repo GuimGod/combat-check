@@ -62,6 +62,11 @@ final class StyleCalc
 		/** What a weapon with a rule of its own does to the attack roll and to the max hit (a demonbane weapon on a demon). */
 		double weaponAccuracy = 1;
 		double weaponDamage = 1;
+		/**
+		 * A demonbane weapon on a demon: the percent added to the attack roll and to the max hit, in whole numbers before
+		 * {@link #weaponAccuracy} (SetCalc#withDemonbane, the calculator's order).
+		 */
+		int demonbanePercent;
 		/** The same in whole numbers, each rounded down as the calculator does (the keris partisans: 115/100, 133/100). */
 		int accuracyNumerator = 1;
 		int accuracyDenominator = 1;
@@ -214,6 +219,8 @@ final class StyleCalc
 			attackRoll += baseRoll / 10;
 			max += baseMax / 10;
 		}
+		attackRoll += attackRoll * in.demonbanePercent / 100;
+		max += max * in.demonbanePercent / 100;
 		attackRoll = (long) (attackRoll * in.weaponAccuracy) * in.accuracyNumerator / in.accuracyDenominator;
 		max = (long) (max * in.weaponDamage) * in.damageNumerator / in.damageDenominator + in.maxAdd;
 		if (CRUSH.equals(type) && in.inquisitor > 0)

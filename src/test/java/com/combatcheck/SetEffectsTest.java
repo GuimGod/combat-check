@@ -49,6 +49,7 @@ public class SetEffectsTest
 		p.magic = magic;
 		p.magicDamage = magicDamage + SetEffects.magicDamageBonus(name, c);
 		p.setBonus = SetEffects.scoreBonus(name, c);
+		p.name = name;
 		p.keep = SetEffects.keep(name);
 		p.carriedForUse = SetEffects.carriedForUse(name);
 		return p;
@@ -185,6 +186,42 @@ public class SetEffectsTest
 		assertTrue(SwitchSet.missing(StyleCalc.MELEE, StyleCalc.SLASH, worn(), Arrays.asList(shadows)).isEmpty());
 		// and a Lightbearer is worn for its effect: a damage ring in the bag does not replace it
 		assertTrue(SwitchSet.missing(StyleCalc.MELEE, StyleCalc.SLASH, worn(lightbearer), Arrays.asList(bellator)).isEmpty());
+	}
+
+	@Test
+	public void theAmuletOfBloodFuryIsKeptOverTheRancourOnly()
+	{
+		// worn to heal: not swapped for the Rancour, and for nothing else kept
+		SetEffects.Context melee = context(StyleCalc.MELEE, StyleCalc.SLASH, "Scythe of vitur");
+		SwitchSet.Piece bloodFury = piece("Amulet of blood fury", NECK, melee, 10, 10, 10, 8, 10, 0, 10, 0);
+		SwitchSet.Piece rancour = piece("Amulet of rancour", NECK, melee, 25, 25, 25, 12, 0, 0, 0, 0);
+		SwitchSet.Piece glory = piece("Amulet of glory(4)", NECK, melee, 10, 10, 10, 6, 10, 0, 10, 0);
+		// worn with a melee weapon: the Rancour carried does not replace it, and the set after the switch still has it
+		assertTrue(SwitchSet.missing(StyleCalc.MELEE, StyleCalc.SLASH, worn(bloodFury), Arrays.asList(rancour)).isEmpty());
+		assertEquals(bloodFury, SwitchSet.after(StyleCalc.MELEE, StyleCalc.SLASH, worn(bloodFury), Arrays.asList(rancour))[NECK]);
+		// the other pieces go on being asked for with it on
+		SwitchSet.Piece ferocious = piece("Ferocious gloves", HANDS, melee, 16, 16, 16, 14, 0, 0, 0, 0);
+		assertEquals(Arrays.asList(ferocious.itemId),
+			SwitchSet.missing(StyleCalc.MELEE, StyleCalc.SLASH, worn(bloodFury), Arrays.asList(rancour, ferocious)));
+		// with a bow or a staff it is an amulet like any other: the Anguish and the Occult are asked for over it
+		SetEffects.Context ranged = context(StyleCalc.RANGED, null, "Twisted bow");
+		SwitchSet.Piece anguish = piece("Necklace of anguish", NECK, ranged, 0, 0, 0, 0, 15, 5, 0, 0);
+		assertEquals(Arrays.asList(anguish.itemId),
+			SwitchSet.missing(StyleCalc.RANGED, null, worn(bloodFury), Arrays.asList(rancour, anguish)));
+		SetEffects.Context magic = context(StyleCalc.MAGIC, null, "Tumeken's shadow");
+		SwitchSet.Piece occult = piece("Occult necklace", NECK, magic, 0, 0, 0, 0, 0, 0, 12, 5);
+		assertEquals(Arrays.asList(occult.itemId),
+			SwitchSet.missing(StyleCalc.MAGIC, null, worn(bloodFury), Arrays.asList(occult)));
+		// it is not kept as such any more
+		assertFalse(SetEffects.keep("Amulet of blood fury"));
+		assertTrue(SetEffects.keptOver("Amulet of blood fury", "Amulet of rancour (s)"));
+		assertFalse(SetEffects.keptOver("Amulet of blood fury", "Amulet of torture"));
+		assertFalse(SetEffects.keptOver("Amulet of rancour", "Amulet of blood fury"));
+		// carried: never asked for, not over a weaker amulet nor into an empty neck
+		assertTrue(SwitchSet.missing(StyleCalc.MELEE, StyleCalc.SLASH, worn(glory), Arrays.asList(bloodFury)).isEmpty());
+		assertTrue(SwitchSet.missing(StyleCalc.MELEE, StyleCalc.SLASH, worn(), Arrays.asList(bloodFury)).isEmpty());
+		// a plain Amulet of fury is no exception
+		assertFalse(SetEffects.carriedForUse("Amulet of fury"));
 	}
 
 	@Test

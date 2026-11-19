@@ -8,9 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Bork of the Fractured Archive stunned by the Smorks' heavy cannonball, read from what the game shows. While stunned his
- * flat armour is 0 (OSRS Wiki, Bork); nothing else of the stun is known. Only the figures change: nothing is drawn for
- * the stun, and the Defence line stays as it was.
+ * Bork of the Fractured Archive stunned by the Smorks' heavy cannonball, read from what the game shows. While stunned he
+ * is counted as the OSRS Wiki DPS calculator counts him (its phase "Stunned"): every melee attack lands, his stab and
+ * slash defence 100 lower and his crush defence 50 lower, no flat armour and no magic resistance
+ * ({@link BorkArmour#apply}); his Defence level is not lowered, so ranged and magic roll against it as usual. Only the
+ * figures change: nothing is drawn for the stun, and the Defence line stays as it was.
  *
  * <p>The stun as recorded in two measured fights: the cannonball falls on him, he says "Oof." and plays the stun's
  * animation ({@link #STUNNED}); 14 ticks on he says "Bork very angry!!" and starts his stomps ({@link #STOMP}), which
@@ -74,6 +76,18 @@ final class BorkStun
 			return false;
 		}
 		return start != null;
+	}
+
+	/**
+	 * What the stun does to Bork's defence on the target {@code t} (his row's, taken once): every melee attack lands, stab
+	 * and slash defence 100 lower, crush 50 lower ("verified via monster examine", the calculator's 3da927f).
+	 */
+	static void stun(SetCalc.Target t)
+	{
+		t.meleeLands = true;
+		t.stab -= 100;
+		t.slash -= 100;
+		t.crush -= 50;
 	}
 
 	/** Drops this NPC: it died or went away. */

@@ -57,8 +57,10 @@ public class FracturedArchiveTest
 	}
 
 	/**
-	 * The rows: the wiki's numbers checked with in-game examines. The Archive Guardian with the
-	 * opening's Defence 260 and Magic 250 in both forms (the ground's own defence bonuses and fire weakness 40%), Ezekiel
+	 * The rows: the wiki's numbers checked with in-game examines, and the official post "Quest Month - Week Two & TFA
+	 * Changes" of 2026-11-11 (the Guardian in flight light 75 to 55, on the ground magic 130 to 50 and fire weakness 40%
+	 * to 80%; Xarth stab 115 to 60; the base hitpoints of Bork +150, the Smorks +50, Xarth -150).
+	 * The Archive Guardian with the opening's Defence 260 and Magic 250 in both forms (the ground's own defence bonuses), Ezekiel
 	 * with the wiki's Defence 200 (the first examine read 140), Bork with the wiki's Defence 300 and the examine's flat armour 8, the Smorks with
 	 * flat armour 2, Dreadnoth a demon 25% more vulnerable to demonbane (the examine), Ocellus in his three phases.
 	 */
@@ -76,10 +78,10 @@ public class FracturedArchiveTest
 			assertTrue(m.fracturedArchive);
 			assertEquals("fire", m.weakness);
 		}
-		assertArrayEquals(new int[]{120, 110, 20, 130, 75, 120, 50, 80},
+		assertArrayEquals(new int[]{120, 110, 20, 130, 55, 120, 50, 80},
 			new int[]{flying.stab, flying.slash, flying.crush, flying.magic, flying.light, flying.standard, flying.heavy,
 				flying.weaknessSeverity});
-		assertArrayEquals(new int[]{120, 90, 20, 130, 50, 115, 50, 40},
+		assertArrayEquals(new int[]{120, 90, 20, 50, 50, 115, 50, 80},
 			new int[]{ground.stab, ground.slash, ground.crush, ground.magic, ground.light, ground.standard, ground.heavy,
 				ground.weaknessSeverity});
 		assertEquals("fa", flying.immune);
@@ -90,13 +92,24 @@ public class FracturedArchiveTest
 		StyleData.Monster bork = data.monster(16640);
 		assertEquals(300, bork.level);
 		assertEquals(8, bork.flatArmour);
+		assertEquals(1650, bork.hitpoints);
 		assertEquals(220, data.monster(16641).level);
 		assertEquals(2, data.monster(16641).flatArmour);
+		assertEquals(650, data.monster(16641).hitpoints);
+		StyleData.Monster xarth = data.monster(16684);
+		assertArrayEquals(new int[]{170, 60, 105, 20, 205, 2450},
+			new int[]{xarth.level, xarth.stab, xarth.slash, xarth.crush, xarth.magic, xarth.hitpoints});
 		StyleData.Monster dreadnoth = data.monster(16665);
 		assertEquals(125, dreadnoth.level);
 		assertTrue(dreadnoth.demon);
-		assertEquals(125, dreadnoth.demonbane);
+		// a quarter of a demonbane weapon's bonus: 75% resistance (OSRS Wiki, Dreadnoth the Jellied; the calculator's 25);
+		// Xarth and Ocellus 20% resistance (the wiki; the calculator's 80). 2026-11-19: Dreadnoth was 125, the others 100
+		assertEquals(25, dreadnoth.demonbane);
 		assertTrue(data.monster(16684).demon);
+		for (int id : new int[]{16684, 16673, 16674, 16677})
+		{
+			assertEquals("demonbane on " + id, 80, data.monster(id).demonbane);
+		}
 		assertEquals(195, data.monster(16667).level);
 		assertNull("Moia's weakness is not confirmed", data.monster(16667).weakness);
 		for (int id : new int[]{16673, 16674})
@@ -149,7 +162,8 @@ public class FracturedArchiveTest
 	@Test
 	public void theFiguresAreTheCalculators() throws IOException
 	{
-		assertEquals(95, SetCalcTest.figuresOf(ARCHIVE).size());
+		// 99 since 2026-11-19: the Ascension crossbows with diamond and onyx ascension bolts (e) on Xarth and Ocellus
+		assertEquals(99, SetCalcTest.figuresOf(ARCHIVE).size());
 		Map<String, SetCalcTest.Case> inFlight = on(16659);
 		first(inFlight, "tbow", "blowpipe");
 		first(inFlight, "harmonised-fire-surge", "harmonised-earth-surge");
@@ -157,16 +171,30 @@ public class FracturedArchiveTest
 		assertEquals(0, inFlight.get("scythe").got, 0);
 		Map<String, SetCalcTest.Case> landed = on(16660);
 		first(landed, "scythe", "fang");
+		// magic defence 50 and fire weakness 80% on the ground (2026-11-11): Fire Surge 9.02 a second (4.41 before), ahead
+		// of the Inquisitor's mace in Inquisitor's
+		assertEquals(9.02, landed.get("harmonised-fire-surge").got / 0.6, 0.01);
+		first(landed, "harmonised-fire-surge", "inquisitors-mace-in-inquisitor");
+		// light 55 in flight: the blowpipe 6.84 a second (5.87 before)
+		assertEquals(6.84, inFlight.get("blowpipe").got / 0.6, 0.01);
 		first(landed, "inquisitors-mace-in-inquisitor", "inquisitors-mace");
 		Map<String, SetCalcTest.Case> ezekiel = on(16652);
 		first(ezekiel, "harmonised-earth-surge", "harmonised-fire-surge");
 		Map<String, SetCalcTest.Case> bork = on(16640);
 		first(bork, "inquisitors-mace", "scythe");
-		// Dreadnoth: demonbane by the examine, the Emberlight first (12.8 per second)
+		// Dreadnoth: a quarter of the demonbane bonus (the wiki's 75% resistance): the Scythe first, the Emberlight
+		// 7.62 a second (12.83 when it was taken as 125%), the Scorching bow behind the Twisted bow
 		Map<String, SetCalcTest.Case> dreadnoth = on(16665);
-		first(dreadnoth, "emberlight", "scythe");
-		assertEquals(12.83, dreadnoth.get("emberlight").got / 0.6, 0.01);
-		first(on(16684), "emberlight", "scythe");
+		first(dreadnoth, "scythe", "emberlight");
+		assertEquals(7.62, dreadnoth.get("emberlight").got / 0.6, 0.01);
+		first(dreadnoth, "tbow", "scorching");
+		// Xarth: 80% of it (20% resistance): the Emberlight 8.96 a second (10.00 at 100%), now behind the Scythe;
+		// Osmumten's fang 8.48 (stab 60 since 2026-11-11)
+		Map<String, SetCalcTest.Case> xarth = on(16684);
+		first(xarth, "scythe", "emberlight");
+		assertEquals(8.96, xarth.get("emberlight").got / 0.6, 0.01);
+		assertEquals(8.48, xarth.get("fang").got / 0.6, 0.01);
+		// Ocellus's last phase: the Emberlight still first at 80%
 		first(on(16677), "emberlight", "scythe");
 	}
 
@@ -320,6 +348,19 @@ public class FracturedArchiveTest
 		assertFalse(stun.stunned(smorks, 401));
 		// the stun shows nothing of its own: only the figures change, the Defence line stays as it was
 		assertFalse(CombatCheckPlugin.defenceUnknown(false, 0));
+		// stunned, as the calculator counts him: every melee attack lands, stab and slash 100 lower, crush 50 lower, no
+		// flat armour and no magic resistance; the Defence level as it is
+		SetCalc.Target t = new StyleData().monster(16640).target();
+		int stab = t.stab;
+		int crush = t.crush;
+		BorkArmour.apply(t, 8, 2, true);
+		BorkStun.stun(t);
+		assertTrue(t.meleeLands);
+		assertEquals(stab - 100, t.stab);
+		assertEquals(crush - 50, t.crush);
+		assertEquals(0, t.flatArmour);
+		assertEquals(0, t.magicResistance);
+		assertEquals(300, t.defenceLevel);
 
 		// the flat armour: 8 off every hit that lands outside the stun, nothing in it
 		StyleData data = new StyleData();
@@ -344,7 +385,7 @@ public class FracturedArchiveTest
 
 	/**
 	 * Hard case 6: the hitpoints of a boss of the raid are the most its boss health bar shows, which the game
-	 * scales for the party (Bork in a trio: 2180); with no bar of its own (the "null" bar of another NPC is not read: the
+	 * scales for the party (Bork in a trio: 2390 since 2026-11-11); with no bar of its own (the "null" bar of another NPC is not read: the
 	 * plugin reads it only when it names the monster fought), the row's are left and the time to kill and the bolts have
 	 * no figure. A monster outside the raid never takes them from the bar.
 	 */
@@ -354,14 +395,14 @@ public class FracturedArchiveTest
 		StyleData data = new StyleData();
 		StyleData.Monster bork = data.monster(16640);
 		DefenceDrains.Levels full = MonsterLevels.scaled(bork, null, null, null);
-		assertEquals(1500, full.hitpoints);
-		assertEquals(2180, MonsterLevels.fromBar(bork, full, 2180).hitpoints);
-		assertEquals(1500, MonsterLevels.fromBar(bork, full, 0).hitpoints);
+		assertEquals(1650, full.hitpoints);
+		assertEquals(2390, MonsterLevels.fromBar(bork, full, 2390).hitpoints);
+		assertEquals(1650, MonsterLevels.fromBar(bork, full, 0).hitpoints);
 		StyleData.Monster vorkath = data.monster(8061);
 		DefenceDrains.Levels v = MonsterLevels.scaled(vorkath, null, null, null);
 		assertEquals(v.hitpoints, MonsterLevels.fromBar(vorkath, v, 9999).hitpoints);
 		// the levels are left as they are
-		assertEquals(300, MonsterLevels.fromBar(bork, full, 2180).defence);
+		assertEquals(300, MonsterLevels.fromBar(bork, full, 2390).defence);
 	}
 
 	/** Hard case 12: the line of the bank's weapon is never shown inside a raid, or on a raid's monster. */
@@ -629,17 +670,22 @@ public class FracturedArchiveTest
 		assertEquals(156, defenceAfter(data, 16660, everything()));
 	}
 
-	/** The hotfix's bosses with "no cap": Dreadnoth, the Smorks, the Dagon'hai and The Blade can be taken to 0. */
+	/**
+	 * The hotfix's bosses with "no cap": Dreadnoth, the Smorks, the Dagon'hai and The Blade can be taken to 0. The game
+	 * held the Dagon'hai at 60% by a bug until the post of 2026-11-11 ("Fixed a bug where the Dagon'hai trios Defence could
+	 * not be reduced to 0"): now it takes them to 0 too, as the plugin always counted.
+	 */
 	@Test
 	public void theUncappedBossesGoDownToNothing() throws IOException
 	{
 		StyleData data = new StyleData();
 		assertEquals(0, defenceAfter(data, 16665, everything()));
 		assertEquals(0, defenceAfter(data, 16641, everything()));
-		// the Dagon'hai, each of the six ids: Defence 100 to 0
+		// the Dagon'hai, each of the six ids: Defence 100 to 0, not the 60 of the bug fixed on 2026-11-11
 		for (int id : new int[]{16643, 16644, 16645, 16646, 16647, 16648})
 		{
 			assertEquals(0, DefenceDrains.floor(id, 100));
+			assertEquals(0, DefenceDrains.floor(id, 60));
 			assertEquals("drained to 0: " + id, 0, defenceAfter(data, id, everything()));
 		}
 		// The Blade (Ocellus's second phase, the wiki's "Phase 2" since 2026-11-01): Defence 250 to 0, no floor
@@ -769,7 +815,7 @@ public class FracturedArchiveTest
 			assertEquals(byQuarter[q][1], t.magicResistance);
 			BorkArmour.apply(t, 8, q, true);
 			assertEquals("stunned", 0, t.flatArmour);
-			assertEquals(byQuarter[q][1], t.magicResistance);
+			assertEquals("stunned", 0, t.magicResistance);
 		}
 
 		// what it changes: the blowpipe deals less on 14 than on 8; Tumeken's shadow less with 6 off each cast, never more
@@ -812,36 +858,52 @@ public class FracturedArchiveTest
 	}
 
 	/**
-	 * The hitpoints by the size of the team (the OSRS Wiki's tables, each boss's "Hitpoints", 2026-10-26), for when the
-	 * boss health bar does not show the monster fought: the bar wins where it does. A solo raid as a duo, the base; more
-	 * than 8 as 8; no team, no table (the Dagon'hai, The Blade) or a monster outside the raid: nothing. Every number is the rule
-	 * measured in recorded fights: the base x 1.45 for 3 and 0.42 more for each player after, to the nearest ten,
-	 * the two the wiki leaves empty (Dreadnoth with 7, Ezekiel with 8) included.
+	 * The hitpoints by the size of the team (the OSRS Wiki's tables, each boss's "Hitpoints", 2026-10-26, and the post of
+	 * 2026-11-11), for when the boss health bar does not show the monster fought: the bar wins where it does. A solo raid as
+	 * a duo, the base x 1.10 since 2026-11-11 (worked out, not measured: the exact figure); more than 8 as 8; no team, no
+	 * table (the Dagon'hai, The Blade) or a monster outside the raid: nothing. A trio and up is the rule measured in
+	 * recorded fights: the base x 1.45 for 3 and 0.42 more for each player after, to the nearest ten, the two the wiki
+	 * leaves empty (Dreadnoth with 7, Ezekiel with 8) included; Bork's, the Smorks' and Xarth's new bases measured so in a
+	 * trio of 2026-11-11.
 	 */
 	@Test
 	public void theRaidsHitpointsComeFromTheTeamsTable() throws IOException
 	{
-		assertEquals(1500, ArchiveScaling.hitpoints(16640, 1));
-		assertEquals(1500, ArchiveScaling.hitpoints(16640, 2));
-		assertEquals(2180, ArchiveScaling.hitpoints(16640, 3));
-		assertEquals(4700, ArchiveScaling.hitpoints(16640, 7));
-		assertEquals(5330, ArchiveScaling.hitpoints(16640, 9));
+		assertEquals(1815, ArchiveScaling.hitpoints(16640, 1));
+		assertEquals(1815, ArchiveScaling.hitpoints(16640, 2));
+		assertEquals(2390, ArchiveScaling.hitpoints(16640, 3));
+		assertEquals(5160, ArchiveScaling.hitpoints(16640, 7));
+		assertEquals(5860, ArchiveScaling.hitpoints(16640, 9));
 		assertEquals(0, ArchiveScaling.hitpoints(16640, 0));
-		assertEquals(870, ArchiveScaling.hitpoints(16641, 3));
+		assertEquals(940, ArchiveScaling.hitpoints(16641, 3));
 		assertEquals(800, ArchiveScaling.hitpoints(16659, 3));
 		assertEquals(1600, ArchiveScaling.hitpoints(16660, 3));
 		assertEquals(4350, ArchiveScaling.hitpoints(16652, 3));
 		assertEquals(6570, ArchiveScaling.hitpoints(16665, 7));
 		assertEquals(10650, ArchiveScaling.hitpoints(16652, 8));
-		assertEquals(4860, ArchiveScaling.hitpoints(16684, 4));
+		assertEquals(4580, ArchiveScaling.hitpoints(16684, 4));
 		assertEquals(4680, ArchiveScaling.hitpoints(16674, 4));
 		assertEquals(16430, ArchiveScaling.hitpoints(16677, 7));
-		// Moia by the rule from her measured base: 1,900 in a duo, 2,760 in a trio (recordings of 2026-10-31)
+		// the trio of 2026-11-11 08:55, after the patch (the hitsplats added up): the Guardian 2,400 as before (in flight
+		// and on the ground), Bork 2,390, the Smorks 940, Xarth 3,550
+		assertEquals(2400, ArchiveScaling.hitpoints(16659, 3) + ArchiveScaling.hitpoints(16660, 3));
+		assertEquals(2390, ArchiveScaling.hitpoints(16640, 3));
+		assertEquals(940, ArchiveScaling.hitpoints(16641, 3));
+		assertEquals(3550, ArchiveScaling.hitpoints(16684, 3));
+		// a solo and a duo, the base x 1.10 (2026-11-11): every boss
+		int[][] duos = {{16659, 605}, {16660, 1210}, {16640, 1815}, {16641, 715}, {16652, 3300}, {16667, 2090},
+			{16665, 2310}, {16684, 2695}, {16673, 2750}, {16674, 2750}, {16677, 5775}};
+		for (int[] d : duos)
+		{
+			assertEquals("solo on " + d[0], d[1], ArchiveScaling.hitpoints(d[0], 1));
+			assertEquals("duo on " + d[0], d[1], ArchiveScaling.hitpoints(d[0], 2));
+		}
+		// Moia by the rule from her measured base: 1,900 (the duos of 2026-10-31; 2,090 since 2026-11-11), 2,760 in a trio
 		int moia = 1900;
 		for (int team = 1; team <= 8; team++)
 		{
-			int percent = team <= 2 ? 100 : 145 + 42 * (team - 3);
-			assertEquals("Moia with " + team, ((moia * percent + 500) / 1000) * 10, ArchiveScaling.hitpoints(16667, team));
+			int rule = team <= 2 ? moia * 11 / 10 : ((moia * (145 + 42 * (team - 3)) + 500) / 1000) * 10;
+			assertEquals("Moia with " + team, rule, ArchiveScaling.hitpoints(16667, team));
 		}
 		assertEquals(2760, ArchiveScaling.hitpoints(16667, 3));
 		for (int id : new int[]{16675, 16676, 16643, 16645, 16647, 8061})
@@ -851,7 +913,7 @@ public class FracturedArchiveTest
 
 		StyleData data = new StyleData();
 		// the base is the row's (the Archive Guardian on the ground aside: its row has the shield's 550, the wiki 1100)
-		int[][] bases = {{16659, 550}, {16660, 1100}, {16640, 1500}, {16641, 600}, {16652, 3000}, {16665, 2100}, {16684, 2600},
+		int[][] bases = {{16659, 550}, {16660, 1100}, {16640, 1650}, {16641, 650}, {16652, 3000}, {16665, 2100}, {16684, 2450},
 			{16673, 2500}, {16674, 2500}, {16677, 5250}};
 		for (int[] b : bases)
 		{
@@ -862,26 +924,25 @@ public class FracturedArchiveTest
 			}
 			for (int team = 1; team <= 8; team++)
 			{
-				int percent = team <= 2 ? 100 : 145 + 42 * (team - 3);
-				int rule = ((b[1] * percent + 500) / 1000) * 10;
+				int rule = team <= 2 ? b[1] * 11 / 10 : ((b[1] * (145 + 42 * (team - 3)) + 500) / 1000) * 10;
 				assertEquals(id + " with " + team, rule, ArchiveScaling.hitpoints(id, team));
 			}
 		}
 
 		// the bar wins; without it the table; with neither, nothing (the time to kill and the bolts then have no figure)
 		assertEquals(2166, CombatCheckPlugin.raidHitpoints(2166, 16640, 3));
-		assertEquals(3440, CombatCheckPlugin.raidHitpoints(0, 16640, 5));
+		assertEquals(3780, CombatCheckPlugin.raidHitpoints(0, 16640, 5));
 		assertEquals(0, CombatCheckPlugin.raidHitpoints(0, 16640, 0));
 		assertEquals(3550, CombatCheckPlugin.raidHitpoints(0, 16667, 4));
 		assertEquals(0, CombatCheckPlugin.raidHitpoints(0, 16643, 4));
 		StyleData.Monster bork = data.monster(16640);
 		DefenceDrains.Levels full = MonsterLevels.scaled(bork, null, null, null);
-		assertEquals(3440, MonsterLevels.fromBar(bork, full, CombatCheckPlugin.raidHitpoints(0, 16640, 5)).hitpoints);
+		assertEquals(3780, MonsterLevels.fromBar(bork, full, CombatCheckPlugin.raidHitpoints(0, 16640, 5)).hitpoints);
 		// the team is the most seen since the raid began: a player who dies or leaves does not lower it
 		int team = CombatCheckPlugin.lockedParty(0, true, 7);
 		team = CombatCheckPlugin.lockedParty(team, true, 6);
 		assertEquals(7, team);
-		assertEquals(8140, ArchiveScaling.hitpoints(16684, team));
+		assertEquals(7670, ArchiveScaling.hitpoints(16684, team));
 		assertEquals("out of the raid", 0, CombatCheckPlugin.lockedParty(team, false, 0));
 	}
 }

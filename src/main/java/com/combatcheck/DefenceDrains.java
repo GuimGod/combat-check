@@ -487,7 +487,10 @@ final class DefenceDrains
 	 * their Defence Reduction, meaning an NPC with 100 Defence could have it reduced down to 60, but no further: Archive
 	 * Guardian, Bork, Ezekiel, Moia, Xarth, Ocellus"): the Archive Guardian in flight and on the ground, Bork, Ezekiel, Moia,
 	 * Xarth and Ocellus in his first and third phases. The others of the raid (Dreadnoth, the Smorks, the Dagon'hai, The
-	 * Blade of Ocellus's second phase) have "no cap": 0, as most monsters.
+	 * Blade of Ocellus's second phase) have "no cap": 0, as most monsters. The game held the Dagon'hai at 60% by a bug
+	 * until the official post "Quest Month - Week Two & TFA Changes" (2026-11-11: "Fixed a bug where the Dagon'hai trios
+	 * Defence could not be reduced to 0 and was instead being incorrectly capped at 60%"): since then the game takes them to
+	 * 0, as counted here.
 	 */
 	private static final int[] ARCHIVE_SIXTY_PERCENT = {16659, 16660, 16640, 16652, 16667, 16684, 16673, 16674, 16677};
 	/** The share of its base Defence a boss of {@link #ARCHIVE_SIXTY_PERCENT} keeps, in percent. */

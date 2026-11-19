@@ -8,8 +8,7 @@ package com.combatcheck;
  * Bork of the Fractured Archive's flat armour and magic resistance, by the Smorks' health (OSRS Wiki, Bork, 2026-10-24:
  * "starting at 8 flat armour and 0 magic resistance at 100% health, and adding 2 flat armour and magic resistance every
  * 25% damage the Smorks take"): 8 and 0 with the Smorks at full health, 10 and 2 from 75% left, 12 and 4 from 50%, 14
- * and 6 from 25%. Stunned, his flat armour is 0 ({@link BorkStun}; the wiki says nothing of the magic resistance then,
- * so it is kept).
+ * and 6 from 25%. Stunned, neither (the calculator's phase "Stunned"; {@link BorkStun}).
  *
  * <p>The quarters lost are read from what the game shows, the most of three: the shouts at 75%, 50% and 25% (the
  * recorder, 2026-10-20, 79 fights: they come on the very tick of the hit that takes the Smorks past the mark, from the
@@ -133,12 +132,13 @@ final class BorkArmour
 
 	/**
 	 * Bork's armour on the target {@code t}: the flat armour from his row's ({@code base}, 8) and the magic resistance for
-	 * {@code quarters} of the Smorks' health lost; stunned, the flat armour 0.
+	 * {@code quarters} of the Smorks' health lost; stunned, neither (the calculator's phase "Stunned" sets none of them:
+	 * lib/scaling/Phases.ts; OSRS Wiki, Bork: flat armour "0 (stunned)"). The rest of the stun: {@link BorkStun#stun}.
 	 */
 	static void apply(SetCalc.Target t, int base, int quarters, boolean stunned)
 	{
 		t.flatArmour = stunned ? 0 : flatArmour(base, quarters);
-		t.magicResistance = magicResistance(quarters);
+		t.magicResistance = stunned ? 0 : magicResistance(quarters);
 	}
 
 	/** A Bork that comes into the scene or leaves it: another fight. */

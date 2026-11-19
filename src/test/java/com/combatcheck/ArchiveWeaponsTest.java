@@ -189,7 +189,7 @@ public class ArchiveWeaponsTest
 			{16652, 13.62, 12.89, 5.40}, // Ezekiel, at the Defence 140 the simulator was run with
 			{16667, 13.36, 12.64, 7.09}, // Moia
 			{16665, 14.67, 13.93, 10.94}, // Dreadnoth
-			{16684, 13.57, 12.84, 7.48}, // Xarth
+			{16684, 13.57, 12.84, 7.48}, // Xarth, at the stab defence 115 the simulator was run with
 			{16673, 11.15, 10.44, 9.86}, // Ocellus, first phase
 			{16677, 11.80, 11.08, 4.07}, // Ocellus, third phase
 			{16659, Double.NaN, Double.NaN, 8.96}, // the Archive Guardian flying: melee only with a polearm
@@ -202,6 +202,11 @@ public class ArchiveWeaponsTest
 			{
 				// the table has the wiki's 200 now; the simulator's figures are for the first examine's 140
 				t.defenceLevel = 140;
+			}
+			if (npc == 16684)
+			{
+				// the table has the post of 2026-11-11's stab 60 now; the simulator's figures are for the wiki's 115 before it
+				t.stab = 115;
 			}
 			if (Double.isNaN(c[1]))
 			{
@@ -482,12 +487,15 @@ public class ArchiveWeaponsTest
 		assertEquals(0.055 * effect + 0.945 * normal, halved, 1e-9);
 		assertEquals(0.11 * effect + 0.89 * normal, full, 1e-9);
 
-		// plain Ascension bolts: no effect; the onyx's effect is not modelled (no figure), as with any other onyx bolts
+		// plain Ascension bolts: no effect; the onyx ones (e) with the onyx's effect at half its chance (counted since
+		// 2026-11-19), the unenchanted ones as plain bolts
 		SetCalc.Loadout plainBolts = ascension("Ascension bolts", 53);
 		assertEquals(0, plainBolts.bolt);
 		assertTrue(SetCalc.plain(plainBolts));
 		assertTrue(perSecond(plainBolts, rigour(), ocellus) < got);
-		assertFalse(SetCalc.plain(ascension("Onyx ascension bolts (e)", 58)));
+		SetCalc.Loadout onyx = ascension("Onyx ascension bolts (e)", 58);
+		assertEquals(SetCalc.ONYX, onyx.bolt);
+		assertTrue(SetCalc.plain(onyx));
 		assertTrue(SetCalc.plain(ascension("Onyx ascension bolts", 58)));
 	}
 
@@ -510,7 +518,7 @@ public class ArchiveWeaponsTest
 		assertFalse(Weapons.canFire(crossbows, "Crossbow", "Ascension crossbows", 9144, "Runite bolts"));
 		assertTrue(Weapons.canFire(26374, "Crossbow", "Zaryte crossbow", 21944, "Ruby dragon bolts (e)"));
 		assertEquals(SetCalc.DIAMOND, SetCalc.boltKind("Diamond ascension bolts (e)"));
-		assertEquals(0, SetCalc.boltKind("Onyx ascension bolts (e)"));
+		assertEquals(SetCalc.ONYX, SetCalc.boltKind("Onyx ascension bolts (e)"));
 		assertEquals(0, SetCalc.boltKind("Diamond ascension bolts"));
 	}
 

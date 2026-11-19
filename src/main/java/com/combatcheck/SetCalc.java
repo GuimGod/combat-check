@@ -64,9 +64,9 @@ final class SetCalc
 		/** Ticks between attacks, as on the item. */
 		int speed = 4;
 		List<StyleData.Style> styles = Collections.emptyList();
-		/** Enchanted bolts other than ruby and diamond: their effect is not counted, so a crossbow with them gets no figure. */
+		/** Enchanted bolts other than ruby, diamond and onyx: their effect is not counted, so a crossbow with them gets no figure. */
 		boolean boltEffect;
-		/** Ruby or diamond bolts (e) in the ammunition slot: {@link #RUBY}, {@link #DIAMOND}, or 0. */
+		/** Ruby, diamond or onyx bolts (e) in the ammunition slot: {@link #RUBY}, {@link #DIAMOND}, {@link #ONYX}, or 0. */
 		int bolt;
 		/** Slayer helmet or Black mask worn: {@link SetEffects#MASK}, {@link SetEffects#MASK_IMBUED}, or 0. */
 		int mask;
@@ -225,6 +225,8 @@ final class SetCalc
 		boolean ogreDivision;
 		/** Every attack lands (the Doom of Mokhaiotl shielded and burrowed, the Spawn of the Abyssal Sire). */
 		boolean everyAttackLands;
+		/** Every melee attack lands, the others roll as usual (Bork stunned: {@link BorkStun#stun}). */
+		boolean meleeLands;
 		/** A hit that lands kills it, whatever the hit: every attack deals its hitpoints (Scurrius's rats, the Flowers). */
 		boolean oneHit;
 		/**
@@ -357,6 +359,14 @@ final class SetCalc
 
 	static final int RUBY = 1;
 	static final int DIAMOND = 2;
+	/** Onyx bolts (e), counted since 2026-11-19 as the calculator counts them. */
+	static final int ONYX = 3;
+
+	/** The bolts' name as the reminders show it: "Ruby", "Diamond", "Onyx"; "" for none. */
+	static String boltName(int kind)
+	{
+		return kind == RUBY ? "Ruby" : kind == DIAMOND ? "Diamond" : kind == ONYX ? "Onyx" : "";
+	}
 
 	/**
 	 * Magic Dart and Iban Blast by their number in the game's autocast setting (OSRS Wiki, Varbit 276). Named only:
@@ -367,7 +377,7 @@ final class SetCalc
 	/** Crumble Undead by its number in the game's autocast setting (OSRS Wiki, Varbit 276): no figure either. */
 	static final int CRUMBLE_UNDEAD = 17;
 
-	/** {@link #RUBY} or {@link #DIAMOND} for enchanted bolts of either tier, 0 for anything else. */
+	/** {@link #RUBY}, {@link #DIAMOND} or {@link #ONYX} for enchanted bolts of any tier, 0 for anything else. */
 	static int boltKind(String itemName)
 	{
 		if (itemName == null || !itemName.endsWith("(e)"))
@@ -379,12 +389,19 @@ final class SetCalc
 			return RUBY;
 		}
 		// the Diamond ascension bolts (e): the diamond's effect, half as often ({@link #withBolt})
+		if (itemName.startsWith("Onyx bolts") || itemName.startsWith("Onyx dragon bolts")
+			|| itemName.startsWith("Onyx ascension bolts"))
+		{
+			// the Onyx ascension bolts (e) are onyx bolts, at half the chance on the Ascension crossbows (the calculator's
+			// 7116717: it took them for dragonstone before)
+			return ONYX;
+		}
 		return itemName.startsWith("Diamond bolts") || itemName.startsWith("Diamond dragon bolts")
 			|| itemName.startsWith("Diamond ascension bolts") ? DIAMOND : 0;
 	}
 
 	/**
-	 * Expected damage of one crossbow shot with ruby or diamond bolts (e): the effect on its share of the
+	 * Expected damage of one crossbow shot with ruby, diamond or onyx bolts (e): the effect on its share of the
 	 * shots, the ordinary hit on the rest (OSRS Wiki). Ruby: 6% of the shots deal 20% of the monster's
 	 * current health, at most 100 (22% and 110 with a Zaryte crossbow). Diamond: 10% of the shots cannot
 	 * miss and roll up to 115% of the max hit (126%). The Kandarin hard diary adds a tenth to either chance.
@@ -423,7 +440,30 @@ final class SetCalc
 	static double withBolt(int bolt, boolean zaryte, boolean halved, Player p, Target t, long max, double normal,
 		Scale diamondScale, Scale rubyScale, int limit)
 	{
+		return withBolt(bolt, zaryte, halved, p, t, max, normal, diamondScale, rubyScale, limit, Double.NaN);
+	}
+
+	/**
+	 * The same, with the shot's chance to land ({@code accuracy}), which the onyx bolts' effect needs: 11% of the shots
+	 * that land roll up to 120% of the max hit instead (132% with a Zaryte crossbow), never on the undead; the Kandarin
+	 * diary's tenth and the Ascension crossbows' half on the chance as for any bolts (the calculator's onyxBolts, with
+	 * c446f2e and 7116717). Without {@code accuracy} the onyx bolts count as plain ones.
+	 */
+	static double withBolt(int bolt, boolean zaryte, boolean halved, Player p, Target t, long max, double normal,
+		Scale diamondScale, Scale rubyScale, int limit, double accuracy)
+	{
 		double diary = (p.kandarinDiary ? 1.1 : 1.0) * (halved ? 0.5 : 1.0);
+		if (bolt == ONYX)
+		{
+			if (t.undead || Double.isNaN(accuracy))
+			{
+				return normal;
+			}
+			double chance = 0.11 * diary;
+			long top = max * (zaryte ? 132 : 120) / 100;
+			double effect = landed(0, top, t, diamondScale.monsterPart(), limit, false);
+			return (1 - chance) * normal + accuracy * chance * effect;
+		}
 		if (bolt == DIAMOND)
 		{
 			double chance = 0.10 * diary;
@@ -443,11 +483,24 @@ final class SetCalc
 		return chance * takes(hit, t, limit, false) + (1 - chance) * normal;
 	}
 
-	/** Extra accuracy and damage of a demonbane weapon on this monster, as a multiplier; 1 when it is not a demon. */
-	static double demonbane(Target t, int percent)
+	/**
+	 * Extra accuracy and damage of a demonbane weapon on this monster, in percent; 0 when it is not a demon. The weapon's
+	 * percentage is scaled by the monster's share and rounded down: 5% on Duke Sucellus (70) is 3%, 30% on Dreadnoth (25)
+	 * is 7% (the calculator's demonbaneFactor).
+	 */
+	static int demonbane(Target t, int percent)
 	{
-		// the weapon's percentage is scaled by the monster's share and rounded down: 5% on Duke Sucellus (70) is 3%
-		return t.demon ? 1 + (percent * t.demonbane / 100) / 100.0 : 1;
+		return t.demon ? percent * t.demonbane / 100 : 0;
+	}
+
+	/**
+	 * {@code x} with a demonbane weapon's {@code percent} added, in whole numbers as the calculator does (its
+	 * trackAddFactor: x + x * percent / 100, rounded down). A multiplier in floating point lost 1 on some values (a max hit
+	 * of 125 with the Emberlight on Yama, 84%: 230, not 229).
+	 */
+	static long withDemonbane(long x, Target t, int percent)
+	{
+		return x + x * demonbane(t, percent) / 100;
 	}
 
 	/**
@@ -690,6 +743,12 @@ final class SetCalc
 			return 0;
 		}
 		String n = l.weaponName == null ? "" : l.weaponName.toLowerCase(Locale.ROOT);
+		if (immune.contains("s"))
+		{
+			// a Tanglefoot: only Magic secateurs in melee hurt it, by a max hit of their own from the Farming level (the
+			// calculator's since 741f2f2), which is not read here: they get no figure, anything else 0
+			return StyleCalc.MELEE.equals(cls) && n.startsWith("magic secateurs") ? -1 : 0;
+		}
 		// the monsters only some weapons hurt (the calculator's isImmune): the leafy ones, the vampyres of tiers 2 and
 		// 3, the Doom of Mokhaiotl's shield, the Fire Warrior of Lesarkus
 		if (t.leafy && !leafBladed(l, cls) || vampyreImmune(l, t, cls)
@@ -1052,7 +1111,9 @@ final class SetCalc
 		{
 			return new Scale(1, 2, 0, false, before, 0);
 		}
-		int most = t.vampyre == 2 && silver ? 10 : 0;
+		// tier 2: a silver weapon that is not vampyrebane at most 10 each hit; a vampyrebane one (the Hallowed flail) deals
+		// all of it (the calculator's getAttackerDist since 74958b1, 2026-11-12)
+		int most = t.vampyre == 2 && silver && !vampyrebane(t, cls, lowerName) ? 10 : 0;
 		return before.length == 0 && most == 0 ? NO_SCALE : new Scale(1, 1, 0, false, before, most);
 	}
 
@@ -1308,7 +1369,7 @@ final class SetCalc
 		in.defenceStab = t.stab;
 		in.defenceSlash = t.slash;
 		in.defenceCrush = t.crush;
-		in.alwaysHit = t.wardenP2 || t.everyAttackLands;
+		in.alwaysHit = t.wardenP2 || t.everyAttackLands || t.meleeLands;
 		in.defencelessShare = t.defencelessShare;
 		in.toa = t.toa;
 		in.defenceRollInvocation = t.toaInvocation;
@@ -1358,7 +1419,7 @@ final class SetCalc
 		in.defenceSlash = t.slash;
 		in.defenceCrush = t.crush;
 		in.corporealBeast = "Corporeal Beast".equals(t.name);
-		in.alwaysHit = t.wardenP2 || t.everyAttackLands;
+		in.alwaysHit = t.wardenP2 || t.everyAttackLands || t.meleeLands;
 		// the Tormented Demon: a share of the attacks meets it without defence and lands
 		in.defencelessShare = t.defencelessShare;
 		int[] bonus = headOrNeck(l, t, StyleCalc.MELEE);
@@ -1369,17 +1430,17 @@ final class SetCalc
 		double keris = 1;
 		if (n.contains("emberlight") || n.contains("arclight") && !n.contains("(inactive)"))
 		{
-			in.weaponAccuracy = in.weaponDamage = demonbane(t, 70);
+			in.demonbanePercent = demonbane(t, 70);
 		}
 		else if (n.contains("silverlight") || n.contains("darklight") || n.contains("arclight"))
 		{
 			// the Arclight without charges "functions identically to Darklight" (OSRS Wiki, Arclight; the calculator
 			// keeps its 70%; the wiki decides)
-			in.weaponAccuracy = in.weaponDamage = demonbane(t, 60);
+			in.demonbanePercent = demonbane(t, 60);
 		}
 		else if (n.contains("burning claws") || n.contains("bone claws"))
 		{
-			in.weaponAccuracy = in.weaponDamage = demonbane(t, 5);
+			in.demonbanePercent = demonbane(t, 5);
 		}
 		else if (n.contains("dragon hunter lance") && t.dragon)
 		{
@@ -1722,8 +1783,8 @@ final class SetCalc
 			}
 			if (scorching)
 			{
-				roll = (long) (roll * demonbane(t, 30));
-				max = withHelmet ? max : (long) (max * demonbane(t, 30));
+				roll = withDemonbane(roll, t, 30);
+				max = withHelmet ? max : withDemonbane(max, t, 30);
 			}
 			if (revenant)
 			{
@@ -1732,7 +1793,9 @@ final class SetCalc
 			}
 			if (tonalztics)
 			{
-				max = max * 3 / 4; // each hit rolled up to three quarters of the max
+				// each hit rolled up to the max less a quarter of it, rounded down (the calculator's since 013ff38,
+				// 2026-10-23: a max of 50 rolls up to 38, not the 37 of three quarters)
+				max = max - max / 4;
 			}
 			if (tbow)
 			{
@@ -1778,6 +1841,10 @@ final class SetCalc
 				{
 					top = Math.max(top, rubyHit(zaryte, t));
 				}
+				else if (bolts && l.bolt == ONYX && !t.undead)
+				{
+					top = Math.max(top, max * (zaryte ? 132 : 120) / 100);
+				}
 				best = better(best, atMax(top, t, perHit) / speed, null, speed);
 				continue;
 			}
@@ -1802,7 +1869,7 @@ final class SetCalc
 			if (bolts)
 			{
 				shot = withBolt(l.bolt, zaryte, ArchiveItems.ascensionCrossbows(l.weaponName), p, t, range[1], shot, scale,
-					perHit, limit);
+					perHit, limit, chance);
 			}
 			// the damage as chances, while ticksToKill listens: each shot rolled on its own; not with a bolt's effect
 			double[] damage = shot / speed > best && listening() && !bolts && limit <= 0
@@ -1950,17 +2017,20 @@ final class SetCalc
 		}
 		if (t.alwaysMaxMagic)
 		{
-			// every cast that lands is at its highest hit: the staff's 8 more, the second hit of the Twinflame staff
+			// every cast that lands is at its highest hit: the second hit of the Twinflame staff
 			// included. On the Royal Titans' elementals a cast lands with the magic attack bonus / 100 + 0.3 (the
 			// calculator's accuracy for them; its damage figure takes every cast as landing, which the bonus reaches at 70)
-			long top = sanguinesti ? max + 8 : twinflame ? Math.max(1, max) + Math.max(1, max) * 4 / 10 : max;
+			long top = twinflame ? Math.max(1, max) + Math.max(1, max) * 4 / 10 : max;
 			double lands = 1;
 			if (t.titanElemental)
 			{
 				lands = Math.min(1.0, Math.max(0, bonus) / 100.0 + 0.3);
 				lands = l.voidMagic > 0 ? Math.min(1.0, lands * 1.45) : lands;
 			}
+			// the Sanguinesti staff: its 8 more on one cast in five, the others at the max (the calculator's since d20a3d9,
+			// 2026-10-24; before, every cast at the max and 8 more)
 			double atTop = ahrims ? 0.75 * atMax(top, noArmour, perHit) + 0.25 * atMax(top, noArmour, ahrimsHit)
+				: sanguinesti ? 0.8 * atMax(top, noArmour, perHit) + 0.2 * atMax(top + 8, noArmour, perHit)
 				: atMax(top, noArmour, perHit);
 			return better(-1, lands * atTop / speed, null, speed);
 		}

@@ -113,8 +113,8 @@ public interface CombatCheckConfig extends Config
 
 	@ConfigItem(
 		keyName = "boltReminder",
-		name = "Ruby or diamond bolts",
-		description = "With a crossbow and both ruby and diamond bolts (e) on you, show the ones in your inventory when they would deal more to the monster at its current health (\"Diamond +3%\")",
+		name = "Ruby, diamond or onyx bolts",
+		description = "With a crossbow and ruby, diamond or onyx bolts (e) on you, show the ones in your inventory that would deal the most to the monster at its current health (\"Diamond +3%\")",
 		position = 5,
 		section = master
 	)
@@ -244,7 +244,7 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "boltsAfterAttack",
 		name = "Bolts: after the last attack",
-		description = "How long after your last attack on the monster the ruby or diamond bolts reminder stays. 0 (the default) keeps it for as long as the monster is the one you fight: until it dies, a minute passes without an attack, you walk away or you attack another",
+		description = "How long after your last attack on the monster the ruby, diamond or onyx bolts reminder stays. 0 (the default) keeps it for as long as the monster is the one you fight: until it dies, a minute passes without an attack, you walk away or you attack another",
 		position = 11,
 		section = delays
 	)
