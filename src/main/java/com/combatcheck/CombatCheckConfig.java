@@ -407,6 +407,22 @@ public interface CombatCheckConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showDefenceAbove",
+		name = "Defence above monsters",
+		description = "Above each monster around whose Defence a special attack lowered, whether you attack it or not: the "
+			+ "Defence icon with how much more its Defence can be lowered (its Defence now less the lowest it can go: \"Def 0\" "
+			+ "once it is as low as it goes), and under it each weapon counted with its icon (\"BGS x1\", \"DWH x1\"): yours, "
+			+ "your party's and the others'. It stays while the monster is on screen and goes when it dies. Not for a monster "
+			+ "whose Defence cannot be lowered",
+		position = 14,
+		section = master
+	)
+	default boolean showDefenceAbove()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "showBulwarkSpec",
 		name = "Show Dinh's bulwark's spec",
 		description = "With Dinh's bulwark in hand in its Pummel style and half your special attack energy left, a line with "

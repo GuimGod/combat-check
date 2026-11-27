@@ -14,7 +14,7 @@ final class Words
 	{
 		WRONG_PRAYER, PRAYER_OFF, PRAYER_STILL_ON, CHECK_BLOWPIPE, PIECES_LEFT, PIECES_OFF,
 		MELEE_PRAYER, RANGED_PRAYER, MAGIC_PRAYER, RUBY, DIAMOND, QUIVER, DEFENCE_LEFT, SPECS, ONE_SPEC, MAGIC_LEFT, LOW_HP,
-		BASH_ONE, BASH_MANY, DEFENCE_UNKNOWN, BANK, JELLY_CHINCHOMPA, SPEC_UNUSED, HITS, ONE_HIT
+		BASH_ONE, BASH_MANY, DEFENCE_UNKNOWN, BANK, JELLY_CHINCHOMPA, SPEC_UNUSED, HITS, ONE_HIT, DEFENCE_NOW
 	}
 
 	/** One row per key, in the order of {@link CombatCheckConfig.Language}: English, Portuguese, Spanish, German, French. */
@@ -57,6 +57,8 @@ final class Words
 		// the hits that landed of a weapon that hits more than once ("Ralos 1 spec (2hits)")
 		{"(%dhits)", "(%dhits)", "(%dgolpes)", "(%dTreffer)", "(%dcoups)"},
 		{"(1hit)", "(1hit)", "(1golpe)", "(1Treffer)", "(1coup)"},
+		// above a monster whose Defence was lowered, how much more it can be lowered ("Def 54"; "Def 0" at its floor)
+		{"Def %s", "Def %s", "Def %s", "Vert %s", "Déf %s"},
 	};
 
 	private Words()

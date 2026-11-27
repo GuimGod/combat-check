@@ -168,6 +168,9 @@ public class CombatCheckPlugin extends Plugin
 	@Inject
 	private MissingItemsOverlay missingOverlay;
 
+	@Inject
+	private DefenceAboveOverlay aboveOverlay;
+
 	private StyleData data;
 	@Inject
 	private net.runelite.client.plugins.PluginManager pluginManager;
@@ -854,6 +857,7 @@ public class CombatCheckPlugin extends Plugin
 		overlayManager.add(overlay);
 		overlayManager.add(buttonOverlay);
 		overlayManager.add(missingOverlay);
+		overlayManager.add(aboveOverlay);
 	}
 
 	/**
@@ -899,6 +903,8 @@ public class CombatCheckPlugin extends Plugin
 		overlayManager.remove(overlay);
 		overlayManager.remove(buttonOverlay);
 		overlayManager.remove(missingOverlay);
+		overlayManager.remove(aboveOverlay);
+		above = Collections.emptyList();
 		reset();
 		running = false;
 		data = null;
@@ -949,6 +955,8 @@ public class CombatCheckPlugin extends Plugin
 		hydra.forget(event.getNpc());
 		bork.forget(event.getNpc());
 		ezekiel.forget(event.getNpc());
+		// and the Defence drawn above it, until the next tick works the list out again
+		dropAbove(event.getNpc());
 		borkArmour.bork(event.getNpc().getId());
 		if (event.getNpc().getId() == XarthShield.XARTH && event.getNpc().isDead())
 		{
@@ -1811,6 +1819,143 @@ public class CombatCheckPlugin extends Plugin
 	}
 
 	/**
+	 * A monster around whose Defence was lowered, and the lines drawn above it ({@link DefenceAboveOverlay}): "Def 54"
+	 * with the Defence icon, and under it a row per weapon with the weapon's icon, as in the line of the monster fought.
+	 */
+	static final class Above
+	{
+		final NPC npc;
+		final DefenceLine line;
+
+		Above(NPC npc, DefenceLine line)
+		{
+			this.npc = npc;
+			this.line = line;
+		}
+	}
+
+	/** The monsters to draw the Defence above now, worked out each game tick. */
+	private volatile List<Above> above = Collections.emptyList();
+
+	List<Above> above()
+	{
+		return above;
+	}
+
+	/**
+	 * Every monster around with a special attack counted on it whose Defence can be lowered, attacked by the player or
+	 * not: how much more its Defence can be lowered, by the
+	 * same drains as the line of the monster fought ({@link #aboveHead}), and under it the weapons counted, a row each.
+	 * Empty with "Defence above monsters" off.
+	 */
+	private List<Above> aboveNow()
+	{
+		if (!config.showDefenceAbove() || client.getGameState() != GameState.LOGGED_IN || data == null)
+		{
+			return Collections.emptyList();
+		}
+		List<Above> out = new ArrayList<>();
+		for (NPC npc : client.getTopLevelWorldView().npcs())
+		{
+			int specs = npc == null ? 0 : drains.counted(npc.getIndex(), npc);
+			StyleData.Monster monster = specs <= 0 ? null : tableMonster(npc);
+			if (monster == null)
+			{
+				continue;
+			}
+			boolean unknown = defenceUnknown(ezekiel.called(npc), specs);
+			DefenceDrains.Levels full = aboveFullLevels(npc, monster);
+			boolean immune = DefenceDrains.immune(monster) || DefenceDrains.immune(npc.getId());
+			if (!showsAbove(npc.isDead(), unknown, immune, DefenceDrains.floor(npc.getId(), full.defence), full.defence,
+				specs))
+			{
+				continue;
+			}
+			DefenceDrains.Levels left = DefenceDrains.left(monster, npc.getId(), full, drains.of(npc.getIndex(), npc),
+				drains.ticksSince(npc.getIndex(), npc, client.getTickCount()));
+			int floor = Math.max(DefenceDrains.floor(monster.id, full.defence), DefenceDrains.floor(npc.getId(), full.defence));
+			List<DefenceLine.Row> rows = DefenceLine.rows(config.language(), drains.byWeapon(npc.getIndex(), npc),
+				marksEstimate(true, config.estimateSpecs()));
+			out.add(new Above(npc, new DefenceLine(aboveHead(config.language(), unknown, left.defence, floor,
+				marksEstimate(drains.estimated(npc.getIndex(), npc), config.estimateSpecs())), rows)));
+		}
+		return out;
+	}
+
+	private List<Above> aboveSafely()
+	{
+		try
+		{
+			return aboveNow();
+		}
+		catch (RuntimeException e)
+		{
+			log.debug("could not work out the Defence above the monsters", e);
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * A monster's levels before the special attacks, for the Defence above it: the monster fought's are the ones its line
+	 * uses; another's are the raid's scaling, the Fractured Archive's table for the team, Araxxor's enrage by the health
+	 * bar above it and the Warden's enrage.
+	 */
+	private DefenceDrains.Levels aboveFullLevels(NPC npc, StyleData.Monster monster)
+	{
+		if (npc == targetNpc)
+		{
+			return fullLevels(monster);
+		}
+		DefenceDrains.Levels full = MonsterLevels.scaled(monster, raid, tobRaid, toaRaid);
+		full = MonsterLevels.fromBar(monster, full,
+			monster.fracturedArchive ? raidHitpoints(0, monster.id, archivePartyLocked) : 0);
+		int health = npc.getHealthScale() > 0 && npc.getHealthRatio() > 0
+			? Math.max(1, (int) ((long) full.hitpoints * npc.getHealthRatio() / npc.getHealthScale())) : 0;
+		full = MonsterLevels.enraged(monster, full, health);
+		return MonsterLevels.wardenEnraged(monster, full, wardenEnraged);
+	}
+
+	/** Takes a monster out of the ones the Defence is drawn above (it went away). */
+	private void dropAbove(NPC npc)
+	{
+		List<Above> now = above;
+		if (now.stream().anyMatch(a -> a.npc == npc))
+		{
+			List<Above> kept = new ArrayList<>(now);
+			kept.removeIf(a -> a.npc == npc);
+			above = kept;
+		}
+	}
+
+	/**
+	 * Whether the Defence is drawn above this monster: alive, with a special attack counted on it, and either a Defence
+	 * not known now ("Def ?") or one that can be lowered, by the same rule as the line of the monster fought.
+	 */
+	static boolean showsAbove(boolean dead, boolean unknown, boolean immune, int floor, int full, int specs)
+	{
+		if (dead || specs <= 0)
+		{
+			return false;
+		}
+		return unknown || showsDefence(immune, floor, full, specs);
+	}
+
+	/**
+	 * The first line above the monster: how much more its Defence can be lowered, its Defence now less its floor (a
+	 * Defence of 250 that goes no lower than 150, lowered to 150, gives "Def 0"), so the player can tell whether it is as
+	 * low as it goes; for a monster with no floor, its Defence now. "~" before it for an
+	 * estimate; "Def ?" when the Defence is not known.
+	 */
+	static String aboveHead(CombatCheckConfig.Language language, boolean unknown, int left, int floor, boolean estimated)
+	{
+		if (unknown)
+		{
+			return Words.of(language, Words.Key.DEFENCE_UNKNOWN);
+		}
+		return String.format(Words.of(language, Words.Key.DEFENCE_NOW), (estimated ? "~" : "") + Math.max(0, left - floor));
+	}
+
+	/**
 	 * The Chambers of Xeric's scaling while the player is inside the raid, read from the game: the party size the
 	 * raid was scaled for, Challenge Mode (its varbit, or the game's message at the raid's start: the varbit reads 0
 	 * for a member who is not the leader) and the party's highest combat level. The highest Hitpoints level has no
@@ -2226,6 +2371,7 @@ public class CombatCheckPlugin extends Plugin
 		{
 			// nothing of the last fight is carried to another world or another login
 			reset();
+			above = Collections.emptyList();
 			prayerNotice = null;
 			defenceLine = null;
 			bulwarkSpecLine = null;
@@ -2323,6 +2469,7 @@ public class CombatCheckPlugin extends Plugin
 				blowpipeNotice = null;
 				piecesGain = Double.NaN;
 				archiveNotices = Collections.emptyList();
+				above = Collections.emptyList();
 				return;
 			}
 			if (fightingPlayer(client.getTickCount()))
@@ -2335,6 +2482,7 @@ public class CombatCheckPlugin extends Plugin
 				bulwarkSpecLine = null;
 				leftOnNotice = null;
 				archiveNotices = Collections.emptyList();
+				above = Collections.emptyList();
 				outOfCombat = 0;
 				prayerTimer.reset();
 				return;
@@ -2342,6 +2490,8 @@ public class CombatCheckPlugin extends Plugin
 			readBlowpipe();
 			update(client.getTickCount());
 			lookForSpecs();
+			// after the monster fought is known for this tick, on its own: a failure here keeps the other notices
+			above = aboveSafely();
 		}
 		catch (RuntimeException e)
 		{
@@ -2360,6 +2510,7 @@ public class CombatCheckPlugin extends Plugin
 			defenceLine = null;
 			bulwarkSpecLine = null;
 			piecesGain = Double.NaN;
+			above = Collections.emptyList();
 		}
 	}
 
