@@ -419,7 +419,7 @@ public interface CombatCheckConfig extends Config
 	)
 	default boolean showDefenceAbove()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(

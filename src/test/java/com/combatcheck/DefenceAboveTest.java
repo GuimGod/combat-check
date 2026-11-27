@@ -106,9 +106,9 @@ public class DefenceAboveTest
 	}
 
 	@Test
-	public void offByDefault()
+	public void onByDefault()
 	{
-		assertFalse(new CombatCheckConfig()
+		assertTrue(new CombatCheckConfig()
 		{
 		}.showDefenceAbove());
 	}
