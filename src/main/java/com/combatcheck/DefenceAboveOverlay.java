@@ -13,8 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+import net.runelite.api.Client;
 import net.runelite.api.NPC;
+import net.runelite.api.Perspective;
 import net.runelite.api.Point;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.Skill;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SkillIconManager;
@@ -25,21 +28,27 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
 /**
- * Above each monster whose Defence a special attack lowered, while it is on screen, attacked or not ("Defence above
- * monsters"): the Defence icon with how much more its Defence can be lowered ("Def 54"), and under it a row per weapon
+ * On each monster whose Defence a special attack lowered, while it is on screen, attacked or not ("Defence above
+ * monsters"), just under its health bar: the Defence icon with how much more its Defence can be lowered ("Def 54"), and under it a row per weapon
  * counted with the weapon's icon ("BGS x1", "DWH x1"), as in the line of the monster fought. The lines are worked out
  * each game tick by the plugin ({@link CombatCheckPlugin#above()}).
  */
 class DefenceAboveOverlay extends Overlay
 {
-	/** The lowest line's height above the monster's head: over the health bar and the names other plugins draw there. */
-	private static final int HEIGHT_ABOVE = 60;
+	/**
+	 * The game draws a monster's health bar at its height plus this (in local units), the bar over that point: the lines
+	 * start under it, so the bar never covers them, on a big boss and on a small monster alike.
+	 */
+	private static final int BAR_HEIGHT = 15;
+	/** Pixels from that point down to the top of the first line: under the bar (a boss's bar is the tallest) with a gap. */
+	private static final int BELOW_BAR = 8;
 	/** Icons are drawn at this height, a little over the small font's. */
 	private static final int ICON_H = 14;
 	private static final int GAP = 2;
 	private static final int LINE_H = ICON_H + 1;
 	private static final Color TEXT = Color.WHITE;
 
+	private final Client client;
 	private final CombatCheckPlugin plugin;
 	private final CombatCheckConfig config;
 	private final SkillIconManager skillIcons;
@@ -47,9 +56,10 @@ class DefenceAboveOverlay extends Overlay
 	private final Map<Integer, BufferedImage> icons = new HashMap<>();
 
 	@Inject
-	DefenceAboveOverlay(CombatCheckPlugin plugin, CombatCheckConfig config, SkillIconManager skillIcons,
+	DefenceAboveOverlay(Client client, CombatCheckPlugin plugin, CombatCheckConfig config, SkillIconManager skillIcons,
 		ItemManager itemManager)
 	{
+		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
 		this.skillIcons = skillIcons;
@@ -76,19 +86,21 @@ class DefenceAboveOverlay extends Overlay
 			{
 				continue;
 			}
-			// null while the monster is off screen; with no words, the point is the middle above it
-			Point at = npc.getCanvasTextLocation(graphics, "", npc.getLogicalHeight() + HEIGHT_ABOVE);
-			if (at == null)
+			// where the game draws its health bar; null while the monster is off screen
+			LocalPoint local = npc.getLocalLocation();
+			Point bar = local == null || npc.getWorldView() == null ? null
+				: Perspective.localToCanvas(client, local, npc.getWorldView().getPlane(), npc.getLogicalHeight() + BAR_HEIGHT);
+			if (bar == null)
 			{
 				continue;
 			}
-			// the Defence on top, the weapons under it, the last one at the point
-			int y = at.getY() - a.line.rows.size() * LINE_H;
-			line(graphics, fm, at.getX(), y, defence, a.line.head);
+			// the Defence first, just under the bar, and the weapons under it
+			int y = bar.getY() + BELOW_BAR + fm.getAscent();
+			line(graphics, fm, bar.getX(), y, defence, a.line.head);
 			for (DefenceLine.Row row : a.line.rows)
 			{
 				y += LINE_H;
-				line(graphics, fm, at.getX(), y, icon(row.itemId), row.text);
+				line(graphics, fm, bar.getX(), y, icon(row.itemId), row.text);
 			}
 		}
 		return null;
