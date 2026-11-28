@@ -382,8 +382,8 @@ public interface CombatCheckConfig extends Config
 			+ "counted, from their special attack animation and the hitsplats on the monster, only as far as the hit leaves "
 			+ "no doubt. With this on, the figures that use one are marked with ~; the figures are "
 			+ "the same either way",
-		position = 13,
-		section = master
+		position = 4,
+		section = defence
 	)
 	default boolean estimateSpecs()
 	{
@@ -398,8 +398,8 @@ public interface CombatCheckConfig extends Config
 			+ "and the others' (with \"Mark estimated specs\" the figure gets ~). Not for a monster whose Defence cannot be "
 			+ "lowered. With a magic weapon it gives the Magic level instead, and only when it was lowered (except where magic "
 			+ "rolls against Defence). The Special Attack Counter shows each weapon's drain; this shows the level the figures use",
-		position = 14,
-		section = master
+		position = 3,
+		section = defence
 	)
 	default boolean showDefence()
 	{
@@ -414,8 +414,8 @@ public interface CombatCheckConfig extends Config
 			+ "once it is as low as it goes), and under it each weapon counted with its icon (\"BGS x1\", \"DWH x1\"): yours, "
 			+ "your party's and the others'. It stays while the monster is on screen and goes when it dies. Not for a monster "
 			+ "whose Defence cannot be lowered",
-		position = 14,
-		section = master
+		position = 1,
+		section = defence
 	)
 	default boolean showDefenceAbove()
 	{
@@ -448,8 +448,8 @@ public interface CombatCheckConfig extends Config
 		description = "Where \"Defence above monsters\" draws its lines on each monster: over its health bar, just under it, "
 			+ "or at the monster's feet. None of them touches the health bar; over it, the lines can cover the prayer icon "
 			+ "some monsters show above their bar",
-		position = 14,
-		section = master
+		position = 2,
+		section = defence
 	)
 	default DefencePosition defencePosition()
 	{
@@ -483,6 +483,15 @@ public interface CombatCheckConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigSection(
+		name = "Defence",
+		description = "The monster's Defence lowered by special attacks (the hammers, the Bandos godsword, the Tonalztics "
+			+ "of Ralos, Arclight and the like): yours, your party's and the others'. How much more it can be lowered, "
+			+ "drawn on each monster, and the line in the corner for the monster you fight",
+		position = 14
+	)
+	String defence = "defence";
 
 	@ConfigSection(
 		name = "Elemental magic",

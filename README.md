@@ -23,7 +23,7 @@ RuneLite's item data does not have the raid's rewards yet, so their bonuses are 
 
 ## What is on
 
-The first section of the settings has one switch for each reminder: the attack style ("Combat check"), switch pieces left behind, pieces to take off, better weapon in the inventory, better weapon in the bank, ruby, diamond or onyx bolts (and whether their difference is shown all the time or only once the other bolts deal more), no attack prayer on, wrong attack prayer on, prayer left on, and the request to Check a blowpipe. The Slayer task is always read: it has no switch. Everything else in the settings is how each one looks and how long it waits.
+The first section of the settings has one switch for each reminder: the attack style ("Combat check"), switch pieces left behind, pieces to take off, better weapon in the inventory, better weapon in the bank, ruby, diamond or onyx bolts (and whether their difference is shown all the time or only once the other bolts deal more), no attack prayer on, wrong attack prayer on, prayer left on, and the request to Check a blowpipe. The Slayer task is always read: it has no switch. Everything else in the settings is how each one looks and how long it waits. The Defence lowered by special attacks has its own "Defence" section: "Defence above monsters", "Defence position", "Show the Defence left" (the line in the corner) and "Mark estimated specs".
 
 ## Where it is drawn
 
