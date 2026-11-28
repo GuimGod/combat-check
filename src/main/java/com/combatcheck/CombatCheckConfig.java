@@ -409,9 +409,8 @@ public interface CombatCheckConfig extends Config
 	@ConfigItem(
 		keyName = "showDefenceAbove",
 		name = "Defence above monsters",
-		description = "On each monster around whose Defence a special attack lowered, just under its health bar, whether you "
-			+ "attack it or not: the "
-			+ "Defence icon with how much more its Defence can be lowered (its Defence now less the lowest it can go: \"Def 0\" "
+		description = "On each monster around whose Defence a special attack lowered, whether you attack it or not (where: "
+			+ "\"Defence position\", just under its health bar by default): the Defence icon with how much more its Defence can be lowered (its Defence now less the lowest it can go: \"Def 0\" "
 			+ "once it is as low as it goes), and under it each weapon counted with its icon (\"BGS x1\", \"DWH x1\"): yours, "
 			+ "your party's and the others'. It stays while the monster is on screen and goes when it dies. Not for a monster "
 			+ "whose Defence cannot be lowered",
@@ -421,6 +420,40 @@ public interface CombatCheckConfig extends Config
 	default boolean showDefenceAbove()
 	{
 		return true;
+	}
+
+	enum DefencePosition
+	{
+		ABOVE_BAR("Above the health bar"),
+		UNDER_BAR("Under the health bar"),
+		FEET("At its feet");
+
+		private final String label;
+
+		DefencePosition(String label)
+		{
+			this.label = label;
+		}
+
+		@Override
+		public String toString()
+		{
+			return label;
+		}
+	}
+
+	@ConfigItem(
+		keyName = "defencePosition",
+		name = "Defence position",
+		description = "Where \"Defence above monsters\" draws its lines on each monster: over its health bar, just under it, "
+			+ "or at the monster's feet. None of them touches the health bar; over it, the lines can cover the prayer icon "
+			+ "some monsters show above their bar",
+		position = 14,
+		section = master
+	)
+	default DefencePosition defencePosition()
+	{
+		return DefencePosition.UNDER_BAR;
 	}
 
 	@ConfigItem(

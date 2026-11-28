@@ -105,6 +105,66 @@ public class DefenceAboveTest
 		assertEquals(0, drains.counted(1, hit));
 	}
 
+	/**
+	 * Each "Defence position" keeps every line off the health bar (the bar's pixels and a second bar's over it), on a big
+	 * boss, on a small monster and on one so far off that its feet are by its bar, with 0 to 4 weapon rows.
+	 */
+	@Test
+	public void noPositionTouchesTheBar()
+	{
+		// {bar's point, ground's point} on screen
+		int[][] monsters = {{100, 420}, {300, 330}, {300, 304}};
+		for (CombatCheckConfig.DefencePosition position : CombatCheckConfig.DefencePosition.values())
+		{
+			for (int[] m : monsters)
+			{
+				for (int ascent = 9; ascent <= 13; ascent++)
+				{
+					for (int rows = 0; rows <= 4; rows++)
+					{
+						int first = DefenceAboveOverlay.firstBaseline(position, m[0], m[1], ascent, 3, rows);
+						for (int i = 0; i <= rows; i++)
+						{
+							int baseline = first + i * DefenceAboveOverlay.LINE_H;
+							// as the line is drawn: the words (their shadow 1 px under) and the icon beside them
+							int icon = DefenceAboveOverlay.iconTop(baseline, ascent);
+							int top = Math.min(baseline - ascent, icon);
+							int bottom = Math.max(baseline + 3 + 1, icon + DefenceAboveOverlay.ICON_H);
+							String where = position + " bar " + m[0] + " feet " + m[1] + " ascent " + ascent + " line " + i;
+							assertTrue(where, bottom < m[0] - DefenceAboveOverlay.BAR_UP || top > m[0] + DefenceAboveOverlay.BAR_DOWN);
+							if (position == CombatCheckConfig.DefencePosition.ABOVE_BAR)
+							{
+								assertTrue(where, bottom < m[0] - DefenceAboveOverlay.BAR_UP);
+							}
+							else
+							{
+								assertTrue(where, top > m[0] + DefenceAboveOverlay.BAR_DOWN);
+							}
+						}
+					}
+				}
+			}
+		}
+		// at the feet: the first line starts at the near edge of its tiles when there is room
+		int first = DefenceAboveOverlay.firstBaseline(CombatCheckConfig.DefencePosition.FEET, 100, 420, 11, 3, 2);
+		assertEquals(420, first - DefenceAboveOverlay.lineUp(11));
+		// under the bar: the first line starts 3 px under it
+		first = DefenceAboveOverlay.firstBaseline(CombatCheckConfig.DefencePosition.UNDER_BAR, 100, 420, 11, 3, 2);
+		assertEquals(100 + DefenceAboveOverlay.BAR_DOWN + DefenceAboveOverlay.CLEAR,
+			first - DefenceAboveOverlay.lineUp(11));
+	}
+
+	@Test
+	public void underTheBarByDefault()
+	{
+		assertEquals(CombatCheckConfig.DefencePosition.UNDER_BAR, new CombatCheckConfig()
+		{
+		}.defencePosition());
+		assertEquals("Above the health bar", CombatCheckConfig.DefencePosition.ABOVE_BAR.toString());
+		assertEquals("Under the health bar", CombatCheckConfig.DefencePosition.UNDER_BAR.toString());
+		assertEquals("At its feet", CombatCheckConfig.DefencePosition.FEET.toString());
+	}
+
 	@Test
 	public void onByDefault()
 	{
